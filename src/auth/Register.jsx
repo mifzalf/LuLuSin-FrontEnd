@@ -1,23 +1,25 @@
 "use client"
 
 import { motion } from "framer-motion"
+import React from "react";
 
 const Register = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#1B2B44] h-screen w-screen">
-      <section className="flex items-center justify-center w-full h-screen px-4">
+    <div className="fixed inset-0 bg-[#1B2B44] overflow-hidden">
+      <section className="w-full h-full flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="flex flex-col md:flex-row w-full max-w-5xl mx-auto bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl shadow-lg overflow-hidden"
+          className="w-full max-w-5xl mx-4 bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl shadow-lg overflow-hidden flex flex-col md:flex-row"
+          style={{ maxHeight: "90vh" }}
         >
-          {/* Bagian Kiri - Deskripsi */}
+          {/* Left Section - Description */}
           <motion.div
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="w-full md:w-1/2 flex flex-col items-center justify-center text-white px-6 md:px-10 py-8 bg-[#2D4562]"
+            className="w-full md:w-1/2 flex flex-col items-center justify-center text-white p-6 md:p-8 bg-[#2D4562]"
           >
             <motion.h2
               initial={{ y: -20, opacity: 0 }}
@@ -31,25 +33,25 @@ const Register = () => {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.7, duration: 0.4 }}
-              className="text-center text-sm px-4"
+              className="text-center text-sm"
             >
               Bersiaplah menaklukkan SNBT dengan materi lengkap, tryout interaktif, dan analisis skor cerdas. Daftar
               sekarang dan mulai langkahmu menuju masa depan cerah!
             </motion.p>
           </motion.div>
 
-          {/* Bagian Kanan - Form Register */}
+          {/* Right Section - Register Form */}
           <motion.div
             initial={{ x: 50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="w-full md:w-1/2 bg-[#F5F0EB] flex flex-col items-center justify-center px-6 md:px-10 py-8"
+            className="w-full md:w-1/2 bg-[#F5F0EB] flex flex-col items-center justify-center p-6 md:p-8"
           >
             <motion.h2
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.5, duration: 0.4 }}
-              className="text-3xl font-bold text-[#2D4562] mb-6 text-center"
+              className="text-3xl font-bold text-[#2D4562] mb-5 text-center"
             >
               Register
             </motion.h2>
@@ -58,7 +60,7 @@ const Register = () => {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.6, duration: 0.4 }}
-              className="w-full mb-4"
+              className="w-full mb-3"
             >
               <motion.input
                 whileFocus={{ scale: 1.02, boxShadow: "0 0 0 2px rgba(45, 69, 98, 0.3)" }}
@@ -73,7 +75,7 @@ const Register = () => {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.7, duration: 0.4 }}
-              className="w-full mb-4 flex gap-2"
+              className="w-full mb-3 flex gap-2"
             >
               <motion.input
                 whileFocus={{ scale: 1.02, boxShadow: "0 0 0 2px rgba(45, 69, 98, 0.3)" }}
@@ -95,7 +97,7 @@ const Register = () => {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.8, duration: 0.4 }}
-              className="w-full mb-4"
+              className="w-full mb-3"
             >
               <motion.input
                 whileFocus={{ scale: 1.02, boxShadow: "0 0 0 2px rgba(45, 69, 98, 0.3)" }}
@@ -110,7 +112,7 @@ const Register = () => {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.9, duration: 0.4 }}
-              className="w-full mb-5"
+              className="w-full mb-4"
             >
               <motion.input
                 whileFocus={{ scale: 1.02, boxShadow: "0 0 0 2px rgba(45, 69, 98, 0.3)" }}
@@ -125,7 +127,7 @@ const Register = () => {
               initial={{ opacity: 0, scaleX: 0 }}
               animate={{ opacity: 1, scaleX: 1 }}
               transition={{ delay: 1, duration: 0.4 }}
-              className="w-full border-t border-gray-300 my-4"
+              className="w-full border-t border-gray-300 my-3"
             />
 
             <motion.button
@@ -143,12 +145,12 @@ const Register = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.2, duration: 0.4 }}
-              className="mt-5 text-sm text-gray-600 text-center"
+              className="mt-4 text-sm text-gray-600 text-center"
             >
               sudah memiliki akun?{" "}
               <motion.a
                 whileHover={{ scale: 1.05, color: "#1B2B44" }}
-                href="#"
+                href="/login"
                 className="text-[#2D4562] font-semibold"
               >
                 Login
