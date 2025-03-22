@@ -14,6 +14,7 @@ import CreateTryout from "./Pages/Guru/CreateTryout";
 import SiswaDashBoard from "./Pages/Siswa/DashBoard";
 import SiswaLandingPage from "./Pages/Siswa/landingpage";
 import SiswaTryout from "./Pages/Siswa/Tryout";
+import SiswaTryoutDetail from "./Pages/Siswa/Tryoutdetail";
 
 
 function App() {
@@ -84,6 +85,7 @@ function App() {
             <Route path="Siswa/DashBoard" element={<SiswaDashBoard />} />   
             <Route path="Siswa/landingpage" element={<SiswaLandingPage />} />   
             <Route path="Siswa/Tryout" element={<SiswaTryout />} />      
+            <Route path="Siswa/Tryout/id/subjek" element={<SiswaTryoutDetail />} />      
           </Routes>
         </Layout>
       } />
