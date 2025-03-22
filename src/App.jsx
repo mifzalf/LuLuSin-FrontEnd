@@ -11,6 +11,8 @@ import Dashboard from "./Pages/Admin/DashBoard";
 import DetailGuru from "./Pages/Admin/DetailGuru";
 import DetailMurid from "./Pages/Admin/DetailMurid";
 import CreateTryout from "./Pages/Guru/CreateTryout";
+import SiswaDashBoard from "./Pages/Siswa/DashBoard";
+
 
 function App() {
   const [count, setCount] = useState(0);
@@ -30,26 +32,34 @@ function App() {
         <Layout>
           <Routes>
             <Route index element={
-              <div>
-                <a href="https://vite.dev" target="_blank">
-                  <img src={viteLogo} className="logo" alt="Vite logo" />
-                </a>
-                <a href="https://react.dev" target="_blank">
-                  <img src={reactLogo} className="logo react" alt="React logo" />
-                </a>
-                <h1>Vite + React</h1>
-                <div className="card">
-                  <button onClick={() => setCount(count + 1)}>
-                    count is {count}
-                  </button>
-                  <p>Edit <code>src/App.jsx</code> and save to test HMR</p>
+              <div className="group-members-container">
+                <h1>Anggota Kelompok</h1>
+                <div className="members-list">
+                  <div className="member-card">
+                    <h2>Anggota 1</h2>
+                    <p>Dafa Ahmad Fahrisi</p>
+                    <p>NRP: 3123522007</p>
+                  </div>
+                  <div className="member-card">
+                    <h2>Anggota 2</h2>
+                    <p>Nama Lengkap</p>
+                    <p>NIM: 123456789</p>
+                  </div>
+                  <div className="member-card">
+                    <h2>Anggota 3</h2>
+                    <p>Nama Lengkap</p>
+                    <p>NIM: 123456789</p>
+                  </div>
+                  <div className="member-card">
+                    <h2>Anggota 4</h2>
+                    <p>Nama Lengkap</p>
+                    <p>NIM: 123456789</p>
+                  </div>
                 </div>
-                <p className="read-the-docs">
-                  Click on the Vite and React logos to learn more
-                </p>
               </div>
             } />
             <Route path="Guru/CreateTryout" element={<CreateTryout />} />
+            <Route path="Siswa/DashBoard" element={<SiswaDashBoard />} />
           </Routes>
         </Layout>
       } />

@@ -3,9 +3,9 @@ import React from "react";
 
 export default function Header() {
   return (
-    <div className="flex flex-col flex-grow">
+    <div className="w-full">
       <motion.header
-        className="bg-[#1B2B44] p-4 flex justify-between items-center shadow-md"
+        className="bg-[#1B2B44] p-4 flex justify-between items-center shadow-md w-full"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}

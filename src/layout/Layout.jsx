@@ -4,9 +4,9 @@ import Footer from "./Footer";
 
 export default function Layout({ children }) {
   return (
-    <div>
+    <div className="layout-container w-full min-h-screen flex flex-col">
       <Header />
-      <main>{children}</main>
+      <main className="main-content flex-grow w-full">{children}</main>
       <Footer />
     </div>
   );
