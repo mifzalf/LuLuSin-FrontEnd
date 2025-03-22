@@ -60,3 +60,20 @@ html, body {
 .read-the-docs {
   color: #888;
 }
+
+.member-name {
+  position: relative;
+  display: inline-block;
+}
+
+.member-name:hover {
+  transform: scale(1.05);
+  color: #2980b9 !important;
+  text-shadow: 0 0 5px rgba(52, 152, 219, 0.5) !important;
+}
+
+.member-card:hover {
+  transform: translateY(-10px) !important;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15) !important;
+  background-color: #ffffff !important;
+}
