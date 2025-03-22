@@ -13,6 +13,7 @@ import DetailMurid from "./Pages/Admin/DetailMurid";
 import CreateTryout from "./Pages/Guru/CreateTryout";
 import SiswaDashBoard from "./Pages/Siswa/DashBoard";
 import SiswaLandingPage from "./Pages/Siswa/landingpage";
+import SiswaTryout from "./Pages/Siswa/Tryout";
 
 
 function App() {
@@ -81,7 +82,8 @@ function App() {
             } />
             <Route path="Guru/CreateTryout" element={<CreateTryout />} />
             <Route path="Siswa/DashBoard" element={<SiswaDashBoard />} />   
-            <Route path="Siswa/landingpage" element={<SiswaLandingPage />} />         
+            <Route path="Siswa/landingpage" element={<SiswaLandingPage />} />   
+            <Route path="Siswa/Tryout" element={<SiswaTryout />} />      
           </Routes>
         </Layout>
       } />
