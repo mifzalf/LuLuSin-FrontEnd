@@ -16,7 +16,8 @@ import SiswaLandingPage from "./Pages/Siswa/landingpage";
 import SiswaTryout from "./Pages/Siswa/Tryout";
 import SiswaTryoutDetail from "./Pages/Siswa/Tryoutdetail";
 import SiswaTryoutHasil from "./Pages/Siswa/TryoutHasil";
-import SiswaTryoutPembahasan from "./Pages/Siswa/TruoutPembahasan";
+import SiswaTryoutPembahasan from "./Pages/Siswa/TryoutPembahasan";
+import SiswaTryoutPengerjaan from "./Pages/Siswa/TryoutPengerjaan";
 
 
 
@@ -32,7 +33,6 @@ function App() {
       <Route path="/Admin/DetailGuru" element={<DetailGuru />} />
       <Route path="/Admin/DetailMurid" element={<DetailMurid />} />
       <Route path="/Guru/Tryout/id/subjek" element={<GuruTryoutSubjek />} />
-
       {/* Routing dengan Layout */}
       <Route path="/*" element={
         <Layout>
@@ -90,7 +90,8 @@ function App() {
             <Route path="Siswa/Tryout" element={<SiswaTryout />} />      
             <Route path="Siswa/Tryout/id/subjek" element={<SiswaTryoutDetail />} />      
             <Route path="Siswa/Tryout/id/subjek/hasil" element={<SiswaTryoutHasil />} />      
-            <Route path="Siswa/Tryout/id/subjek/pembahasan" element={<SiswaTryoutPembahasan />} />        
+            <Route path="Siswa/Tryout/id/subjek/pembahasan" element={<SiswaTryoutPembahasan />} />
+            <Route path="Siswa/Tryout/id/subjek/pengerjaan" element={<SiswaTryoutPengerjaan />} />
           </Routes>
         </Layout>
       } />
