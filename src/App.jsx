@@ -12,6 +12,7 @@ import DetailGuru from "./Pages/Admin/DetailGuru";
 import DetailMurid from "./Pages/Admin/DetailMurid";
 import CreateTryout from "./Pages/Guru/CreateTryout";
 import SiswaDashBoard from "./Pages/Siswa/DashBoard";
+import SiswaLandingPage from "./Pages/Siswa/landingpage";
 
 
 function App() {
@@ -59,7 +60,8 @@ function App() {
               </div>
             } />
             <Route path="Guru/CreateTryout" element={<CreateTryout />} />
-            <Route path="Siswa/DashBoard" element={<SiswaDashBoard />} />
+            <Route path="Siswa/DashBoard" element={<SiswaDashBoard />} />   
+            <Route path="Siswa/landingpage" element={<SiswaLandingPage />} />         
           </Routes>
         </Layout>
       } />
