@@ -23,6 +23,9 @@ import EditSoalCreatePembahasan from "./Pages/Guru/EditSoalCreatePembahasan";
 import EditTryout from "./Pages/Guru/EditTryout";
 import EditTryoutSubjek from "./Pages/Guru/EditTryoutSubjek";
 import GuruTryout from "./Pages/Guru/GuruTryout";
+import GuruTryoutDetail from "./Pages/Guru/GuruTryoutDetail";
+
+
 function App() {
   const [count, setCount] = useState(0);
 
@@ -98,12 +101,12 @@ function App() {
             <Route path="Guru/Tryout/id/subjek/editpembahasan/create" element={<EditSoalCreatePembahasan />} />
             <Route path="Guru/Tryout/id/subjek/edit" element={<EditTryout />} />
             <Route path="Guru/Tryout/id/editsubjek" element={<EditTryoutSubjek />} />
-            <Route path="Guru/Tryout" element={<GuruTryout />} />
+            <Route path="Guru/Tryout/id/detail" element={<GuruTryoutDetail />} />
           </Routes>
         </Layout>
       } />
     </Routes>
   );
 }
-    
+
 export default App;
