@@ -6,11 +6,18 @@ import "./App.css";
 import Layout from "./layout/Layout";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
-import GuruTryoutSubjek from "./Pages/Guru/GuruTryoutSubjek";
 import Dashboard from "./Pages/Admin/DashBoard";
 import DetailGuru from "./Pages/Admin/DetailGuru";
 import DetailMurid from "./Pages/Admin/DetailMurid";
 import CreateTryout from "./Pages/Guru/CreateTryout";
+import EditPembahasanSoalTryout from "./Pages/Guru/editpembahasansoaltryout";
+import EditSoalCreatePembahasan from "./Pages/Guru/EditSoalCreatePembahasan";
+import EditTryout from "./Pages/Guru/EditTryout";
+import EditTryoutSubjek from "./Pages/Guru/EditTryoutSubjek";
+import GuruTryout from "./Pages/Guru/GuruTryout";
+import GuruTryoutDetail from "./Pages/Guru/GuruTryoutDetail";
+import GuruTryoutSubjek from "./Pages/Guru/GuruTryoutSubjek";
+import Home from "./Pages/Guru/Home";
 import SiswaDashBoard from "./Pages/Siswa/DashBoard";
 import SiswaLandingPage from "./Pages/Siswa/landingpage";
 import SiswaTryout from "./Pages/Siswa/Tryout";
@@ -18,12 +25,6 @@ import SiswaTryoutDetail from "./Pages/Siswa/Tryoutdetail";
 import SiswaTryoutHasil from "./Pages/Siswa/TryoutHasil";
 import SiswaTryoutPembahasan from "./Pages/Siswa/TryoutPembahasan";
 import SiswaTryoutPengerjaan from "./Pages/Siswa/TryoutPengerjaan";
-import EditPembahasanSoalTryout from "./Pages/Guru/editpembahasansoaltryout";
-import EditSoalCreatePembahasan from "./Pages/Guru/EditSoalCreatePembahasan";
-import EditTryout from "./Pages/Guru/EditTryout";
-import EditTryoutSubjek from "./Pages/Guru/EditTryoutSubjek";
-import GuruTryout from "./Pages/Guru/GuruTryout";
-import GuruTryoutDetail from "./Pages/Guru/GuruTryoutDetail";
 
 
 function App() {
@@ -37,7 +38,6 @@ function App() {
       <Route path="/Admin/DashBoard" element={<Dashboard />} />
       <Route path="/Admin/DetailGuru" element={<DetailGuru />} />
       <Route path="/Admin/DetailMurid" element={<DetailMurid />} />
-      <Route path="/Guru/Tryout/id/subjek" element={<GuruTryoutSubjek />} />
       {/* Routing dengan Layout */}
       <Route path="/*" element={
         <Layout>
@@ -89,7 +89,19 @@ function App() {
                 </div>
               </div>
             } />
+            
+            {/* Guru Routes */}
+            <Route path="Guru/Home" element={<Home />} />
             <Route path="Guru/CreateTryout" element={<CreateTryout />} />
+            <Route path="Guru/Tryout" element={<GuruTryout />} />
+            <Route path="Guru/Tryout/id/detail" element={<GuruTryoutDetail />} />
+            <Route path="Guru/Tryout/id/subjek" element={<GuruTryoutSubjek />} />
+            <Route path="Guru/Tryout/id/editsubjek" element={<EditTryoutSubjek />} />
+            <Route path="Guru/Tryout/id/subjek/edit" element={<EditTryout />} />
+            <Route path="Guru/Tryout/id/subjek/pembahasan/edit" element={<EditPembahasanSoalTryout />} />
+            <Route path="Guru/Tryout/id/subjek/editpembahasan/create" element={<EditSoalCreatePembahasan />} />
+            
+            {/* Siswa Routes */}
             <Route path="Siswa/DashBoard" element={<SiswaDashBoard />} />   
             <Route path="Siswa/landingpage" element={<SiswaLandingPage />} />   
             <Route path="Siswa/Tryout" element={<SiswaTryout />} />      
@@ -97,11 +109,6 @@ function App() {
             <Route path="Siswa/Tryout/id/subjek/hasil" element={<SiswaTryoutHasil />} />      
             <Route path="Siswa/Tryout/id/subjek/pembahasan" element={<SiswaTryoutPembahasan />} />
             <Route path="Siswa/Tryout/id/subjek/pengerjaan" element={<SiswaTryoutPengerjaan />} />
-            <Route path="Guru/Tryout/id/subjek/pembahasan/edit" element={<EditPembahasanSoalTryout />} />
-            <Route path="Guru/Tryout/id/subjek/editpembahasan/create" element={<EditSoalCreatePembahasan />} />
-            <Route path="Guru/Tryout/id/subjek/edit" element={<EditTryout />} />
-            <Route path="Guru/Tryout/id/editsubjek" element={<EditTryoutSubjek />} />
-            <Route path="Guru/Tryout/id/detail" element={<GuruTryoutDetail />} />
           </Routes>
         </Layout>
       } />
