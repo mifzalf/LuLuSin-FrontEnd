@@ -19,7 +19,7 @@ import SiswaTryoutHasil from "./Pages/Siswa/TryoutHasil";
 import SiswaTryoutPembahasan from "./Pages/Siswa/TryoutPembahasan";
 import SiswaTryoutPengerjaan from "./Pages/Siswa/TryoutPengerjaan";
 import EditPembahasanSoalTryout from "./Pages/Guru/editpembahasansoaltryout";
-
+import EditSoalCreatePembahasan from "./Pages/Guru/EditSoalCreatePembahasan";
 
 
 function App() {
@@ -94,6 +94,7 @@ function App() {
             <Route path="Siswa/Tryout/id/subjek/pembahasan" element={<SiswaTryoutPembahasan />} />
             <Route path="Siswa/Tryout/id/subjek/pengerjaan" element={<SiswaTryoutPengerjaan />} />
             <Route path="Guru/Tryout/id/subjek/pembahasan/edit" element={<EditPembahasanSoalTryout />} />
+            <Route path="Guru/Tryout/id/subjek/editpembahasan/create" element={<EditSoalCreatePembahasan />} />
           </Routes>
         </Layout>
       } />
