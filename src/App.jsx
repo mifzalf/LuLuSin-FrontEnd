@@ -30,6 +30,7 @@ import CreateTryoutSubjek from "./Pages/Guru/CreateTryoutSubjek";
 import GuruKategori from "./Pages/Guru/GuruKategori"; 
 import KategoriSubjek from "./Pages/Guru/KategoriSubjek";
 import EditKategoriSubjek from "./Pages/Guru/EditKategoriSubjek";
+import GuruSubjek from "./Pages/Guru/GuruSubjek";
 
 
 function App() {
@@ -106,11 +107,10 @@ function App() {
             <Route path="/guru/category_subject" element={<GuruKategori />} />
             <Route path="/guru/category_subject/create" element={<KategoriSubjek />} /> 
             <Route path="/guru/category_subject/edit" element={<EditKategoriSubjek />} />
-
-          
             <Route path="guru/tryout/id/subjek/pembahasan/edit" element={<EditPembahasanSoalTryout />} />
             <Route path="guru/tryout/id/subjek/editpembahasan/create" element={<EditSoalCreatePembahasan />} />
             <Route path="guru/tryout/id/subjek/create" element={<CreateTryoutSubjek />} />
+            <Route path="guru/subjek" element={<GuruSubjek />} />
 
 
             {/* Siswa Routes */}
