@@ -29,6 +29,7 @@ import Peralihan from "./Pages/Siswa/Peralihan";
 import CreateTryoutSubjek from "./Pages/Guru/CreateTryoutSubjek";
 import GuruKategori from "./Pages/Guru/GuruKategori"; 
 import KategoriSubjek from "./Pages/Guru/KategoriSubjek";
+import EditKategoriSubjek from "./Pages/Guru/EditKategoriSubjek";
 
 
 function App() {
@@ -104,6 +105,7 @@ function App() {
             <Route path="guru/tryout/id/editsubjek" element={<EditTryoutSubjek />} />
             <Route path="/guru/category_subject" element={<GuruKategori />} />
             <Route path="/guru/category_subject/create" element={<KategoriSubjek />} /> 
+            <Route path="/guru/category_subject/edit" element={<EditKategoriSubjek />} />
 
           
             <Route path="guru/tryout/id/subjek/pembahasan/edit" element={<EditPembahasanSoalTryout />} />
