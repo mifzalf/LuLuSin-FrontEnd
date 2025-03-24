@@ -95,10 +95,11 @@ function App() {
             <Route path="Guru/Home" element={<Home />} />
             <Route path="Guru/CreateTryout" element={<CreateTryout />} />
             <Route path="Guru/Tryout" element={<GuruTryout />} />
+            <Route path="Guru/editTryout" element={<EditTryout />} />
             <Route path="Guru/Tryout/id/detail" element={<GuruTryoutDetail />} />
             <Route path="Guru/Tryout/id/subjek" element={<GuruTryoutSubjek />} />
             <Route path="Guru/Tryout/id/editsubjek" element={<EditTryoutSubjek />} />
-            <Route path="Guru/Tryout/id/subjek/edit" element={<EditTryout />} />
+          
             <Route path="Guru/Tryout/id/subjek/pembahasan/edit" element={<EditPembahasanSoalTryout />} />
             <Route path="Guru/Tryout/id/subjek/editpembahasan/create" element={<EditSoalCreatePembahasan />} />
             <Route path="Guru/Tryout/id/subjek/create" element={<CreateTryoutSubjek />} />
