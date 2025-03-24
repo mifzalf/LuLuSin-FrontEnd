@@ -21,7 +21,7 @@ export default function Header() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
-            Home
+            Dashboard
           </motion.a>
           <motion.a
             href="#"
