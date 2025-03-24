@@ -27,6 +27,7 @@ import SiswaTryoutPembahasan from "./Pages/Siswa/TryoutPembahasan";
 import SiswaTryoutPengerjaan from "./Pages/Siswa/TryoutPengerjaan";
 import Peralihan from "./Pages/Siswa/Peralihan";
 import CreateTryoutSubjek from "./Pages/Guru/CreateTryoutSubjek";
+import GuruKategori from "./Pages/Guru/GuruKategori"; 
 
 function App() {
   const [count, setCount] = useState(0);
@@ -99,10 +100,14 @@ function App() {
             <Route path="guru/tryout/id/detail" element={<GuruTryoutDetail />} />
             <Route path="guru/tryout/id/subjek" element={<GuruTryoutSubjek />} />
             <Route path="guru/tryout/id/editsubjek" element={<EditTryoutSubjek />} />
+            <Route path="/guru/category_subject" element={<GuruKategori />} />
+
           
             <Route path="guru/tryout/id/subjek/pembahasan/edit" element={<EditPembahasanSoalTryout />} />
             <Route path="guru/tryout/id/subjek/editpembahasan/create" element={<EditSoalCreatePembahasan />} />
             <Route path="guru/tryout/id/subjek/create" element={<CreateTryoutSubjek />} />
+
+
             {/* Siswa Routes */}
             <Route path="siswa/dashboard" element={<SiswaDashBoard />} />   
             <Route path="siswa/landingpage" element={<SiswaLandingPage />} />   
