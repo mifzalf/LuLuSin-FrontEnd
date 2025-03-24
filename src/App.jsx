@@ -36,9 +36,9 @@ function App() {
       {/* Routing untuk halaman tanpa layout */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/Admin/DashBoard" element={<Dashboard />} />
-      <Route path="/Admin/DetailGuru" element={<DetailGuru />} />
-      <Route path="/Admin/DetailMurid" element={<DetailMurid />} />
+      <Route path="/admin/dashboard" element={<Dashboard />} />
+      <Route path="/admin/detailguru" element={<DetailGuru />} />
+      <Route path="/admin/detailmurid" element={<DetailMurid />} />
       {/* Routing dengan Layout */}
       <Route path="/*" element={
         <Layout>
@@ -92,26 +92,26 @@ function App() {
             } />
             
             {/* Guru Routes */}
-            <Route path="Guru/Home" element={<Home />} />
-            <Route path="Guru/CreateTryout" element={<CreateTryout />} />
-            <Route path="Guru/Tryout" element={<GuruTryout />} />
-            <Route path="Guru/editTryout" element={<EditTryout />} />
-            <Route path="Guru/Tryout/id/detail" element={<GuruTryoutDetail />} />
-            <Route path="Guru/Tryout/id/subjek" element={<GuruTryoutSubjek />} />
-            <Route path="Guru/Tryout/id/editsubjek" element={<EditTryoutSubjek />} />
+            <Route path="guru/home" element={<Home />} />
+            <Route path="guru/createtryout" element={<CreateTryout />} />
+            <Route path="guru/tryout" element={<GuruTryout />} />
+            <Route path="guru/edittryout" element={<EditTryout />} />
+            <Route path="guru/tryout/id/detail" element={<GuruTryoutDetail />} />
+            <Route path="guru/tryout/id/subjek" element={<GuruTryoutSubjek />} />
+            <Route path="guru/tryout/id/editsubjek" element={<EditTryoutSubjek />} />
           
-            <Route path="Guru/Tryout/id/subjek/pembahasan/edit" element={<EditPembahasanSoalTryout />} />
-            <Route path="Guru/Tryout/id/subjek/editpembahasan/create" element={<EditSoalCreatePembahasan />} />
-            <Route path="Guru/Tryout/id/subjek/create" element={<CreateTryoutSubjek />} />
+            <Route path="guru/tryout/id/subjek/pembahasan/edit" element={<EditPembahasanSoalTryout />} />
+            <Route path="guru/tryout/id/subjek/editpembahasan/create" element={<EditSoalCreatePembahasan />} />
+            <Route path="guru/tryout/id/subjek/create" element={<CreateTryoutSubjek />} />
             {/* Siswa Routes */}
-            <Route path="Siswa/DashBoard" element={<SiswaDashBoard />} />   
-            <Route path="Siswa/landingpage" element={<SiswaLandingPage />} />   
-            <Route path="Siswa/Tryout" element={<SiswaTryout />} />      
-            <Route path="Siswa/Tryout/id/subjek" element={<SiswaTryoutDetail />} />      
-            <Route path="Siswa/Tryout/id/subjek/hasil" element={<SiswaTryoutHasil />} />      
-            <Route path="Siswa/Tryout/id/subjek/pembahasan" element={<SiswaTryoutPembahasan />} />
-            <Route path="Siswa/Tryout/id/subjek/pengerjaan" element={<SiswaTryoutPengerjaan />} />
-            <Route path="Siswa/Peralihan" element={<Peralihan />} />
+            <Route path="siswa/dashboard" element={<SiswaDashBoard />} />   
+            <Route path="siswa/landingpage" element={<SiswaLandingPage />} />   
+            <Route path="siswa/tryout" element={<SiswaTryout />} />      
+            <Route path="siswa/tryout/id/subjek" element={<SiswaTryoutDetail />} />      
+            <Route path="siswa/tryout/id/subjek/hasil" element={<SiswaTryoutHasil />} />      
+            <Route path="siswa/tryout/id/subjek/pembahasan" element={<SiswaTryoutPembahasan />} />
+            <Route path="siswa/tryout/id/subjek/pengerjaan" element={<SiswaTryoutPengerjaan />} />
+            <Route path="siswa/peralihan" element={<Peralihan />} />
           </Routes>
         </Layout>
       } />

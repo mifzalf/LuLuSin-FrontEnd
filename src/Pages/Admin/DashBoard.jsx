@@ -10,28 +10,19 @@ export default function Dashboard() {
         <nav className="mt-6">
           <ul className="space-y-4">
             <li className="flex items-center space-x-2 text-gray-700 hover:text-blue-900 cursor-pointer">
-              <a
-                href="/Admin/DashBoard"
-                className="flex items-center space-x-2"
-              >
+              <a href="/admin/dashboard">
                 <span className="text-lg">📊</span>
                 <span>Dashboard</span>
               </a>
             </li>
             <li className="flex items-center space-x-2 text-gray-700 hover:text-blue-900 cursor-pointer">
-              <a
-                href="/Admin/DetailGuru"
-                className="flex items-center space-x-2"
-              >
+              <a href="/admin/detailguru">
                 <span className="text-lg">👨‍🏫</span>
                 <span>Guru</span>
               </a>
             </li>
             <li className="flex items-center space-x-2 text-gray-700 hover:text-blue-900 cursor-pointer">
-              <a
-                href="/Admin/DetailMurid"
-                className="flex items-center space-x-2"
-              >
+              <a href="/admin/detailmurid">
                 <span className="text-lg">👩‍🎓</span>
                 <span>Murid</span>
               </a>

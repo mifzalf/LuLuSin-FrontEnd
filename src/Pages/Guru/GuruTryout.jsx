@@ -68,7 +68,7 @@ const GuruTryout = () => {
   };
 
   const navigateToEditTryout = (tryout) => {
-    navigate(`/guru/editTryout?id=${tryout.id}`);
+    navigate(`/guru/edittryout?id=${tryout.id}`);
   };
 
   return (

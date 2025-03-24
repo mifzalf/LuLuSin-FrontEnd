@@ -108,7 +108,7 @@ const Peralihan = () => {
     if (timeLeft === 0) {
       // Navigate to the next page when timer reaches 0
       setTimeout(() => {
-        navigate('/Siswa/Tryout/id/subjek/pengerjaan');
+        navigate('/siswa/tryout/id/subjek/pengerjaan');
       }, 500);
       return;
     }
@@ -162,6 +162,10 @@ const Peralihan = () => {
     }
   `;
   
+  const handleStartTryout = () => {
+    navigate('/siswa/tryout/id/subjek/pengerjaan');
+  };
+
   return (
     <>
       <style>{styleString}</style>
@@ -240,7 +244,7 @@ const Peralihan = () => {
             whileHover={{ scale: 1.05, ...styles.buttonHover }}
             whileTap={{ scale: 0.95 }}
             style={styles.button}
-            onClick={() => navigate('/Siswa/Tryout/id/subjek/pengerjaan')}
+            onClick={() => navigate('/siswa/tryout/id/subjek/pengerjaan')}
           >
             Siapkan Diri anda
           </motion.button>

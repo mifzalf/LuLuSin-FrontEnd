@@ -74,7 +74,11 @@ export default function SiswaTryoutHasil() {
           transition={{ delay: 0.2, duration: 0.5 }}
           className="flex items-center justify-between mb-6"
         >
-          <motion.a href="/Siswa/Tryout" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <motion.a 
+            href="/siswa/tryout" 
+            whileHover={{ scale: 1.05 }} 
+            whileTap={{ scale: 0.95 }}
+          >
             <motion.button
               className="bg-gradient-to-r from-[#1E3A5F] to-[#2E4A7F] text-white p-3 rounded-full shadow-md flex items-center justify-center"
               style={{ boxShadow: "0 4px 6px -1px rgba(30, 58, 95, 0.3)" }}
