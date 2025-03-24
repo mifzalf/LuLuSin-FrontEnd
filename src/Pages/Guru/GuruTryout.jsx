@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { FiEdit, FiTrash, FiPlus } from "react-icons/fi";
+import { FiPlay } from "react-icons/fi";
 
 const GuruTryout = () => {
   const tryouts = [
@@ -39,7 +39,7 @@ const GuruTryout = () => {
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
         <motion.div
-          className="flex justify-between items-center mb-6"
+          className="mb-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -52,13 +52,6 @@ const GuruTryout = () => {
           >
             Tryout UTBK SNBT 2025
           </motion.h1>
-          <motion.button
-            className="bg-[#2f4a64] text-white px-4 py-2 rounded-lg hover:bg-[#1e364d] transition-all flex items-center gap-2 shadow-md"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <FiPlus /> Tambah Tryout Baru
-          </motion.button>
         </motion.div>
 
         <motion.div
@@ -86,20 +79,13 @@ const GuruTryout = () => {
                   <td className="p-4 font-medium text-blue-700">
                     {tryout.nama}
                   </td>
-                  <td className="p-4 flex space-x-3 justify-end">
+                  <td className="p-4 flex justify-end">
                     <motion.button
-                      className="text-gray-600 hover:text-blue-700 bg-gray-100 p-2 rounded-full"
-                      whileHover={{ scale: 1.1, backgroundColor: "#e6f7ff" }}
-                      whileTap={{ scale: 0.9 }}
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all flex items-center gap-2 shadow-sm"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      <FiEdit size={18} />
-                    </motion.button>
-                    <motion.button
-                      className="text-gray-600 hover:text-red-700 bg-gray-100 p-2 rounded-full"
-                      whileHover={{ scale: 1.1, backgroundColor: "#fff1f0" }}
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      <FiTrash size={18} />
+                      <FiPlay size={16} /> Mulai
                     </motion.button>
                   </td>
                 </motion.tr>
