@@ -10,11 +10,14 @@ export default function Header() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="text-white font-bold text-lg">
-          Santoso
-          <p className="text-xs font-light">Education Assistant</p>
+        {/* Logo and title */}
+        <div className="text-white font-bold text-lg pl-16">
+          LuLuSin
+          <p className="text-xs font-light">Education Academy</p>
         </div>
-        <nav className="space-x-6 flex text-white text-sm font-semibold">
+
+        {/* Navigation */}
+        <div className="flex items-center space-x-4 text-white text-sm font-semibold">
           <motion.a
             href="#"
             className="hover:text-gray-400 transition"
@@ -29,25 +32,16 @@ export default function Header() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
-            About
+            Tryout
           </motion.a>
-          <motion.a
-            href="#"
-            className="hover:text-gray-400 transition"
+          <motion.button
+            className="bg-gray-600 text-white px-4 py-1 rounded-full text-sm shadow-md pr-15 hover:bg-gray-500 transition"
             whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.9 }}
           >
-            Tutorial
-          </motion.a>
-          <motion.a
-            href="/login"
-            className="hover:text-gray-400 transition"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Login
-          </motion.a>
-        </nav>
+            Logout
+          </motion.button>
+        </div>
       </motion.header>
     </div>
   );
