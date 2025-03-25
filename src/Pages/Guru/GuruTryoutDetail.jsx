@@ -73,6 +73,18 @@ const GuruTryoutDetail = () => {
 
 const Section = ({ title, items, icon, color }) => {
   const [isOpen, setIsOpen] = useState(true)
+  const [selectedItem, setSelectedItem] = useState(null)
+
+  // Add descriptions for each subject
+  const descriptions = {
+    "Penalaran Umum": "Mengukur kemampuan dalam menganalisis dan memecahkan masalah menggunakan logika dan penalaran. Mencakup analisis argumen, pola, dan hubungan antar konsep.",
+    "Pemahaman Bacaan dan Menulis": "Menguji kemampuan memahami teks kompleks, menganalisis informasi, dan mengekspresikan ide secara tertulis dengan efektif dan terstruktur.",
+    "Pengetahuan dan Pemahaman Umum": "Mengukur wawasan umum tentang sains, sosial, budaya, dan isu kontemporer. Menguji kemampuan mengaitkan berbagai bidang pengetahuan.",
+    "Penalaran Kuantitatif": "Menguji kemampuan dalam menganalisis data numerik, statistik, dan pemecahan masalah matematis dalam konteks praktis.",
+    "Literasi Bahasa Indonesia": "Mengukur kemampuan memahami dan menggunakan Bahasa Indonesia dalam konteks akademik, termasuk tata bahasa, kosakata, dan pemahaman teks.",
+    "Literasi Bahasa Inggris": "Menguji pemahaman teks bahasa Inggris, kemampuan mengidentifikasi informasi tersirat, dan penguasaan grammar dalam konteks akademik.",
+    "Penalaran Matematika": "Mengukur kemampuan dalam memecahkan masalah matematika kompleks, logika numerik, dan penerapan konsep matematika dalam berbagai situasi.",
+  }
 
   // Variants for animations
   const containerVariants = {
@@ -145,6 +157,7 @@ const Section = ({ title, items, icon, color }) => {
               key={index}
               className={`p-4 border-b last:border-b-0 hover:bg-gray-50 cursor-pointer transition-colors duration-150`}
               variants={itemVariants}
+              onClick={() => setSelectedItem(selectedItem === item ? null : item)}
               whileHover={{
                 backgroundColor: `${color}10`,
                 x: 5,
@@ -153,20 +166,54 @@ const Section = ({ title, items, icon, color }) => {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
+                  <motion.div 
+                    className="w-2 h-2 rounded-full" 
+                    style={{ backgroundColor: color }}
+                    animate={{
+                      scale: selectedItem === item ? [1, 1.5, 1] : 1
+                    }}
+                    transition={{ duration: 0.3 }}
+                  />
                   <span className="font-medium text-gray-800">{item}</span>
                 </div>
                 <motion.div
                   className="text-gray-400"
+                  animate={{ 
+                    rotate: selectedItem === item ? 90 : 0,
+                    color: selectedItem === item ? color : "#9CA3AF"
+                  }}
                   whileHover={{
                     scale: 1.2,
-                    color: color,
                     transition: { duration: 0.2 },
                   }}
                 >
                   <ChevronRight size={16} />
                 </motion.div>
               </div>
+              
+              {/* Description panel */}
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{
+                  height: selectedItem === item ? "auto" : 0,
+                  opacity: selectedItem === item ? 1 : 0,
+                }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                <motion.p 
+                  className="mt-3 text-gray-600 text-sm pl-4 border-l-2" 
+                  style={{ borderColor: color }}
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ 
+                    x: selectedItem === item ? 0 : -20,
+                    opacity: selectedItem === item ? 1 : 0
+                  }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                >
+                  {descriptions[item]}
+                </motion.p>
+              </motion.div>
             </motion.div>
           ))}
         </div>
