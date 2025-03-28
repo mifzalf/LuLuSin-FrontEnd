@@ -121,8 +121,8 @@ function App() {
             <Route path="siswa/dashboard" element={<SiswaDashBoard />} />   
             <Route path="siswa/landingpage" element={<SiswaLandingPage />} />   
             <Route path="siswa/tryout" element={<SiswaTryout />} />      
-            <Route path="siswa/tryout/id/subjek" element={<SiswaTryoutDetail />} />      
-            <Route path="siswa/tryout/id/subjek/hasil" element={<SiswaTryoutHasil />} />      
+            <Route path="siswa/tryout/id/detail" element={<SiswaTryoutDetail />} />      
+            <Route path="siswa/tryout/id/hasil" element={<SiswaTryoutHasil />} />      
             <Route path="siswa/tryout/id/subjek/pembahasan" element={<SiswaTryoutPembahasan />} />
             <Route path="siswa/tryout/id/subjek/pengerjaan" element={<SiswaTryoutPengerjaan />} />
             <Route path="siswa/peralihan" element={<Peralihan />} />

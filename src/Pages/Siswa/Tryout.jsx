@@ -3,9 +3,11 @@
 import { motion } from "framer-motion"
 import { useState } from "react"
 import { ArrowLeft, BookOpen, CheckCircle, Clock } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 
 export default function SiswaTryout() {
   const [activeTab, setActiveTab] = useState("pending")
+  const navigate = useNavigate()
 
   // Animation variants
   const containerVariants = {
@@ -236,6 +238,7 @@ export default function SiswaTryout() {
                     }}
                     whileTap={{ scale: 0.95 }}
                     transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    onClick={() => navigate(`/siswa/tryout/id/hasil`)}
                     className="bg-gradient-to-r from-[#1E3A5F] to-[#2E4A7F] text-white px-5 py-2 rounded-xl text-sm font-medium z-10"
                     style={{ boxShadow: "0 4px 6px -1px rgba(30, 58, 95, 0.3)" }}
                   >
