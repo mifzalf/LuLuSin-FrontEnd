@@ -103,7 +103,7 @@ export default function TryoutId() {
         <motion.div variants={itemVariants} className="flex justify-between items-center mb-6">
           <button
             onClick={() => navigate('/siswa/tryout')}
-            className="bg-[#1e2a3b] text-white p-3 rounded-full hover:bg-[#2c3e50] transition-colors duration-300 flex items-center gap-2"
+            className="bg-[#1E3A5F] text-white p-3 rounded-full hover:bg-[#2E4A7F] transition-colors duration-300 flex items-center gap-2"
           >
             <ArrowLeft />
             <span className="hidden md:inline">Kembali</span>
@@ -111,18 +111,18 @@ export default function TryoutId() {
         </motion.div>
 
         <motion.div variants={itemVariants} className="grid md:grid-cols-2 gap-6 mb-6">
-          <div className="bg-[#1e2a3b] text-white p-6 rounded-xl shadow-lg">
+          <div className="bg-[#1E3A5F] text-white p-6 rounded-xl shadow-lg">
             <h2 className="text-2xl font-bold mb-2">Tryout UTBK SNBT 2025</h2>
             <p className="text-gray-300">Episode 5</p>
           </div>
 
-          <div className="bg-[#1e2a3b] text-white p-6 rounded-xl shadow-lg">
+          <div className="bg-[#1E3A5F] text-white p-6 rounded-xl shadow-lg">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <FileText />
                 <span className="text-lg">Jumlah Soal</span>
               </div>
-              <div className="bg-[#d9c5a0] text-[#1e2a3b] px-4 py-2 rounded-full text-lg font-semibold">
+              <div className="bg-[#d9c5a0] text-[#1E3A5F] px-4 py-2 rounded-full text-lg font-semibold">
                 100
               </div>
             </div>
@@ -131,7 +131,7 @@ export default function TryoutId() {
                 <Clock />
                 <span className="text-lg">Waktu</span>
               </div>
-              <div className="bg-[#d9c5a0] text-[#1e2a3b] px-4 py-2 rounded-full text-lg font-semibold">
+              <div className="bg-[#d9c5a0] text-[#1E3A5F] px-4 py-2 rounded-full text-lg font-semibold">
                 40 Menit
               </div>
             </div>
@@ -140,9 +140,9 @@ export default function TryoutId() {
 
         <motion.div
           variants={itemVariants}
-          className="bg-[#1e2a3b] rounded-xl overflow-hidden shadow-lg mb-6"
+          className="bg-[#1E3A5F] rounded-xl overflow-hidden shadow-lg mb-6"
         >
-          <div className="bg-[#2c3e50] text-white py-4 px-6 text-center text-xl font-semibold">
+          <div className="bg-[#2E4A7F] text-white py-4 px-6 text-center text-xl font-semibold">
             Peraturan Tryout
           </div>
           <div className="p-8 text-white">
@@ -197,8 +197,8 @@ export default function TryoutId() {
 
         <motion.button
           variants={itemVariants}
-          onClick={() => navigate(`/siswa/tryout/${id}/subjek`)}
-          className="w-full bg-[#2c3e50] hover:bg-[#3a4f63] text-white py-4 px-8 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+          onClick={() => navigate(`/siswa/tryout/id/subjek/pengerjaan`)}
+          className="w-full bg-gradient-to-r from-[#1E3A5F] to-[#2E4A7F] text-white py-4 px-8 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"
         >
           MULAI TRYOUT
         </motion.button>
