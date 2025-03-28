@@ -3,9 +3,11 @@
 import { motion } from "framer-motion"
 import { CheckCircle, XCircle, HelpCircle, BarChart3, BookOpen, Award, ArrowLeft } from "lucide-react"
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 export default function SiswaTryoutHasil() {
   const [hoveredCard, setHoveredCard] = useState(null)
+  const navigate = useNavigate()
 
   // Animation variants
   const containerVariants = {
@@ -297,6 +299,7 @@ export default function SiswaTryoutHasil() {
             }}
             whileTap={{ scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            onClick={() => navigate('/siswa/tryout')}
             className="bg-gradient-to-r from-[#1E3A5F] to-[#2E4A7F] text-white px-8 py-3 rounded-xl text-lg font-semibold shadow-lg"
             style={{ boxShadow: "0 10px 15px -3px rgba(30, 58, 95, 0.3)" }}
           >
