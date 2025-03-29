@@ -6,6 +6,8 @@ import { FiPlus, FiX, FiArrowRight, FiArrowLeft } from "react-icons/fi";
 
 const EditTryoutSubjek = () => {
   const [options, setOptions] = useState(["", "", "", "", ""]);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const addOption = () => {
     setOptions([...options, ""]);
@@ -15,6 +17,19 @@ const EditTryoutSubjek = () => {
     if (options.length > 2) {
       setOptions(options.filter((_, index) => index !== indexToRemove));
     }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const removeImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
   };
 
   // Animation variants
@@ -76,6 +91,50 @@ const EditTryoutSubjek = () => {
               className="w-full p-3 border border-gray-400 bg-gray-50 rounded-lg h-32 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all text-black"
               whileFocus={{ boxShadow: "0 0 0 3px rgba(107, 114, 128, 0.2)" }}
             ></motion.textarea>
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Gambar Soal (Opsional)
+            </label>
+            <div className="space-y-4">
+              <div className="flex items-center justify-center w-full">
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <FiPlus className="w-8 h-8 mb-2 text-gray-500" />
+                    <p className="text-sm text-gray-500">
+                      Klik untuk upload gambar
+                    </p>
+                  </div>
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                  />
+                </label>
+              </div>
+
+              {imagePreview && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="relative"
+                >
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="max-h-48 rounded-lg mx-auto"
+                  />
+                  <button
+                    onClick={removeImage}
+                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                  >
+                    <FiX size={16} />
+                  </button>
+                </motion.div>
+              )}
+            </div>
           </motion.div>
 
           <motion.div variants={itemVariants} className="space-y-3">
