@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { FiPlay, FiEdit, FiPlus } from "react-icons/fi";
 import { useState } from "react";
 import { useNavigate, Link } from 'react-router-dom';
-import GuruLayout from "./Layout/GuruLayout";
 
 const GuruTryout = () => {
   const navigate = useNavigate();

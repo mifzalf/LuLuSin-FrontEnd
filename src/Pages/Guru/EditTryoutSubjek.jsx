@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiPlus, FiX, FiArrowRight, FiArrowLeft } from "react-icons/fi";
-import GuruLayout from "./Layout/GuruLayout";
+
 
 const EditTryoutSubjek = () => {
   const [options, setOptions] = useState(["", "", "", "", ""]);

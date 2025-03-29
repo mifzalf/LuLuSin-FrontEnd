@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
-import GuruLayout from "./Layout/GuruLayout";
+
 
 const KategoriSubjek = () => {
   return (
