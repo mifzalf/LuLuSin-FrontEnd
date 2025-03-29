@@ -1,11 +1,17 @@
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { FiLogOut } from "react-icons/fi"
 
 const Header = () => {
   const location = useLocation()
+  const navigate = useNavigate()
 
   const isActiveLink = (path) => {
     return location.pathname.startsWith(`/guru${path}`)
+  }
+
+  const handleLogout = () => {
+    // Here you can add any logout logic (clear tokens, etc.)
+    navigate("/login")
   }
 
   return (
@@ -47,9 +53,9 @@ const Header = () => {
               Subjek
             </Link>
             <Link
-              to="/guru/kategori-subjek"
+              to="/guru/kategorisubjek"
               className={`${
-                isActiveLink("/kategori-subjek") ? "text-white" : "text-gray-300 hover:text-white"
+                isActiveLink("/kategorisubjek") ? "text-white" : "text-gray-300 hover:text-white"
               } transition-colors duration-200`}
             >
               Kategori Subjek
@@ -57,7 +63,10 @@ const Header = () => {
           </nav>
 
           {/* Logout Button */}
-          <button className="bg-[#374151] px-4 py-1 rounded-full text-white flex items-center gap-2 transition-colors duration-200 mr-4">
+          <button 
+            onClick={handleLogout}
+            className="bg-[#374151] hover:bg-[#4B5563] px-4 py-1.5 rounded-full text-white flex items-center gap-2 transition-all duration-200 mr-4"
+          >
             <span>Logout</span>
             <FiLogOut className="w-4 h-4" />
           </button>

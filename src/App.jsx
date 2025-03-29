@@ -35,6 +35,7 @@ import GuruSubjek from "./Pages/Guru/GuruSubjek";
 import GuruSubjekCreate from "./Pages/Guru/GuruSubjekCreate";
 import GuruSubjekEdit from "./Pages/Guru/GuruSubjekEdit";
 import SiswaTryoutId from "./Pages/Siswa/TryoutId";
+import GuruDashboard from "./Pages/Guru/Dashboard";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -72,6 +73,7 @@ function App() {
         <Route path="subjek/create" element={<GuruSubjekCreate />} />
         <Route path="subjek/edit" element={<GuruSubjekEdit />} />
         <Route path="tryout/id/subjek/create" element={<CreateTryoutSubjek />} />
+        <Route path="dashboard" element={<GuruDashboard />} />
       </Route>
 
       {/* Siswa Routes with LayoutSiswa */}
