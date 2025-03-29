@@ -1,8 +1,10 @@
 "use client";
+import React from "react";
 import { motion } from "framer-motion";
 import { FiPlay, FiEdit, FiPlus } from "react-icons/fi";
 import { useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import GuruLayout from "./Layout/GuruLayout";
 
 const GuruTryout = () => {
   const navigate = useNavigate();
@@ -72,13 +74,8 @@ const GuruTryout = () => {
   };
 
   return (
-    <div className="bg-gradient-to-b from-gray-100 to-gray-200 flex justify-center items-center min-h-screen w-screen p-4">
-      <motion.div
-        className="w-full max-w-4xl bg-[#f5f0e6] p-8 rounded-2xl shadow-lg border border-gray-200"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
+    <GuruLayout>
+      <div className="w-full">
         <motion.div
           className="mb-6 flex justify-between items-center"
           initial={{ opacity: 0 }}
@@ -151,76 +148,76 @@ const GuruTryout = () => {
             </tbody>
           </table>
         </motion.div>
-      </motion.div>
 
-      {/* Create Tryout Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
-          <motion.div 
-            className="bg-white rounded-xl p-6 w-full max-w-md"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-          >
-            <h2 className="text-xl font-bold mb-4">Tambah Tryout Baru</h2>
-            <input
-              type="text"
-              placeholder="Nama Tryout"
-              className="w-full p-3 border rounded-lg mb-4"
-              value={newTryoutName}
-              onChange={(e) => setNewTryoutName(e.target.value)}
-            />
-            <div className="flex justify-end gap-3">
-              <button 
-                className="px-4 py-2 border rounded-lg hover:bg-gray-100"
-                onClick={() => setShowCreateModal(false)}
-              >
-                Batal
-              </button>
-              <button 
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                onClick={handleCreateTryout}
-              >
-                Simpan
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
+        {/* Create Tryout Modal */}
+        {showCreateModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+            <motion.div 
+              className="bg-white rounded-xl p-6 w-full max-w-md"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+            >
+              <h2 className="text-xl font-bold mb-4">Tambah Tryout Baru</h2>
+              <input
+                type="text"
+                placeholder="Nama Tryout"
+                className="w-full p-3 border rounded-lg mb-4"
+                value={newTryoutName}
+                onChange={(e) => setNewTryoutName(e.target.value)}
+              />
+              <div className="flex justify-end gap-3">
+                <button 
+                  className="px-4 py-2 border rounded-lg hover:bg-gray-100"
+                  onClick={() => setShowCreateModal(false)}
+                >
+                  Batal
+                </button>
+                <button 
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  onClick={handleCreateTryout}
+                >
+                  Simpan
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
 
-      {/* Edit Tryout Modal */}
-      {showEditModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
-          <motion.div 
-            className="bg-white rounded-xl p-6 w-full max-w-md"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-          >
-            <h2 className="text-xl font-bold mb-4">Edit Tryout</h2>
-            <input
-              type="text"
-              placeholder="Nama Tryout"
-              className="w-full p-3 border rounded-lg mb-4"
-              value={newTryoutName}
-              onChange={(e) => setNewTryoutName(e.target.value)}
-            />
-            <div className="flex justify-end gap-3">
-              <button 
-                className="px-4 py-2 border rounded-lg hover:bg-gray-100"
-                onClick={() => setShowEditModal(false)}
-              >
-                Batal
-              </button>
-              <button 
-                className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600"
-                onClick={handleEditTryout}
-              >
-                Update
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
-    </div>
+        {/* Edit Tryout Modal */}
+        {showEditModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+            <motion.div 
+              className="bg-white rounded-xl p-6 w-full max-w-md"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+            >
+              <h2 className="text-xl font-bold mb-4">Edit Tryout</h2>
+              <input
+                type="text"
+                placeholder="Nama Tryout"
+                className="w-full p-3 border rounded-lg mb-4"
+                value={newTryoutName}
+                onChange={(e) => setNewTryoutName(e.target.value)}
+              />
+              <div className="flex justify-end gap-3">
+                <button 
+                  className="px-4 py-2 border rounded-lg hover:bg-gray-100"
+                  onClick={() => setShowEditModal(false)}
+                >
+                  Batal
+                </button>
+                <button 
+                  className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600"
+                  onClick={handleEditTryout}
+                >
+                  Update
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </div>
+    </GuruLayout>
   );
 };
 

@@ -47,6 +47,7 @@ function App() {
       <Route path="/admin/dashboard" element={<Dashboard />} />
       <Route path="/admin/detailguru" element={<DetailGuru />} />
       <Route path="/admin/detailmurid" element={<DetailMurid />} />
+      <Route path="guru/tryout/id/subjek/create" element={<CreateTryoutSubjek />} />
       {/* Routing dengan Layout */}
       <Route path="/*" element={
         <Layout>
@@ -112,7 +113,7 @@ function App() {
             <Route path="/guru/kategorisubjek/edit" element={<EditKategoriSubjek />} />
             <Route path="guru/tryout/id/subjek/pembahasan/edit" element={<EditPembahasanSoalTryout />} />
             <Route path="guru/tryout/id/subjek/editpembahasan/create" element={<EditSoalCreatePembahasan />} />
-            <Route path="guru/tryout/id/subjek/create" element={<CreateTryoutSubjek />} />
+            
             <Route path="guru/subjek" element={<GuruSubjek />} />
             <Route path="guru/subjek/create" element={<GuruSubjekCreate />} />
             <Route path="guru/subjek/edit" element={<GuruSubjekEdit />} />
