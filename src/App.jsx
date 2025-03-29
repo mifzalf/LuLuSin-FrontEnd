@@ -48,6 +48,23 @@ function App() {
       <Route path="/admin/detailguru" element={<DetailGuru />} />
       <Route path="/admin/detailmurid" element={<DetailMurid />} />
       <Route path="guru/tryout/id/subjek/create" element={<CreateTryoutSubjek />} />
+      <Route path="guru/home" element={<Home />} />
+      <Route path="guru/home" element={<Home />} />
+            <Route path="guru/createtryout" element={<CreateTryout />} />
+            <Route path="guru/tryout" element={<GuruTryout />} />
+            <Route path="guru/edittryout" element={<EditTryout />} />
+            <Route path="guru/tryout/id/detail" element={<GuruTryoutDetail />} />
+            <Route path="guru/tryout/id/subjek" element={<GuruTryoutSubjek />} />
+            <Route path="guru/tryout/id/editsubjek" element={<EditTryoutSubjek />} />
+            <Route path="/guru/kategorisubjek" element={<GuruKategori />} />
+            <Route path="/guru/kategorisubjek/create" element={<KategoriSubjek />} /> 
+            <Route path="/guru/kategorisubjek/edit" element={<EditKategoriSubjek />} />
+            <Route path="guru/tryout/id/subjek/pembahasan/edit" element={<EditPembahasanSoalTryout />} />
+            <Route path="guru/tryout/id/subjek/editpembahasan/create" element={<EditSoalCreatePembahasan />} />
+            
+            <Route path="guru/subjek" element={<GuruSubjek />} />
+            <Route path="guru/subjek/create" element={<GuruSubjekCreate />} />
+            <Route path="guru/subjek/edit" element={<GuruSubjekEdit />} />
       {/* Routing dengan Layout */}
       <Route path="/*" element={
         <Layout>
@@ -101,22 +118,7 @@ function App() {
             } />
             
             {/* Guru Routes */}
-            <Route path="guru/home" element={<Home />} />
-            <Route path="guru/createtryout" element={<CreateTryout />} />
-            <Route path="guru/tryout" element={<GuruTryout />} />
-            <Route path="guru/edittryout" element={<EditTryout />} />
-            <Route path="guru/tryout/id/detail" element={<GuruTryoutDetail />} />
-            <Route path="guru/tryout/id/subjek" element={<GuruTryoutSubjek />} />
-            <Route path="guru/tryout/id/editsubjek" element={<EditTryoutSubjek />} />
-            <Route path="/guru/kategorisubjek" element={<GuruKategori />} />
-            <Route path="/guru/kategorisubjek/create" element={<KategoriSubjek />} /> 
-            <Route path="/guru/kategorisubjek/edit" element={<EditKategoriSubjek />} />
-            <Route path="guru/tryout/id/subjek/pembahasan/edit" element={<EditPembahasanSoalTryout />} />
-            <Route path="guru/tryout/id/subjek/editpembahasan/create" element={<EditSoalCreatePembahasan />} />
-            
-            <Route path="guru/subjek" element={<GuruSubjek />} />
-            <Route path="guru/subjek/create" element={<GuruSubjekCreate />} />
-            <Route path="guru/subjek/edit" element={<GuruSubjekEdit />} />
+           
 
             {/* Siswa Routes */}
             <Route path="siswa/dashboard" element={<SiswaDashBoard />} />   
