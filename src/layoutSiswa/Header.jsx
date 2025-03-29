@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function Header() {
   return (
@@ -11,35 +12,46 @@ export default function Header() {
         transition={{ duration: 0.5 }}
       >
         {/* Logo and title */}
-        <div className="text-white font-bold text-lg pl-16">
+        <Link to="/siswa/dashboard" className="text-white font-bold text-lg pl-16">
           LuLuSin
           <p className="text-xs font-light">Education Academy</p>
-        </div>
+        </Link>
 
         {/* Navigation */}
         <div className="flex items-center space-x-4 text-white text-sm font-semibold">
-          <motion.a
-            href="#"
-            className="hover:text-gray-400 transition"
+          <motion.div
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
-            Dashboard
-          </motion.a>
-          <motion.a
-            href="#"
-            className="hover:text-gray-400 transition"
+            <Link
+              to="/siswa/dashboard"
+              className="hover:text-gray-400 transition"
+            >
+              Dashboard
+            </Link>
+          </motion.div>
+          <motion.div
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
-            Tryout
-          </motion.a>
+            <Link
+              to="/siswa/tryout"
+              className="hover:text-gray-400 transition"
+            >
+              Tryout
+            </Link>
+          </motion.div>
           <motion.button
             className="bg-gray-600 text-white px-4 py-1 rounded-full text-sm shadow-md pr-15 hover:bg-gray-500 transition"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
-            Logout
+             <Link
+                to="/login"
+              className="hover:text-gray-400 transition"
+            >
+              Logout
+            </Link>
           </motion.button>
         </div>
       </motion.header>
