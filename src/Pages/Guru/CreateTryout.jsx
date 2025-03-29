@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { FiEdit, FiTrash, FiPlus, FiX } from "react-icons/fi"
+import React from "react"
 
 const GuruTryout = () => {
   const [tryouts, setTryouts] = useState([

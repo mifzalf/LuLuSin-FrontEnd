@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
@@ -49,6 +49,9 @@ function App() {
       <Route path="/admin/dashboard" element={<Dashboard />} />
       <Route path="/admin/detailguru" element={<DetailGuru />} />
       <Route path="/admin/detailmurid" element={<DetailMurid />} />
+
+      {/* Redirect /Guru to /guru */}
+      <Route path="/Guru" element={<Navigate to="/guru" replace />} />
 
       {/* Guru Routes with GuruLayout */}
       <Route path="/guru" element={<LayoutGuru />}>

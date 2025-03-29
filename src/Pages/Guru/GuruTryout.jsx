@@ -1,223 +1,160 @@
-"use client";
-import React from "react";
-import { motion } from "framer-motion";
-import { FiPlay, FiEdit, FiPlus } from "react-icons/fi";
-import { useState } from "react";
-import { useNavigate, Link } from 'react-router-dom';
+"use client"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { FiEdit, FiPlus, FiTrash2, FiX } from "react-icons/fi"
 
 const GuruTryout = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const [tryouts, setTryouts] = useState([
-    { id: 1, nama: "tryout utbk snbt 2025 ep. 1" },
-    { id: 2, nama: "tryout utbk snbt 2025 ep. 2" },
-    { id: 3, nama: "tryout utbk snbt 2025 ep. 3" },
-  ]);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [currentTryout, setCurrentTryout] = useState(null);
-  const [newTryoutName, setNewTryoutName] = useState("");
-
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        when: "beforeChildren",
-        staggerChildren: 0.1,
-      },
+    {
+      id: 1,
+      nama: "Tryout UTBK SNBT 2025 Ep. 1",
+      soalDibuat: 110,
+      targetSoal: 160,
+      status: "Show",
     },
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { type: "spring", stiffness: 100 },
+    {
+      id: 2,
+      nama: "Tryout UTBK SNBT 2025 Ep. 2",
+      soalDibuat: 0,
+      targetSoal: 160,
+      status: "Show",
     },
-  };
+    {
+      id: 3,
+      nama: "Tryout UTBK SNBT 2025 Ep. 3",
+      soalDibuat: 0,
+      targetSoal: 160,
+      status: "Hide",
+    },
+  ])
 
-  const handleCreateTryout = () => {
-    if (newTryoutName.trim() === "") return;
-    
-    const newTryout = {
-      id: tryouts.length > 0 ? Math.max(...tryouts.map(t => t.id)) + 1 : 1,
-      nama: newTryoutName.trim()
-    };
-    
-    setTryouts([...tryouts, newTryout]);
-    setNewTryoutName("");
-    setShowCreateModal(false);
-  };
-
-  const handleEditTryout = () => {
-    if (newTryoutName.trim() === "" || !currentTryout) return;
-    
-    const updatedTryouts = tryouts.map(tryout => 
-      tryout.id === currentTryout.id ? {...tryout, nama: newTryoutName} : tryout
-    );
-    
-    setTryouts(updatedTryouts);
-    setNewTryoutName("");
-    setCurrentTryout(null);
-    setShowEditModal(false);
-  };
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [tryoutToDelete, setTryoutToDelete] = useState(null)
 
   const navigateToCreateTryout = () => {
-    navigate('/guru/createtryout');
-  };
+    navigate("/guru/createtryout")
+  }
 
   const navigateToEditTryout = (tryout) => {
-    navigate(`/guru/edittryout?id=${tryout.id}`);
-  };
+    navigate(`/guru/edittryout?id=${tryout.id}`)
+  }
+
+  const handleDeleteClick = (tryout) => {
+    setTryoutToDelete(tryout)
+    setShowDeleteModal(true)
+  }
+
+  const handleDeleteConfirm = () => {
+    if (tryoutToDelete) {
+      setTryouts(tryouts.filter(t => t.id !== tryoutToDelete.id))
+      setShowDeleteModal(false)
+      setTryoutToDelete(null)
+    }
+  }
 
   return (
-    <GuruLayout>
-      <div className="w-full">
-        <motion.div
-          className="mb-6 flex justify-between items-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          <motion.h1
-            className="text-2xl font-bold text-gray-900"
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.3, type: "spring" }}
-          >
-            Tryout UTBK SNBT 2025
-          </motion.h1>
-          
-          <motion.button
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all flex items-center gap-2 shadow-sm"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+    <div className="min-h-screen bg-[#f5f0e6] p-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-8 flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-[#2f4a64]">Tryout UTBK SNBT 2025</h1>
+
+          <button
+            className="bg-[#2f4a64] text-white px-4 py-2 rounded-lg hover:bg-[#1e364d] transition-all flex items-center gap-2"
             onClick={navigateToCreateTryout}
           >
-            <FiPlus size={16} /> Tambah Tryout
-          </motion.button>
-        </motion.div>
+            <FiPlus size={16} /> Tambah Tryout Baru
+          </button>
+        </div>
 
-        <motion.div
-          className="bg-white rounded-xl overflow-hidden shadow-md"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <table className="w-full border-collapse">
+        <div className="overflow-hidden rounded-lg shadow">
+          <table className="w-full">
             <thead>
               <tr className="bg-[#2f4a64] text-white">
-                <th className="p-4 text-left rounded-tl-xl">No</th>
-                <th className="p-4 text-left">Nama Tryout</th>
-                <th className="p-4 text-right rounded-tr-xl">Aksi</th>
+                <th className="py-3 px-4 text-left w-16">No</th>
+                <th className="py-3 px-4 text-left">Nama Tryout</th>
+                <th className="py-3 px-4 text-left">Soal Dibuat</th>
+                <th className="py-3 px-4 text-left">Target soal</th>
+                <th className="py-3 px-4 text-left">Status</th>
+                <th className="py-3 px-4 text-left w-24">Aksi</th>
               </tr>
             </thead>
             <tbody>
               {tryouts.map((tryout, index) => (
-                <motion.tr
-                  key={tryout.id}
-                  className="border-b last:border-b-0 hover:bg-gray-50 transition-colors"
-                  variants={itemVariants}
-                >
-                  <td className="p-4 text-gray-800">{index + 1}</td>
-                  <td className="p-4 font-medium text-blue-700">
-                    {tryout.nama}
+                <tr key={tryout.id} className="bg-white border-b hover:bg-gray-50">
+                  <td className="py-4 px-4 text-[#2f4a64] font-medium">{index + 1}</td>
+                  <td className="py-4 px-4 text-[#2f4a64] font-medium">{tryout.nama}</td>
+                  <td className="py-4 px-4 text-[#2f4a64] font-medium">{tryout.soalDibuat}</td>
+                  <td className="py-4 px-4 text-[#2f4a64] font-medium">{tryout.targetSoal}</td>
+                  <td className="py-4 px-4">
+                    <span className={`px-2 py-1 rounded-full text-sm font-medium ${
+                      tryout.status === "Show" 
+                        ? "bg-green-100 text-green-800" 
+                        : "bg-red-100 text-red-800"
+                    }`}>
+                      {tryout.status}
+                    </span>
                   </td>
-                  <td className="p-4 flex justify-end gap-2">
-                    <motion.button
-                      className="bg-amber-500 text-white px-3 py-2 rounded-lg hover:bg-amber-600 transition-all flex items-center gap-1 shadow-sm"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => navigateToEditTryout(tryout)}
-                    >
-                      <FiEdit size={16} /> Edit
-                    </motion.button>
-                    <motion.button
-                      className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-all flex items-center gap-1 shadow-sm"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <FiPlay size={16} /> Mulai
-                    </motion.button>
+                  <td className="py-4 px-4">
+                    <div className="flex space-x-2">
+                      <button
+                        className="text-[#2f4a64] hover:text-[#1e364d] transition-colors"
+                        onClick={() => navigateToEditTryout(tryout)}
+                      >
+                        <FiEdit size={18} />
+                      </button>
+                      <button 
+                        className="text-[#2f4a64] hover:text-red-600 transition-colors"
+                        onClick={() => handleDeleteClick(tryout)}
+                      >
+                        <FiTrash2 size={18} />
+                      </button>
+                    </div>
                   </td>
-                </motion.tr>
+                </tr>
               ))}
             </tbody>
           </table>
-        </motion.div>
+        </div>
 
-        {/* Create Tryout Modal */}
-        {showCreateModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
-            <motion.div 
-              className="bg-white rounded-xl p-6 w-full max-w-md"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-            >
-              <h2 className="text-xl font-bold mb-4">Tambah Tryout Baru</h2>
-              <input
-                type="text"
-                placeholder="Nama Tryout"
-                className="w-full p-3 border rounded-lg mb-4"
-                value={newTryoutName}
-                onChange={(e) => setNewTryoutName(e.target.value)}
-              />
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-[#2f4a64]">Konfirmasi Hapus</h2>
+                <button
+                  className="text-gray-500 hover:text-gray-700"
+                  onClick={() => setShowDeleteModal(false)}
+                >
+                  <FiX size={24} />
+                </button>
+              </div>
+              <p className="text-gray-600 mb-6">
+                Apakah Anda yakin ingin menghapus tryout "{tryoutToDelete?.nama}"? 
+                Tindakan ini tidak dapat dibatalkan.
+              </p>
               <div className="flex justify-end gap-3">
-                <button 
-                  className="px-4 py-2 border rounded-lg hover:bg-gray-100"
-                  onClick={() => setShowCreateModal(false)}
+                <button
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700"
+                  onClick={() => setShowDeleteModal(false)}
                 >
                   Batal
                 </button>
-                <button 
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                  onClick={handleCreateTryout}
+                <button
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                  onClick={handleDeleteConfirm}
                 >
-                  Simpan
+                  Hapus
                 </button>
               </div>
-            </motion.div>
-          </div>
-        )}
-
-        {/* Edit Tryout Modal */}
-        {showEditModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
-            <motion.div 
-              className="bg-white rounded-xl p-6 w-full max-w-md"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-            >
-              <h2 className="text-xl font-bold mb-4">Edit Tryout</h2>
-              <input
-                type="text"
-                placeholder="Nama Tryout"
-                className="w-full p-3 border rounded-lg mb-4"
-                value={newTryoutName}
-                onChange={(e) => setNewTryoutName(e.target.value)}
-              />
-              <div className="flex justify-end gap-3">
-                <button 
-                  className="px-4 py-2 border rounded-lg hover:bg-gray-100"
-                  onClick={() => setShowEditModal(false)}
-                >
-                  Batal
-                </button>
-                <button 
-                  className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600"
-                  onClick={handleEditTryout}
-                >
-                  Update
-                </button>
-              </div>
-            </motion.div>
+            </div>
           </div>
         )}
       </div>
-    </GuruLayout>
-  );
-};
+    </div>
+  )
+}
 
-export default GuruTryout;
+export default GuruTryout
+
