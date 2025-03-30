@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { FiLogOut } from "react-icons/fi"
+import { FiLogOut, FiHome, FiBook, FiList, FiGrid } from "react-icons/fi"
 
 const Header = () => {
   const location = useLocation()
@@ -14,58 +14,64 @@ const Header = () => {
     navigate("/login")
   }
 
+  const navItems = [
+    { path: "/dashboard", label: "Dashboard", icon: FiHome },
+    { path: "/tryout", label: "Tryout", icon: FiBook },
+    { path: "/subjek", label: "Subjek", icon: FiList },
+    { path: "/kategorisubjek", label: "Kategori Subjek", icon: FiGrid },
+  ]
+
   return (
-    <header className="bg-[#1E2A4F] text-white">
-      <div className="container mx-auto">
+    <header className="bg-[#1E2A4F] text-white shadow-lg">
+      <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo and Brand */}
-          <Link to="/guru/dashboard" className="flex items-center ml-4">
+          <Link 
+            to="/guru/dashboard" 
+            className="flex items-center space-x-2 hover:opacity-90 transition-opacity"
+          >
             <div>
-              <span className="text-xl font-bold">LuLuSin</span>
-              <div className="text-xs text-gray-300">Education Academy</div>
+              <span className="text-xl font-bold tracking-tight">LuLuSin</span>
+              <div className="text-xs text-gray-300 font-medium">Education Academy</div>
             </div>
           </Link>
 
-          {/* Navigation (moved more to the right) */}
-          <nav className="flex items-center space-x-8 ml-auto mr-8">
-            <Link
-              to="/guru/dashboard"
-              className={`${
-                isActiveLink("/dashboard") ? "text-white" : "text-gray-300 hover:text-white"
-              } transition-colors duration-200`}
-            >
-              Dashboard
-            </Link>
-            <Link
-              to="/guru/tryout"
-              className={`${
-                isActiveLink("/tryout") ? "text-white" : "text-gray-300 hover:text-white"
-              } transition-colors duration-200`}
-            >
-              Tryout
-            </Link>
-            <Link
-              to="/guru/subjek"
-              className={`${
-                isActiveLink("/subjek") ? "text-white" : "text-gray-300 hover:text-white"
-              } transition-colors duration-200`}
-            >
-              Subjek
-            </Link>
-            <Link
-              to="/guru/kategorisubjek"
-              className={`${
-                isActiveLink("/kategorisubjek") ? "text-white" : "text-gray-300 hover:text-white"
-              } transition-colors duration-200`}
-            >
-              Kategori Subjek
-            </Link>
+          {/* Navigation */}
+          <nav className="flex items-center space-x-1 ml-auto mr-8">
+            {navItems.map((item) => {
+              const Icon = item.icon
+              return (
+                <Link
+                  key={item.path}
+                  to={`/guru${item.path}`}
+                  className={`
+                    flex items-center space-x-2 px-4 py-2 rounded-lg
+                    transition-all duration-200
+                    ${isActiveLink(item.path) 
+                      ? "bg-white/10 text-white" 
+                      : "text-gray-300 hover:text-white hover:bg-white/5"
+                    }
+                  `}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span className="font-medium">{item.label}</span>
+                </Link>
+              )
+            })}
           </nav>
 
           {/* Logout Button */}
           <button 
             onClick={handleLogout}
-            className="bg-[#374151] hover:bg-[#4B5563] px-4 py-1.5 rounded-full text-white flex items-center gap-2 transition-all duration-200 mr-4"
+            className="
+              bg-[#374151] hover:bg-[#4B5563] 
+              px-4 py-1.5 rounded-lg 
+              text-white font-medium
+              flex items-center gap-2 
+              transition-all duration-200
+              hover:shadow-md
+              active:transform active:scale-95
+            "
           >
             <span>Logout</span>
             <FiLogOut className="w-4 h-4" />
