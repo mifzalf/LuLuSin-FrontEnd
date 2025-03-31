@@ -426,7 +426,7 @@ const GuruTryoutSubjek = () => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="bg-white w-full max-w-2xl rounded-lg shadow-lg border mb-20"
+            className="bg-white w-full max-w-[95vw] rounded-lg shadow-lg border mb-20"
           >
             <motion.div className="p-6 flex justify-between items-center">
               <motion.h1 className="text-2xl font-bold text-gray-800">Tes Potensi Skolastik</motion.h1>
@@ -465,106 +465,108 @@ const GuruTryoutSubjek = () => {
                 </motion.h2>
 
                 {/* Questions List */}
-                {questions.map((question) => (
-                  <React.Fragment key={question.id}>
-                    {editingQuestionId === question.id ? (
-                      <QuestionEditForm question={question} />
-                    ) : (
-                      <motion.div
-                        className="mb-6 border border-gray-200 rounded-md overflow-hidden"
-                        variants={itemVariants}
-                        whileHover={{ boxShadow: "0px 4px 12px rgba(0,0,0,0.08)" }}
-                      >
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {questions.map((question) => (
+                    <React.Fragment key={question.id}>
+                      {editingQuestionId === question.id ? (
+                        <QuestionEditForm question={question} />
+                      ) : (
                         <motion.div
-                          className="flex justify-between items-center p-4 cursor-pointer bg-white hover:bg-gray-50"
-                          onClick={() => toggleQuestion(question.id)}
+                          className="mb-6 border border-gray-200 rounded-md overflow-hidden"
+                          variants={itemVariants}
+                          whileHover={{ boxShadow: "0px 4px 12px rgba(0,0,0,0.08)" }}
                         >
-                          <p className="font-medium text-black pr-4">{question.question}</p>
                           <motion.div
-                            animate={{ rotate: openQuestions[question.id] ? 90 : 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="flex-shrink-0"
+                            className="flex justify-between items-center p-4 cursor-pointer bg-white hover:bg-gray-50"
+                            onClick={() => toggleQuestion(question.id)}
                           >
-                            {openQuestions[question.id] ? (
-                              <ChevronDown className="text-teal-500" />
-                            ) : (
-                              <ChevronRight className="text-gray-500" />
-                            )}
-                          </motion.div>
-                        </motion.div>
-
-                        <AnimatePresence initial={false}>
-                          {openQuestions[question.id] && (
+                            <p className="font-medium text-black pr-4">{question.question}</p>
                             <motion.div
-                              variants={accordionVariants}
-                              initial="closed"
-                              animate="open"
-                              exit="closed"
-                              className="overflow-hidden border-t border-gray-200"
+                              animate={{ rotate: openQuestions[question.id] ? 90 : 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="flex-shrink-0"
                             >
-                              <div className="p-4 bg-gray-50">
-                                <div className="space-y-2 mb-4">
-                                  {question.options.map((option, index) => (
-                                    <div key={index} className="flex items-center">
-                                      <span className="font-semibold mr-2 text-black">{String.fromCharCode(65 + index)}.</span>
-                                      <span className="text-black">{option}</span>
-                                    </div>
-                                  ))}
-                                </div>
-
-                                <div className="mb-3 pt-2 border-t border-gray-200">
-                                  <div className="font-bold text-black mb-2">
-                                    Jawaban yang benar: {question.correctAnswer}
-                                  </div>
-                                </div>
-
-                                <div className="pt-2 border-t border-gray-200">
-                                  <div className="font-semibold mb-1 text-black">Pembahasan:</div>
-                                  <div className="text-black whitespace-pre-line">{question.explanation}</div>
-
-                                  {/* Edit button inside question */}
-                                  <div className="flex justify-end mt-4">
-                                    <motion.button
-                                      className="bg-[#2e4460] text-white px-6 py-2 rounded-md text-sm transition relative overflow-hidden"
-                                      variants={buttonVariants}
-                                      whileHover="hover"
-                                      whileTap="tap"
-                                      onHoverStart={() => setIsHovered(true)}
-                                      onHoverEnd={() => setIsHovered(false)}
-                                      onClick={() => startEditing(question)}
-                                    >
-                                      <Edit className="w-4 h-4 mr-2 inline" />
-                                      <motion.span
-                                        initial={{ x: 0 }}
-                                        animate={{ x: isHovered ? -5 : 0 }}
-                                        transition={{ duration: 0.2 }}
-                                      >
-                                        Edit
-                                      </motion.span>
-                                      <AnimatePresence>
-                                        {isHovered && (
-                                          <motion.span
-                                            className="absolute right-4"
-                                            initial={{ opacity: 0, x: -10 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            exit={{ opacity: 0, x: -10 }}
-                                            transition={{ duration: 0.2 }}
-                                          >
-                                            →
-                                          </motion.span>
-                                        )}
-                                      </AnimatePresence>
-                                    </motion.button>
-                                  </div>
-                                </div>
-                              </div>
+                              {openQuestions[question.id] ? (
+                                <ChevronDown className="text-teal-500" />
+                              ) : (
+                                <ChevronRight className="text-gray-500" />
+                              )}
                             </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </motion.div>
-                    )}
-                  </React.Fragment>
-                ))}
+                          </motion.div>
+
+                          <AnimatePresence initial={false}>
+                            {openQuestions[question.id] && (
+                              <motion.div
+                                variants={accordionVariants}
+                                initial="closed"
+                                animate="open"
+                                exit="closed"
+                                className="overflow-hidden border-t border-gray-200"
+                              >
+                                <div className="p-4 bg-gray-50">
+                                  <div className="space-y-2 mb-4">
+                                    {question.options.map((option, index) => (
+                                      <div key={index} className="flex items-center">
+                                        <span className="font-semibold mr-2 text-black">{String.fromCharCode(65 + index)}.</span>
+                                        <span className="text-black">{option}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+
+                                  <div className="mb-3 pt-2 border-t border-gray-200">
+                                    <div className="font-bold text-black mb-2">
+                                      Jawaban yang benar: {question.correctAnswer}
+                                    </div>
+                                  </div>
+
+                                  <div className="pt-2 border-t border-gray-200">
+                                    <div className="font-semibold mb-1 text-black">Pembahasan:</div>
+                                    <div className="text-black whitespace-pre-line">{question.explanation}</div>
+
+                                    {/* Edit button inside question */}
+                                    <div className="flex justify-end mt-4">
+                                      <motion.button
+                                        className="bg-[#2e4460] text-white px-6 py-2 rounded-md text-sm transition relative overflow-hidden"
+                                        variants={buttonVariants}
+                                        whileHover="hover"
+                                        whileTap="tap"
+                                        onHoverStart={() => setIsHovered(true)}
+                                        onHoverEnd={() => setIsHovered(false)}
+                                        onClick={() => startEditing(question)}
+                                      >
+                                        <Edit className="w-4 h-4 mr-2 inline" />
+                                        <motion.span
+                                          initial={{ x: 0 }}
+                                          animate={{ x: isHovered ? -5 : 0 }}
+                                          transition={{ duration: 0.2 }}
+                                        >
+                                          Edit
+                                        </motion.span>
+                                        <AnimatePresence>
+                                          {isHovered && (
+                                            <motion.span
+                                              className="absolute right-4"
+                                              initial={{ opacity: 0, x: -10 }}
+                                              animate={{ opacity: 1, x: 0 }}
+                                              exit={{ opacity: 0, x: -10 }}
+                                              transition={{ duration: 0.2 }}
+                                            >
+                                              →
+                                            </motion.span>
+                                          )}
+                                        </AnimatePresence>
+                                      </motion.button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </motion.div>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
 
                 {/* New question form */}
                 {isAddingQuestion && <NewQuestionForm />}
