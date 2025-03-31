@@ -93,9 +93,9 @@ function App() {
 
       {/* Landing Page Route */}
       <Route path="/" element={
-        <div className="min-h-screen bg-gradient-to-b from-[#f5f7fa] to-[#e4e8f0] py-12">
+        <div className="min-h-screen bg-[#213555] py-12">
           <div className="max-w-7xl mx-auto px-4">
-            <h1 className="text-center text-4xl font-bold text-[#2c3e50] mb-12 mt-8">
+            <h1 className="text-center text-4xl font-bold text-white mb-12 mt-8">
               Anggota Kelompok
             </h1>
             
@@ -149,24 +149,24 @@ function App() {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ y: -10 }}
                   className="
-                    bg-white rounded-xl p-6 shadow-lg
-                    hover:shadow-xl transition-all duration-300
-                    border border-gray-100
+                    bg-white/10 backdrop-blur-sm rounded-xl p-6
+                    hover:bg-white/20 transition-all duration-300
+                    border border-white/20
                     flex flex-col items-center text-center
                   "
                 >
-                  <div className="w-16 h-16 bg-[#3498db] rounded-full flex items-center justify-center mb-4">
+                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4">
                     <span className="text-white text-xl font-bold">
                       {member.role.split(" ")[1]}
                     </span>
                   </div>
-                  <h2 className="text-[#3498db] text-lg font-semibold mb-2">
+                  <h2 className="text-white text-lg font-semibold mb-2">
                     {member.role}
                   </h2>
-                  <p className="text-gray-800 font-medium mb-1">
+                  <p className="text-white/90 font-medium mb-1">
                     {member.name}
                   </p>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-white/70 text-sm">
                     NRP: {member.nrp}
                   </p>
                 </motion.div>
