@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { useNavigate, useParams } from "react-router-dom"
 // Import icons if you're using lucide-react
 // If not, you can replace with any icon library or SVG elements
@@ -92,6 +92,30 @@ export default function TryoutId() {
     }
   }
 
+  const cardVariants = {
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 0.4 }
+    },
+    hover: {
+      scale: 1.02,
+      transition: { duration: 0.2 }
+    }
+  }
+
+  const buttonVariants = {
+    hover: {
+      scale: 1.05,
+      transition: { duration: 0.2 }
+    },
+    tap: {
+      scale: 0.95,
+      transition: { duration: 0.1 }
+    }
+  }
+
   return (
     <motion.div
       initial="hidden"
@@ -100,29 +124,40 @@ export default function TryoutId() {
       className="min-h-screen bg-gradient-to-b from-[#f8f3ee] to-[#f0e9e4] flex items-center justify-center p-4 md:p-8"
     >
       <div className="w-full max-w-4xl">
-        <motion.div variants={itemVariants} className="flex justify-between items-center mb-6">
-          <button
+        <motion.div variants={itemVariants} className="flex justify-between items-center mb-8">
+          <motion.button
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
             onClick={() => navigate('/siswa/tryout')}
-            className="bg-[#1E3A5F] text-white p-3 rounded-full hover:bg-[#2E4A7F] transition-colors duration-300 flex items-center gap-2"
+            className="bg-[#1E3A5F] text-white p-3 rounded-full hover:bg-[#2E4A7F] transition-colors duration-300 flex items-center gap-2 shadow-lg"
           >
             <ArrowLeft />
             <span className="hidden md:inline">Kembali</span>
-          </button>
+          </motion.button>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="grid md:grid-cols-2 gap-6 mb-6">
-          <div className="bg-[#1E3A5F] text-white p-6 rounded-xl shadow-lg">
+        <motion.div variants={itemVariants} className="grid md:grid-cols-2 gap-6 mb-8">
+          <motion.div
+            variants={cardVariants}
+            whileHover="hover"
+            className="bg-[#1E3A5F] text-white p-6 rounded-xl shadow-lg transform transition-all duration-300 hover:shadow-xl"
+          >
             <h2 className="text-2xl font-bold mb-2">Tryout UTBK SNBT 2025</h2>
             <p className="text-gray-300">Episode 5</p>
-          </div>
+          </motion.div>
 
-          <div className="bg-[#1E3A5F] text-white p-6 rounded-xl shadow-lg">
-            <div className="flex items-center justify-between mb-4">
+          <motion.div
+            variants={cardVariants}
+            whileHover="hover"
+            className="bg-[#1E3A5F] text-white p-6 rounded-xl shadow-lg transform transition-all duration-300 hover:shadow-xl"
+          >
+            <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <FileText />
                 <span className="text-lg">Jumlah Soal</span>
               </div>
-              <div className="bg-[#d9c5a0] text-[#1E3A5F] px-4 py-2 rounded-full text-lg font-semibold">
+              <div className="bg-[#d9c5a0] text-[#1E3A5F] px-6 py-2 rounded-full text-lg font-semibold shadow-md">
                 100
               </div>
             </div>
@@ -131,23 +166,27 @@ export default function TryoutId() {
                 <Clock />
                 <span className="text-lg">Waktu</span>
               </div>
-              <div className="bg-[#d9c5a0] text-[#1E3A5F] px-4 py-2 rounded-full text-lg font-semibold">
+              <div className="bg-[#d9c5a0] text-[#1E3A5F] px-6 py-2 rounded-full text-lg font-semibold shadow-md">
                 40 Menit
               </div>
             </div>
-          </div>
+          </motion.div>
         </motion.div>
 
         <motion.div
-          variants={itemVariants}
-          className="bg-[#1E3A5F] rounded-xl overflow-hidden shadow-lg mb-6"
+          variants={cardVariants}
+          whileHover="hover"
+          className="bg-[#1E3A5F] rounded-xl overflow-hidden shadow-lg mb-8 transform transition-all duration-300 hover:shadow-xl"
         >
           <div className="bg-[#2E4A7F] text-white py-4 px-6 text-center text-xl font-semibold">
             Peraturan Tryout
           </div>
           <div className="p-8 text-white">
             <div className="grid md:grid-cols-2 gap-8">
-              <div className="space-y-6">
+              <motion.div
+                variants={itemVariants}
+                className="space-y-6"
+              >
                 <h3 className="text-xl font-semibold mb-4 text-[#d9c5a0]">
                   Persiapan Sebelum Tryout
                 </h3>
@@ -168,8 +207,11 @@ export default function TryoutId() {
                     Pastikan daya baterai perangkat cukup atau sambungkan ke charger
                   </li>
                 </ol>
-              </div>
-              <div className="space-y-6">
+              </motion.div>
+              <motion.div
+                variants={itemVariants}
+                className="space-y-6"
+              >
                 <h3 className="text-xl font-semibold mb-4 text-[#d9c5a0]">
                   Saat Tryout Berlangsung
                 </h3>
@@ -190,15 +232,17 @@ export default function TryoutId() {
                     Jika terjadi kendala teknis, segera hubungi tim support
                   </li>
                 </ol>
-              </div>
+              </motion.div>
             </div>
           </div>
         </motion.div>
 
         <motion.button
-          variants={itemVariants}
+          variants={buttonVariants}
+          whileHover="hover"
+          whileTap="tap"
           onClick={() => navigate(`/siswa/tryout/id/subjek/pengerjaan`)}
-          className="w-full bg-gradient-to-r from-[#1E3A5F] to-[#2E4A7F] text-white py-4 px-8 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+          className="w-full bg-gradient-to-r from-[#1E3A5F] to-[#2E4A7F] text-white py-4 px-8 rounded-xl text-lg font-semibold shadow-lg transform transition-all duration-300 hover:shadow-xl"
         >
           MULAI TRYOUT
         </motion.button>
