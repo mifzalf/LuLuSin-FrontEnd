@@ -1,9 +1,38 @@
 "use client"
 
 import { motion } from "framer-motion"
-import React from "react"
+import React, { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import axiosInstance from "../api/axiosInstance"
 
 const Login = () => {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
+
+  const handleLogin = async () => {
+    setError(null)
+    setLoading(true)
+    try {
+      const response = await axiosInstance.post("/API/login", {
+        email,
+        password,
+      })
+      console.log("Login successful:", response.data)
+
+      navigate("/dashboard")
+
+    } catch (err) {
+      console.error("Login failed:", err)
+      const errorMessage = err.response?.data?.message || err.message || "Login gagal. Periksa kembali email dan password Anda."
+      setError(errorMessage)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="fixed inset-0 bg-[#1B2B44] overflow-hidden">
       <section className="w-full h-full flex items-center justify-center">
@@ -37,6 +66,15 @@ const Login = () => {
             >
               Masuk untuk melanjutkan perjalananmu menuju kesuksesan!
             </motion.p>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="w-full mb-3 p-3 bg-red-100 border border-red-400 text-red-700 rounded-xl text-center"
+              >
+                {error}
+              </motion.div>
+            )}
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -49,7 +87,10 @@ const Login = () => {
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 type="email"
                 placeholder="Masukkan email"
-                className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none"
+                className="w-full p-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:border-[#2D4562] focus:ring-1 focus:ring-[#2D4562]"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
               />
             </motion.div>
             <motion.div
@@ -64,7 +105,10 @@ const Login = () => {
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 type="password"
                 placeholder="Masukkan password"
-                className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none"
+                className="w-full p-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:border-[#2D4562] focus:ring-1 focus:ring-[#2D4562]"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
               />
             </motion.div>
             <motion.button
@@ -73,9 +117,11 @@ const Login = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               transition={{ delay: 0.9, duration: 0.4, type: "spring", stiffness: 400, damping: 10 }}
-              className="w-full bg-[#2D4562] text-white p-3 rounded-xl hover:bg-[#1B2B44] transition font-semibold"
+              className="w-full bg-[#2D4562] text-white p-3 rounded-xl hover:bg-[#1B2B44] transition font-semibold disabled:opacity-50"
+              onClick={handleLogin}
+              disabled={loading}
             >
-              Login
+              {loading ? "Loading..." : "Login"}
             </motion.button>
             <motion.p
               initial={{ opacity: 0 }}

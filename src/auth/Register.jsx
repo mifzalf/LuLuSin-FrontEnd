@@ -62,11 +62,12 @@ const Register = () => {
               transition={{ delay: 0.6, duration: 0.4 }}
               className="w-full mb-3"
             >
+              <label className="block text-sm font-medium text-[#2D4562] mb-1">Email</label>
               <motion.input
                 whileFocus={{ scale: 1.02, boxShadow: "0 0 0 2px rgba(45, 69, 98, 0.3)" }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 type="email"
-                placeholder="Email"
+                placeholder="contoh@email.com"
                 className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none"
               />
             </motion.div>
@@ -77,20 +78,26 @@ const Register = () => {
               transition={{ delay: 0.7, duration: 0.4 }}
               className="w-full mb-3 flex gap-2"
             >
-              <motion.input
-                whileFocus={{ scale: 1.02, boxShadow: "0 0 0 2px rgba(45, 69, 98, 0.3)" }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                type="text"
-                placeholder="Nama"
-                className="w-1/2 p-3 border border-gray-300 rounded-xl focus:outline-none"
-              />
-              <motion.input
-                whileFocus={{ scale: 1.02, boxShadow: "0 0 0 2px rgba(45, 69, 98, 0.3)" }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                type="text"
-                placeholder="NISN"
-                className="w-1/2 p-3 border border-gray-300 rounded-xl focus:outline-none"
-              />
+              <div className="w-1/2">
+                <label className="block text-sm font-medium text-[#2D4562] mb-1">Nama Lengkap</label>
+                <motion.input
+                  whileFocus={{ scale: 1.02, boxShadow: "0 0 0 2px rgba(45, 69, 98, 0.3)" }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  type="text"
+                  placeholder="Masukkan nama lengkap"
+                  className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none"
+                />
+              </div>
+              <div className="w-1/2">
+                <label className="block text-sm font-medium text-[#2D4562] mb-1">NISN</label>
+                <motion.input
+                  whileFocus={{ scale: 1.02, boxShadow: "0 0 0 2px rgba(45, 69, 98, 0.3)" }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  type="text"
+                  placeholder="Masukkan NISN"
+                  className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none"
+                />
+              </div>
             </motion.div>
 
             <motion.div
@@ -99,11 +106,12 @@ const Register = () => {
               transition={{ delay: 0.8, duration: 0.4 }}
               className="w-full mb-3"
             >
+              <label className="block text-sm font-medium text-[#2D4562] mb-1">Password</label>
               <motion.input
                 whileFocus={{ scale: 1.02, boxShadow: "0 0 0 2px rgba(45, 69, 98, 0.3)" }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 type="password"
-                placeholder="Password"
+                placeholder="Masukkan password"
                 className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none"
               />
             </motion.div>
@@ -114,11 +122,12 @@ const Register = () => {
               transition={{ delay: 0.9, duration: 0.4 }}
               className="w-full mb-4"
             >
+              <label className="block text-sm font-medium text-[#2D4562] mb-1">Konfirmasi Password</label>
               <motion.input
                 whileFocus={{ scale: 1.02, boxShadow: "0 0 0 2px rgba(45, 69, 98, 0.3)" }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 type="password"
-                placeholder="Konfirmasi Password"
+                placeholder="Masukkan ulang password"
                 className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none"
               />
             </motion.div>
@@ -138,7 +147,7 @@ const Register = () => {
               transition={{ delay: 1.1, duration: 0.4, type: "spring", stiffness: 400, damping: 10 }}
               className="w-full bg-[#2D4562] text-white p-3 rounded-xl hover:bg-[#1B2B44] transition font-semibold"
             >
-              Register
+              Daftar Sekarang
             </motion.button>
 
             <motion.p
@@ -147,13 +156,13 @@ const Register = () => {
               transition={{ delay: 1.2, duration: 0.4 }}
               className="mt-4 text-sm text-gray-600 text-center"
             >
-              sudah memiliki akun?{" "}
+              Sudah memiliki akun?{" "}
               <motion.a
                 whileHover={{ scale: 1.05, color: "#1B2B44" }}
                 href="/login"
                 className="text-[#2D4562] font-semibold"
               >
-                Login
+                Masuk di sini
               </motion.a>
             </motion.p>
           </motion.div>
