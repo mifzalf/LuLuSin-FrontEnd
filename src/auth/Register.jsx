@@ -68,7 +68,7 @@ const Register = () => {
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 type="email"
                 placeholder="contoh@email.com"
-                className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none"
+                className="w-full p-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:border-[#2D4562] focus:ring-1 focus:ring-[#2D4562]"
               />
             </motion.div>
 
@@ -85,7 +85,7 @@ const Register = () => {
                   transition={{ type: "spring", stiffness: 400, damping: 10 }}
                   type="text"
                   placeholder="Masukkan nama lengkap"
-                  className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none"
+                  className="w-full p-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:border-[#2D4562] focus:ring-1 focus:ring-[#2D4562]"
                 />
               </div>
               <div className="w-1/2">
@@ -95,7 +95,7 @@ const Register = () => {
                   transition={{ type: "spring", stiffness: 400, damping: 10 }}
                   type="text"
                   placeholder="Masukkan NISN"
-                  className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none"
+                  className="w-full p-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:border-[#2D4562] focus:ring-1 focus:ring-[#2D4562]"
                 />
               </div>
             </motion.div>
@@ -112,7 +112,7 @@ const Register = () => {
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 type="password"
                 placeholder="Masukkan password"
-                className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none"
+                className="w-full p-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:border-[#2D4562] focus:ring-1 focus:ring-[#2D4562]"
               />
             </motion.div>
 
@@ -128,7 +128,7 @@ const Register = () => {
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 type="password"
                 placeholder="Masukkan ulang password"
-                className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none"
+                className="w-full p-3 border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:border-[#2D4562] focus:ring-1 focus:ring-[#2D4562]"
               />
             </motion.div>
 
