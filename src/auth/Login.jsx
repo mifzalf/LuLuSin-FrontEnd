@@ -22,7 +22,16 @@ const Login = () => {
       })
       console.log("Login successful:", response.data)
 
-      navigate("/dashboard")
+      if (response.data && response.data.token && response.data.userType) {
+        localStorage.setItem('authToken', response.data.token);
+        localStorage.setItem('userType', response.data.userType);
+        console.log("Token and userType saved to localStorage");
+
+        navigate("/dashboard")
+      } else {
+        console.error("Login successful, but token or userType missing in response:", response.data);
+        setError("Respons login tidak valid.");
+      }
 
     } catch (err) {
       console.error("Login failed:", err)
