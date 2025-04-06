@@ -27,7 +27,11 @@ const Login = () => {
         localStorage.setItem('userType', response.data.userType);
         console.log("Token and userType saved to localStorage");
 
-        navigate("/dashboard")
+        if (response.data.userType === 'student') {
+          navigate('/siswa/dashboard');
+        } else {
+          navigate('/dashboard');
+        }
       } else {
         console.error("Login successful, but token or userType missing in response:", response.data);
         setError("Respons login tidak valid.");
