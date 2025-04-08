@@ -7,6 +7,7 @@ import axiosInstance from "../api/axiosInstance";
 
 const Register = () => {
   const [email, setEmail] = useState();
+  const [emailHistory, setEmailHistory] = useState([]);
   const [name, setName] = useState();
   const [nisn, setNisn] = useState();
   const [nisnHistory, setNisnHistory] = useState([]);
