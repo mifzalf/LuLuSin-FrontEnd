@@ -7,11 +7,12 @@ const GuruKategori = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [subjects, setSubjects] = useState([]);
-  const [newSubject, setNewSubject] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [notification, setNotification] = useState(location.state?.notification || null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [selectedSubject, setSelectedSubject] = useState(null);
 
   // Fetch subjects when component mounts or when returning from create
   const fetchSubjects = async () => {
@@ -51,31 +52,42 @@ const GuruKategori = () => {
     }
   }, [location]);
 
-  const handleAddSubject = async () => {
-    if (!newSubject.trim()) {
-      setError("Nama subjek tidak boleh kosong");
-      return;
-    }
+  // Handle delete confirmation
+  const handleDeleteClick = (subject) => {
+    setSelectedSubject(subject);
+    setShowDeleteConfirm(true);
+  };
 
-    setLoading(true);
-    setError(null);
+  // Handle delete action
+  const handleDelete = async () => {
+    if (!selectedSubject) return;
 
     try {
-      const response = await axiosInstance.post("/API/teacher/subjectcategory/create", {
-        name: newSubject
-      });
-
+      const response = await axiosInstance.delete(`/API/teacher/subjectcategory/delete/${selectedSubject.subject_category_id}`);
+      
       if (response.data.success) {
-        setSubjects([...subjects, response.data.data]);
-        setNewSubject("");
-        navigate("/guru/kategorisubjek/create");
+        setSubjects(subjects.filter(s => s.subject_category_id !== selectedSubject.subject_category_id));
+        setNotification({
+          type: 'success',
+          message: 'Kategori subjek berhasil dihapus!'
+        });
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Gagal menambahkan subjek");
-      console.error("Add error:", err);
+      setNotification({
+        type: 'error',
+        message: err.response?.data?.message || 'Gagal menghapus kategori subjek'
+      });
     } finally {
-      setLoading(false);
+      setShowDeleteConfirm(false);
+      setSelectedSubject(null);
     }
+  };
+
+  // Handle edit navigation
+  const handleEdit = (subject) => {
+    navigate(`/guru/kategorisubjek/edit/${subject.subject_category_id}`, {
+      state: { subject }
+    });
   };
 
   return (
@@ -118,6 +130,10 @@ const GuruKategori = () => {
         <div className="bg-white rounded-md shadow-md overflow-hidden">
           {isLoading ? (
             <div className="p-4 text-center">Memuat data...</div>
+          ) : subjects.length === 0 ? (
+            <div className="p-4 text-center text-gray-500">
+              Belum ada kategori subjek. Klik tombol "Tambah Kategori Subjek" untuk menambahkan.
+            </div>
           ) : (
             <table className="w-full border-collapse">
               <thead>
@@ -133,10 +149,16 @@ const GuruKategori = () => {
                     <td className="px-4 py-3">{index + 1}</td>
                     <td className="px-4 py-3">{subject.subject_category_name}</td>
                     <td className="px-4 py-3 flex gap-3">
-                      <button className="text-[#213555] hover:text-blue-500 transition bg-transparent">
+                      <button 
+                        onClick={() => handleEdit(subject)}
+                        className="text-[#213555] hover:text-blue-500 transition bg-transparent"
+                      >
                         <FaEdit className="w-5 h-5" />
                       </button>
-                      <button className="text-[#213555] hover:text-red-500 transition bg-transparent">
+                      <button 
+                        onClick={() => handleDeleteClick(subject)}
+                        className="text-[#213555] hover:text-red-500 transition bg-transparent"
+                      >
                         <FaTrash className="w-5 h-5" />
                       </button>
                     </td>
@@ -147,6 +169,32 @@ const GuruKategori = () => {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full">
+            <h2 className="text-xl font-bold text-[#213555] mb-4">Konfirmasi Hapus</h2>
+            <p className="text-gray-600 mb-6">
+              Apakah Anda yakin ingin menghapus kategori subjek "{selectedSubject?.subject_category_name}"?
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
+              >
+                Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
