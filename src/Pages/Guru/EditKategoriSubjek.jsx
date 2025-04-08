@@ -43,10 +43,10 @@ const EditKategoriSubjek = () => {
     setSuccess(false);
 
     try {
-      // Menggunakan endpoint yang benar sesuai dengan API
-      const response = await axiosInstance.put(`/API/teacher/subjectcategory/${id}`, {
+      // Menggunakan endpoint dan metode yang benar sesuai dengan API
+      const response = await axiosInstance.patch(`/API/teacher/subjectcategory/update/${id}`, {
         subject_category_name: kategoriSubjek,
-        subject_category_id: id
+        subject_category_id: id // Anda mungkin tidak perlu mengirim ID di body jika sudah ada di URL
       });
 
       if (response.data.success) {
