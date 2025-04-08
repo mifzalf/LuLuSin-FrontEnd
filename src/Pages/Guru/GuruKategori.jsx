@@ -78,7 +78,7 @@ const GuruKategori = () => {
       if (response.data.success) {
         setSubjects([...subjects, response.data.data]);
         setNewSubject("");
-        navigate("/guru/kategorisubjek");
+        navigate("/guru/kategorisubjek/create");
       }
     } catch (err) {
       setError(err.response?.data?.message || "Gagal menambahkan subjek");

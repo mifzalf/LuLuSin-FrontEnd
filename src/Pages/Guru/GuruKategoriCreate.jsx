@@ -2,8 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
 
-
-const KategoriSubjek = () => {
+const GuruKategoriCreate = () => {
   return (
       <div className="w-full">
         <div className="min-h-screen bg-white flex items-center justify-center p-6">
@@ -42,8 +41,7 @@ const KategoriSubjek = () => {
           </div>
         </div>
       </div>
-
   );
 };
 
-export default KategoriSubjek;
+export default GuruKategoriCreate; 

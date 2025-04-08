@@ -28,8 +28,8 @@ import SiswaTryoutPembahasan from "./Pages/Siswa/TryoutPembahasan";
 import SiswaTryoutPengerjaan from "./Pages/Siswa/TryoutPengerjaan";
 import Peralihan from "./Pages/Siswa/Peralihan";
 import CreateTryoutSubjek from "./Pages/Guru/CreateTryoutSubjek";
-import GuruKategori from "./Pages/Guru/GuruKategori"; 
-import KategoriSubjek from "./Pages/Guru/KategoriSubjek";
+import GuruKategori from "./Pages/Guru/GuruKategori";
+import GuruKategoriCreate from "./Pages/Guru/GuruKategoriCreate";
 import EditKategoriSubjek from "./Pages/Guru/EditKategoriSubjek";
 import GuruSubjek from "./Pages/Guru/GuruSubjek";
 import GuruSubjekCreate from "./Pages/Guru/GuruSubjekCreate";
@@ -66,7 +66,7 @@ function App() {
         <Route path="tryout/id/subjek" element={<GuruTryoutSubjek />} />
         <Route path="tryout/id/editsubjek" element={<EditTryoutSubjek />} />
         <Route path="kategorisubjek" element={<GuruKategori />} />
-        <Route path="kategorisubjek/create" element={<KategoriSubjek />} />
+        <Route path="kategorisubjek/create" element={<GuruKategoriCreate />} />
         <Route path="kategorisubjek/edit" element={<EditKategoriSubjek />} />
         <Route path="tryout/id/subjek/pembahasan/edit" element={<EditPembahasanSoalTryout />} />
         <Route path="tryout/id/subjek/editpembahasan/create" element={<EditSoalCreatePembahasan />} />
