@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
 
 const GuruKategori = () => {
+  const navigate = useNavigate();
   const [subjects, setSubjects] = useState([]);
   const [newSubject, setNewSubject] = useState("");
   const [loading, setLoading] = useState(false);
@@ -76,6 +78,7 @@ const GuruKategori = () => {
       if (response.data.success) {
         setSubjects([...subjects, response.data.data]);
         setNewSubject("");
+        navigate("/guru/kategorisubjek");
       }
     } catch (err) {
       setError(err.response?.data?.message || "Gagal menambahkan subjek");
