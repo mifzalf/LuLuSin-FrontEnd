@@ -20,26 +20,62 @@ const GuruSubjek = () => {
       setLoading(true);
       setError(null);
       console.log('Fetching subjects...');
-      const response = await axiosInstance.get("/API/teacher/subject");
-      console.log('Response received:', response);
       
-      if (response.data.success) {
-        setTryouts(response.data.data);
-        setError(null);
-      } else {
-        setError(response.data.message || "Gagal memuat data subjek");
+      const response = await axiosInstance.get("/API/teacher/subject");
+      console.log('Raw API Response:', response.data);
+      
+      // Extract subjects from the response
+      let subjects = [];
+      if (response.data && response.data.datasubject) {
+        subjects = response.data.datasubject;
       }
+      console.log('Extracted subjects:', subjects);
+
+      // Group subjects by category ID
+      const groupedSubjects = {};
+      subjects.forEach(subject => {
+        const categoryId = subject.id_subject_category;
+        if (!groupedSubjects[categoryId]) {
+          groupedSubjects[categoryId] = {
+            kategori: `Kategori ${categoryId}`,
+            subjek: []
+          };
+        }
+        groupedSubjects[categoryId].subjek.push({
+          subject_id: subject.subject_id,
+          subject_name: subject.subject_name,
+          time_limit: subject.time_limit
+        });
+      });
+      
+      // Convert to array format
+      const formattedData = Object.values(groupedSubjects);
+      console.log('Formatted Data:', formattedData);
+      
+      if (formattedData.length === 0) {
+        setError("Tidak ada data subjek yang tersedia");
+      } else {
+        setError(null);
+      }
+      setTryouts(formattedData);
+      
     } catch (err) {
-      console.error('Error fetching subjects:', err);
+      console.error('Error details:', {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status
+      });
+      
       if (err.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        setError(`Error ${err.response.status}: ${err.response.data.message || 'Gagal memuat data'}`);
+        if (err.response.status === 401) {
+          setError("Sesi anda telah berakhir. Silakan login kembali.");
+          navigate('/login');
+        } else {
+          setError(`Error ${err.response.status}: ${err.response.data?.message || 'Gagal memuat data'}`);
+        }
       } else if (err.request) {
-        // The request was made but no response was received
         setError("Tidak dapat terhubung ke server. Mohon periksa koneksi anda.");
       } else {
-        // Something happened in setting up the request that triggered an Error
         setError("Terjadi kesalahan saat memuat data: " + err.message);
       }
     } finally {
@@ -47,24 +83,33 @@ const GuruSubjek = () => {
     }
   };
 
+  // Add debug logging for tryouts state changes
+  useEffect(() => {
+    console.log('Current tryouts state:', tryouts);
+  }, [tryouts]);
+
   const handleDelete = async (kategoriIdx, subjekIdx) => {
     try {
       const subjectToDelete = tryouts[kategoriIdx].subjek[subjekIdx];
-      const response = await axiosInstance.delete(`/API/teacher/subject/delete/${subjectToDelete.subject_id}`);
+      console.log('Deleting subject:', subjectToDelete);
+      
+      const response = await axiosInstance.delete(`/API/teacher/subject/${subjectToDelete.subject_id}`);
+      console.log('Delete response:', response.data);
       
       if (response.data.success) {
-        const newTryouts = [...tryouts];
-        newTryouts[kategoriIdx].subjek.splice(subjekIdx, 1);
-        setTryouts(newTryouts);
+        await fetchSubjects();
         setNotification({
           type: 'success',
           message: 'Subjek berhasil dihapus!'
         });
+      } else {
+        throw new Error(response.data.message || 'Gagal menghapus subjek');
       }
     } catch (err) {
+      console.error('Delete Error:', err);
       setNotification({
         type: 'error',
-        message: err.response?.data?.message || 'Gagal menghapus subjek'
+        message: err.response?.data?.message || err.message || 'Gagal menghapus subjek'
       });
     }
   };
@@ -116,40 +161,64 @@ const GuruSubjek = () => {
           </button>
         </div>
 
-        <div className="w-full space-y-6">
-          {tryouts.map((kategori, kategoriIdx) => (
-            <div key={kategoriIdx} className="bg-white shadow-md rounded-lg overflow-hidden">
-              <div className="bg-[#213555] text-white p-4 text-lg font-semibold flex">
-                <span className="w-2/3 text-center">{kategori.kategori}</span>
-                <span className="w-1/3 text-center border-l">Aksi</span>
-              </div>
-              {kategori.subjek.map((subjek, subjekIdx) => (
-                <div
-                  key={subjekIdx}
-                  className="flex items-center p-4 border-b last:border-none hover:bg-gray-50 transition"
-                >
-                  <span className="w-2/3 text-center text-[#2f4a64] font-medium">{subjek.subject_name}</span>
-                  <div className="w-1/3 flex justify-center gap-3 border-l">
-                    <button
-                      onClick={() =>
-                        navigate(`/guru/subjek/edit?kategori=${kategori.kategori}&subjek=${subjek.subject_name}&id=${subjek.subject_id}`)
-                      }
-                      className="text-[#3E5879] hover:text-[#213555] transition p-2 hover:bg-gray-100 rounded-full"
-                    >
-                      <FiEdit size={18} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(kategoriIdx, subjekIdx)}
-                      className="text-[#3E5879] hover:text-red-600 transition p-2 hover:bg-gray-100 rounded-full"
-                    >
-                      <FiTrash2 size={18} />
-                    </button>
+        {loading ? (
+          <div className="bg-white shadow-md rounded-lg p-6 text-center">
+            <div className="text-[#213555]">Loading...</div>
+          </div>
+        ) : error ? (
+          <div className="bg-white shadow-md rounded-lg p-6 text-center">
+            <div className="text-red-500">{error}</div>
+          </div>
+        ) : (
+          <div className="w-full space-y-6">
+            {tryouts && tryouts.length > 0 ? (
+              tryouts.map((kategori, kategoriIdx) => (
+                <div key={kategoriIdx} className="bg-white shadow-md rounded-lg overflow-hidden">
+                  <div className="bg-[#213555] text-white p-4 text-lg font-semibold flex">
+                    <span className="w-2/3 text-center">{kategori.kategori}</span>
+                    <span className="w-1/3 text-center border-l">Aksi</span>
                   </div>
+                  {kategori.subjek && kategori.subjek.length > 0 ? (
+                    kategori.subjek.map((subjek, subjekIdx) => (
+                      <div
+                        key={subjekIdx}
+                        className="flex items-center p-4 border-b last:border-none hover:bg-gray-50 transition"
+                      >
+                        <span className="w-2/3 text-center text-[#2f4a64] font-medium">
+                          {subjek.subject_name}
+                        </span>
+                        <div className="w-1/3 flex justify-center gap-3 border-l">
+                          <button
+                            onClick={() =>
+                              navigate(`/guru/subjek/edit?kategori=${kategori.kategori}&subjek=${subjek.subject_name}&id=${subjek.subject_id}`)
+                            }
+                            className="text-[#3E5879] hover:text-[#213555] transition p-2 hover:bg-gray-100 rounded-full"
+                          >
+                            <FiEdit size={18} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(kategoriIdx, subjekIdx)}
+                            className="text-[#3E5879] hover:text-red-600 transition p-2 hover:bg-gray-100 rounded-full"
+                          >
+                            <FiTrash2 size={18} />
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-4 text-center text-gray-500">
+                      Tidak ada subjek dalam kategori ini
+                    </div>
+                  )}
                 </div>
-              ))}
-            </div>
-          ))}
-        </div>
+              ))
+            ) : (
+              <div className="bg-white shadow-md rounded-lg p-6 text-center text-gray-500">
+                Tidak ada data subjek yang tersedia
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
