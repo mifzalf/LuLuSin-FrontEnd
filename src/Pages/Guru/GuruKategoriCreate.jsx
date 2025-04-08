@@ -8,6 +8,7 @@ const GuruKategoriCreate = () => {
   const [kategoriSubjek, setKategoriSubjek] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async () => {
     if (!kategoriSubjek.trim()) {
@@ -17,6 +18,7 @@ const GuruKategoriCreate = () => {
 
     setLoading(true);
     setError(null);
+    setSuccess(false);
 
     try {
       const response = await axiosInstance.post("/API/teacher/subjectcategory/create", {
@@ -24,7 +26,12 @@ const GuruKategoriCreate = () => {
       });
 
       if (response.data.success) {
-        navigate("/guru/kategorisubjek");
+        setSuccess(true);
+        setKategoriSubjek("");
+        // Menunggu sebentar untuk menampilkan pesan sukses
+        setTimeout(() => {
+          navigate("/guru/kategorisubjek");
+        }, 1500);
       }
     } catch (err) {
       setError(err.response?.data?.message || "Gagal menambahkan kategori subjek");
@@ -47,6 +54,12 @@ const GuruKategoriCreate = () => {
           {error && (
             <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
               {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md">
+              Kategori subjek berhasil ditambahkan! Mengalihkan...
             </div>
           )}
 
@@ -74,10 +87,10 @@ const GuruKategoriCreate = () => {
             </button>
             <button
               onClick={handleSubmit}
-              disabled={loading}
+              disabled={loading || success}
               className="bg-[#213555] text-white px-5 py-2 rounded-full hover:opacity-90 transition disabled:opacity-50"
             >
-              {loading ? "Memproses..." : "Buat"}
+              {loading ? "Memproses..." : success ? "Berhasil!" : "Buat"}
             </button>
           </div>
         </div>
