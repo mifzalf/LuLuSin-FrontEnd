@@ -1,36 +1,48 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { FiEdit, FiPlus, FiTrash2, FiX } from "react-icons/fi"
+import axiosInstance from "../../api/axiosInstance"
 
 const GuruTryout = () => {
   const navigate = useNavigate()
-  const [tryouts, setTryouts] = useState([
-    {
-      id: 1,
-      nama: "Tryout UTBK SNBT 2025 Ep. 1",
-      soalDibuat: 110,
-      targetSoal: 160,
-      status: "Show",
-    },
-    {
-      id: 2,
-      nama: "Tryout UTBK SNBT 2025 Ep. 2",
-      soalDibuat: 0,
-      targetSoal: 160,
-      status: "Show",
-    },
-    {
-      id: 3,
-      nama: "Tryout UTBK SNBT 2025 Ep. 3",
-      soalDibuat: 0,
-      targetSoal: 160,
-      status: "Hide",
-    },
-  ])
-
+  const [tryouts, setTryouts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [notification, setNotification] = useState(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [tryoutToDelete, setTryoutToDelete] = useState(null)
+
+  useEffect(() => {
+    fetchTryouts()
+  }, [])
+
+  const fetchTryouts = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await axiosInstance.get("/API/teacher/tryout")
+      
+      if (response.data && response.data.datatryout) {
+        const mappedTryouts = response.data.datatryout.map(tryout => ({
+          id: tryout.tryout_id,
+          tryout_name: tryout.tryout_name,
+          status: tryout.status,
+          targetSoal: tryout.total_questions || 0,
+          soalDibuat: tryout.total_questions || 0
+        }))
+        setTryouts(mappedTryouts)
+      } else {
+        setTryouts([])
+        setError("Belum ada data tryout tersedia")
+      }
+    } catch (err) {
+      console.error('Error fetching tryouts:', err)
+      setError(err.response?.data?.message || "Gagal memuat data tryout")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const navigateToCreateTryout = () => {
     navigate("/guru/createtryout")
@@ -45,17 +57,67 @@ const GuruTryout = () => {
     setShowDeleteModal(true)
   }
 
-  const handleDeleteConfirm = () => {
-    if (tryoutToDelete) {
-      setTryouts(tryouts.filter(t => t.id !== tryoutToDelete.id))
+  const handleDeleteConfirm = async () => {
+    if (!tryoutToDelete) return
+
+    try {
+      const response = await axiosInstance.delete(`/API/teacher/tryout/delete/${tryoutToDelete.id}`)
+      
+      if (response.data.success) {
+        setTryouts(tryouts.filter(t => t.id !== tryoutToDelete.id))
+        setNotification({
+          type: 'success',
+          message: 'Tryout berhasil dihapus!'
+        })
+      }
+    } catch (err) {
+      setNotification({
+        type: 'error',
+        message: err.response?.data?.message || 'Gagal menghapus tryout'
+      })
+    } finally {
       setShowDeleteModal(false)
       setTryoutToDelete(null)
     }
   }
 
+  // Clear notification after 3 seconds
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => {
+        setNotification(null)
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [notification])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#f5f0e6] flex items-center justify-center">
+        <div className="text-[#2f4a64]">Loading...</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#f5f0e6] flex items-center justify-center">
+        <div className="text-red-500">{error}</div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-[#f5f0e6] p-6">
       <div className="max-w-7xl mx-auto">
+        {notification && (
+          <div className={`mb-4 p-4 rounded-lg ${
+            notification.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          }`}>
+            {notification.message}
+          </div>
+        )}
+
         <div className="mb-8 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-[#2f4a64]">Tryout UTBK SNBT 2025</h1>
 
@@ -83,7 +145,7 @@ const GuruTryout = () => {
               {tryouts.map((tryout, index) => (
                 <tr key={tryout.id} className="bg-white border-b hover:bg-gray-50">
                   <td className="py-4 px-4 text-[#2f4a64] font-medium">{index + 1}</td>
-                  <td className="py-4 px-4 text-[#2f4a64] font-medium">{tryout.nama}</td>
+                  <td className="py-4 px-4 text-[#2f4a64] font-medium">{tryout.tryout_name}</td>
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-2">
                       <div className="w-24 h-6 bg-gray-200 rounded-full overflow-hidden">
@@ -145,7 +207,7 @@ const GuruTryout = () => {
                 </button>
               </div>
               <p className="text-gray-600 mb-6">
-                Apakah Anda yakin ingin menghapus tryout "{tryoutToDelete?.nama}"? 
+                Apakah Anda yakin ingin menghapus tryout "{tryoutToDelete?.tryout_name}"? 
                 Tindakan ini tidak dapat dibatalkan.
               </p>
               <div className="flex justify-end gap-3">

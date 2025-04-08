@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Dapatkan base URL dari environment variable
-const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'; // Fallback jika env var tidak ada
+const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5173'; // Updated port to match your application
 
 const axiosInstance = axios.create({
   baseURL: baseURL,
