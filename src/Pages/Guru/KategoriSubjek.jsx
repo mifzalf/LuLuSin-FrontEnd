@@ -5,7 +5,6 @@ import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
 
 const KategoriSubjek = () => {
   return (
-    <GuruLayout>
       <div className="w-full">
         <div className="min-h-screen bg-white flex items-center justify-center p-6">
           <div className="w-full max-w-xl border-2 border-gray-400 rounded-3xl p-6">
@@ -43,7 +42,7 @@ const KategoriSubjek = () => {
           </div>
         </div>
       </div>
-    </GuruLayout>
+
   );
 };
 
