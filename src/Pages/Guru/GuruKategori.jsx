@@ -13,32 +13,42 @@ const GuruKategori = () => {
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
-        console.log("Fetching subjects...");
-        const response = await axiosInstance.get("/API/teacher/subjectcategory");
-        console.log("API Response:", response);
+        console.log("Starting fetch subjects...");
+        console.log("Base URL:", axiosInstance.defaults.baseURL);
+        console.log("Full URL:", `${axiosInstance.defaults.baseURL}/API/teacher/subjectcategory`);
         
-        if (response.data.success) {
-          setSubjects(response.data.data);
+        const response = await axiosInstance.get("/API/teacher/subjectcategory");
+        console.log("Full API Response:", response);
+        
+        if (response.data.dataSubjectCategory) {
+          console.log("Subjects data:", response.data.dataSubjectCategory);
+          setSubjects(response.data.dataSubjectCategory);
           setError(null);
         } else {
-          setError(response.data.message || "Gagal memuat data subjek");
+          console.error("API returned unexpected structure:", response.data);
+          setError("Gagal memuat data subjek: Format data tidak sesuai");
         }
       } catch (err) {
-        console.error("Fetch error details:", {
+        console.error("Detailed error information:", {
           message: err.message,
           response: err.response,
-          config: err.config
+          config: err.config,
+          stack: err.stack
         });
         
         if (err.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
+          console.error("Server response:", {
+            status: err.response.status,
+            statusText: err.response.statusText,
+            data: err.response.data,
+            headers: err.response.headers
+          });
           setError(err.response.data?.message || `Error ${err.response.status}: Gagal memuat data subjek`);
         } else if (err.request) {
-          // The request was made but no response was received
+          console.error("No response received:", err.request);
           setError("Tidak ada respon dari server. Periksa koneksi internet Anda atau pastikan server berjalan.");
         } else {
-          // Something happened in setting up the request that triggered an Error
+          console.error("Request setup error:", err);
           setError(err.message || "Terjadi kesalahan saat memuat data");
         }
       } finally {
