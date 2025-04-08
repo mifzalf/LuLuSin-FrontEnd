@@ -91,7 +91,7 @@ const CreateTryout = () => {
                 name="tryout_name"
                 value={formData.tryout_name}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f4a64] focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f4a64] focus:border-transparent text-gray-800"
                 placeholder="Masukkan nama tryout"
                 required
               />
@@ -107,7 +107,7 @@ const CreateTryout = () => {
                 name="total_questions"
                 value={formData.total_questions}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f4a64] focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f4a64] focus:border-transparent text-gray-800"
                 min="1"
                 required
               />
@@ -122,7 +122,7 @@ const CreateTryout = () => {
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f4a64] focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f4a64] focus:border-transparent text-gray-800"
               >
                 <option value="Show">Show</option>
                 <option value="Hide">Hide</option>
