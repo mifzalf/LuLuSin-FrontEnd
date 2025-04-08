@@ -9,7 +9,9 @@ const Register = () => {
   const [email, setEmail] = useState();
   const [name, setName] = useState();
   const [nisn, setNisn] = useState();
+  const [nisnHistory, setNisnHistory] = useState([]);
   const [password, setPassword] = useState();
+  const [passwordHistory, setPasswordHistory] = useState([]);
   const [confirmPassword, setConfirmPassword] = useState();
 
   const [loading, setLoading] = useState(false);
