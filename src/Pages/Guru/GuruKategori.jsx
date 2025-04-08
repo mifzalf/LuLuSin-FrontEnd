@@ -95,20 +95,12 @@ const GuruKategori = () => {
         <h1 className="text-2xl font-bold text-[#213555] mb-6">Subjek UTBK SNBT 2025</h1>
 
         {/* Form Tambah Kategori */}
-        <div className="flex justify-end mb-4 gap-2">
-          <input
-            type="text"
-            value={newSubject}
-            onChange={(e) => setNewSubject(e.target.value)}
-            placeholder="Masukkan nama subjek baru"
-            className="px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:border-[#213555]"
-          />
+        <div className="flex justify-end mb-4">
           <button
-            onClick={handleAddSubject}
-            disabled={loading}
-            className="bg-[#213555] text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-md hover:opacity-90 transition disabled:opacity-50"
+            onClick={() => navigate("/guru/kategorisubjek/create")}
+            className="bg-[#213555] text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-md hover:opacity-90 transition"
           >
-            <FaPlus /> {loading ? "Menambahkan..." : "Tambah Kategori Subjek"}
+            <FaPlus /> Tambah Kategori Subjek
           </button>
         </div>
 
