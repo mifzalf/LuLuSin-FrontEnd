@@ -6,11 +6,11 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 
 const Register = () => {
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [nisn, setNisn] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [email, setEmail] = useState();
+  const [name, setName] = useState();
+  const [nisn, setNisn] = useState();
+  const [password, setPassword] = useState();
+  const [confirmPassword, setConfirmPassword] = useState();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
