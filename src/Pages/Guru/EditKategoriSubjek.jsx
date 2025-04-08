@@ -28,6 +28,7 @@ const EditKategoriSubjek = () => {
       }
     } catch (err) {
       setError("Gagal memuat data kategori subjek");
+      console.error("Fetch error:", err);
     }
   };
 
@@ -42,8 +43,10 @@ const EditKategoriSubjek = () => {
     setSuccess(false);
 
     try {
+      // Menggunakan endpoint yang benar sesuai dengan API
       const response = await axiosInstance.put(`/API/teacher/subjectcategory/${id}`, {
-        subject_category_name: kategoriSubjek
+        subject_category_name: kategoriSubjek,
+        subject_category_id: id
       });
 
       if (response.data.success) {
@@ -61,7 +64,11 @@ const EditKategoriSubjek = () => {
         }, 1500);
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Gagal memperbarui kategori subjek");
+      console.error("Update error details:", err.response || err);
+      setError(
+        err.response?.data?.message || 
+        "Gagal memperbarui kategori subjek. Silakan coba lagi."
+      );
     } finally {
       setLoading(false);
     }
