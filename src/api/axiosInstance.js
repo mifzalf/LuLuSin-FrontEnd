@@ -13,23 +13,41 @@ const axiosInstance = axios.create({
   }
 });
 
-// Opsional: Tambahkan interceptor untuk request atau response
-// axiosInstance.interceptors.request.use(config => {
-//   // Lakukan sesuatu sebelum request dikirim
-//   console.log('Starting Request', config);
-//   return config;
-// }, error => {
-//   return Promise.reject(error);
-// });
+// Tambahkan interceptor untuk request
+axiosInstance.interceptors.request.use(
+  config => {
+    console.log('Request Config:', {
+      url: config.url,
+      method: config.method,
+      baseURL: config.baseURL,
+      headers: config.headers
+    });
+    return config;
+  },
+  error => {
+    console.error('Request Error:', error);
+    return Promise.reject(error);
+  }
+);
 
-// axiosInstance.interceptors.response.use(response => {
-//   // Lakukan sesuatu dengan data response
-//   console.log('Response:', response);
-//   return response;
-// }, error => {
-//   // Lakukan sesuatu dengan error response
-//   console.error('Response Error:', error);
-//   return Promise.reject(error);
-// });
+// Tambahkan interceptor untuk response
+axiosInstance.interceptors.response.use(
+  response => {
+    console.log('Response:', {
+      status: response.status,
+      data: response.data,
+      headers: response.headers
+    });
+    return response;
+  },
+  error => {
+    console.error('Response Error:', {
+      message: error.message,
+      response: error.response,
+      config: error.config
+    });
+    return Promise.reject(error);
+  }
+);
 
 export default axiosInstance; 
