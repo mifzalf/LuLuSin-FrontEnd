@@ -21,24 +21,43 @@ const GuruTryout = () => {
     try {
       setLoading(true)
       setError(null)
+      console.log('Fetching tryouts...')
       const response = await axiosInstance.get("/API/teacher/tryout")
+      console.log('Tryout response:', response.data)
       
-      if (response.data && response.data.datatryout) {
-        const mappedTryouts = response.data.datatryout.map(tryout => ({
+      if (response.data && (response.data.dataTryout || response.data.datatryout)) {
+        const tryoutData = response.data.dataTryout || response.data.datatryout;
+        const mappedTryouts = tryoutData.map(tryout => ({
           id: tryout.tryout_id,
           tryout_name: tryout.tryout_name,
-          status: tryout.status,
+          status: tryout.status || 'Hide',
           targetSoal: tryout.total_questions || 0,
           soalDibuat: tryout.total_questions || 0
         }))
-        setTryouts(mappedTryouts)
+        console.log('Mapped tryouts:', mappedTryouts)
+        if (mappedTryouts.length === 0) {
+          setError("Belum ada data tryout tersedia")
+        } else {
+          setTryouts(mappedTryouts)
+          setError(null)
+        }
       } else {
+        console.log('No tryout data found in response')
         setTryouts([])
         setError("Belum ada data tryout tersedia")
       }
     } catch (err) {
       console.error('Error fetching tryouts:', err)
-      setError(err.response?.data?.message || "Gagal memuat data tryout")
+      if (err.response) {
+        console.error('Error response:', err.response.data)
+        setError(err.response.data.message || "Gagal memuat data tryout")
+      } else if (err.request) {
+        console.error('Error request:', err.request)
+        setError("Tidak dapat terhubung ke server. Mohon periksa koneksi anda.")
+      } else {
+        console.error('Error:', err.message)
+        setError("Terjadi kesalahan saat memuat data: " + err.message)
+      }
     } finally {
       setLoading(false)
     }
@@ -164,7 +183,7 @@ const GuruTryout = () => {
                   <td className="py-4 px-4 text-[#2f4a64] font-medium">{tryout.targetSoal}</td>
                   <td className="py-4 px-4">
                     <span className={`px-2 py-1 rounded-full text-sm font-medium ${
-                      tryout.status === "Show" 
+                      tryout.status.toLowerCase() === "show"
                         ? "bg-green-100 text-green-800" 
                         : "bg-red-100 text-red-800"
                     }`}>

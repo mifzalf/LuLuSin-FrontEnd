@@ -1,21 +1,27 @@
 import axios from 'axios';
 
 // Dapatkan base URL dari environment variable
-const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5173'; // Updated port to match your application
+const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'; // Sesuaikan dengan port backend Anda
 
 const axiosInstance = axios.create({
   baseURL: baseURL,
-  timeout: 5000, // Contoh timeout 5 detik
+  timeout: 10000, // Timeout 10 detik
   headers: {
     'Content-Type': 'application/json',
-    // Anda bisa menambahkan header lain di sini jika diperlukan
-    // Misalnya: 'Authorization': `Bearer ${token}`
   }
 });
 
 // Tambahkan interceptor untuk request
 axiosInstance.interceptors.request.use(
   config => {
+    // Ambil token dari localStorage
+    const token = localStorage.getItem('authToken');
+    
+    // Jika token ada, tambahkan ke header
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    
     console.log('Request Config:', {
       url: config.url,
       method: config.method,
@@ -46,6 +52,14 @@ axiosInstance.interceptors.response.use(
       response: error.response,
       config: error.config
     });
+    
+    // Jika error 401 (Unauthorized), redirect ke halaman login
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userType');
+      window.location.href = '/login';
+    }
+    
     return Promise.reject(error);
   }
 );
