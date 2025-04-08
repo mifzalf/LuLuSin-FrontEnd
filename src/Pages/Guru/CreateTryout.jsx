@@ -10,9 +10,9 @@ const CreateTryout = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [formData, setFormData] = useState({
-    nama: "",
-    targetSoal: 160,
-    status: "Show"
+    tryout_name: "",
+    total_questions: 160,
+    status: "Hide"
   })
 
   const handleSubmit = async (e) => {
@@ -21,10 +21,11 @@ const CreateTryout = () => {
     setError(null)
 
     try {
+      console.log('Sending data:', formData)
       const response = await axiosInstance.post("/API/teacher/tryout/create", formData)
+      console.log('Response:', response.data)
       
       if (response.data.success) {
-        // Navigate back to tryout list with success message
         navigate("/guru/tryout", {
           state: {
             notification: {
@@ -33,10 +34,19 @@ const CreateTryout = () => {
             }
           }
         })
+      } else {
+        setError(response.data.message || "Gagal membuat tryout")
       }
     } catch (err) {
       console.error('Error creating tryout:', err)
-      setError(err.response?.data?.message || "Gagal membuat tryout")
+      if (err.response) {
+        console.error('Error response:', err.response.data)
+        setError(err.response.data.message || "Gagal membuat tryout")
+      } else if (err.request) {
+        setError("Tidak dapat terhubung ke server. Mohon periksa koneksi anda.")
+      } else {
+        setError("Terjadi kesalahan saat membuat tryout: " + err.message)
+      }
     } finally {
       setLoading(false)
     }
@@ -46,7 +56,7 @@ const CreateTryout = () => {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: name === 'total_questions' ? parseInt(value) : value
     }))
   }
 
@@ -72,14 +82,14 @@ const CreateTryout = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="nama" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="tryout_name" className="block text-sm font-medium text-gray-700 mb-1">
                 Nama Tryout
               </label>
               <input
                 type="text"
-                id="nama"
-                name="nama"
-                value={formData.nama}
+                id="tryout_name"
+                name="tryout_name"
+                value={formData.tryout_name}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f4a64] focus:border-transparent"
                 placeholder="Masukkan nama tryout"
@@ -88,14 +98,14 @@ const CreateTryout = () => {
             </div>
 
             <div>
-              <label htmlFor="targetSoal" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="total_questions" className="block text-sm font-medium text-gray-700 mb-1">
                 Target Soal
               </label>
               <input
                 type="number"
-                id="targetSoal"
-                name="targetSoal"
-                value={formData.targetSoal}
+                id="total_questions"
+                name="total_questions"
+                value={formData.total_questions}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f4a64] focus:border-transparent"
                 min="1"
