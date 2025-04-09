@@ -9,19 +9,52 @@ const GuruSubjekEdit = () => {
   const [searchParams] = useSearchParams()
   const [kategori, setKategori] = useState("")
   const [subjek, setSubjek] = useState("")
+  const [timeLimit, setTimeLimit] = useState("")
   const [subjectId, setSubjectId] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [loadingData, setLoadingData] = useState(true)
   const [error, setError] = useState(null)
   const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     const id = searchParams.get("id")
-    setKategori(searchParams.get("kategori") || "")
-    setSubjek(searchParams.get("subjek") || "")
     setSubjectId(id)
+
     if (!id) {
       setError("ID Subjek tidak ditemukan di URL.")
+      setLoadingData(false)
+      return
     }
+
+    const fetchSubjectDetails = async () => {
+      try {
+        setLoadingData(true)
+        setError(null)
+        const response = await axiosInstance.get(`/API/teacher/subject/${id}`)
+        if (response.data && response.data.datasubject) {
+          const subjectData = response.data.datasubject; 
+          setKategori(subjectData.category_name || searchParams.get("kategori") || "")
+          setSubjek(subjectData.subject_name || "")
+          setTimeLimit(subjectData.time_limit || "")
+        } else {
+          setKategori(searchParams.get("kategori") || "") 
+          setSubjek(searchParams.get("subjek") || "")
+          setTimeLimit("")
+          console.warn("Could not fetch subject details, using URL parameters as fallback.")
+        }
+      } catch (err) {
+        console.error("Error fetching subject details:", err)
+        setError("Gagal memuat detail subjek. Menggunakan data dari URL.")
+        setKategori(searchParams.get("kategori") || "") 
+        setSubjek(searchParams.get("subjek") || "")
+        setTimeLimit("") 
+      } finally {
+        setLoadingData(false)
+      }
+    }
+
+    fetchSubjectDetails()
+
   }, [searchParams])
 
   useEffect(() => {
@@ -47,6 +80,7 @@ const GuruSubjekEdit = () => {
     try {
       const payload = {
         subject_name: subjek,
+        time_limit: timeLimit === '' ? null : Number(timeLimit)
       }
 
       console.log("Sending update request for ID:", subjectId, "Payload:", payload)
@@ -86,67 +120,84 @@ const GuruSubjekEdit = () => {
     }
   }
 
+  if (loadingData) {
+    return (
+      <div className="bg-[#F5EFE7] min-h-screen w-full flex items-center justify-center">
+        <div>Loading subject details...</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-[#F5EFE7] min-h-screen w-full">
-      {/* Main Content */}
-      <div className="flex items-start justify-center pt-16">
-        <div className="bg-[#F5EFE7] rounded-3xl p-8 w-full max-w-2xl border border-[#D8C4B6] shadow-sm">
-          <h2 className="text-xl font-bold text-[#213555] mb-6">Edit Subjek</h2>
+    <div className="bg-[#F5EFE7] min-h-screen w-full flex items-center justify-center p-6">
+      <div className="bg-white rounded-2xl p-8 w-full max-w-2xl shadow-lg border border-gray-200"> 
+        <h2 className="text-xl font-bold text-[#213555] mb-8">Edit Subjek</h2>
 
-          {notification && (
-            <div className={`mb-4 p-3 rounded-lg text-sm ${notification.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-              {notification.message}
-            </div>
-          )}
-          {error && !notification && (
-             <div className="mb-4 p-3 rounded-lg text-sm bg-red-100 text-red-700">
-               {error}
-             </div>
-          )}
+        {notification && (
+          <div className={`mb-4 p-3 rounded-lg text-sm ${notification.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+            {notification.message}
+          </div>
+        )}
+        {error && !notification && (
+           <div className="mb-4 p-3 rounded-lg text-sm bg-red-100 text-red-700">
+             {error}
+           </div>
+        )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="block text-[#213555] text-sm font-medium mb-2">Kategori Subjek</label>
-              <input
-                type="text"
-                value={kategori}
-                onChange={(e) => setKategori(e.target.value)}
-                className="w-full p-2 border border-[#D8C4B6] rounded-lg bg-white text-[#213555] outline-none focus:ring-1 focus:ring-[#3E5879]"
-              />
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-[#213555] text-sm font-medium mb-1">Kategori Subjek</label>
+            <input
+              type="text"
+              value={kategori}
+              readOnly 
+              className="w-full p-3 border border-[#D8C4B6] rounded-full bg-gray-100 text-[#213555] outline-none cursor-not-allowed"
+            />
+          </div>
 
-            <div className="mb-8">
-              <label className="block text-[#213555] text-sm font-medium mb-2">Subjek</label>
-              <input
-                type="text"
-                value={subjek}
-                onChange={(e) => setSubjek(e.target.value)}
-                className="w-full p-2 border border-[#D8C4B6] rounded-lg bg-white text-[#213555] outline-none focus:ring-1 focus:ring-[#3E5879]"
-                required
-              />
-            </div>
+          <div>
+            <label className="block text-[#213555] text-sm font-medium mb-1">Subjek</label>
+            <input
+              type="text"
+              value={subjek}
+              onChange={(e) => setSubjek(e.target.value)}
+              className="w-full p-3 border border-[#D8C4B6] rounded-full bg-white text-[#213555] outline-none focus:ring-1 focus:ring-[#3E5879]"
+              required
+            />
+          </div>
 
-            <hr className="border-t border-[#D8C4B6] mb-6" />
+          <div>
+            <label className="block text-[#213555] text-sm font-medium mb-1">Waktu Pengerjaan <span className="text-xs text-gray-500">(Menit)</span></label>
+            <input
+              type="number"
+              value={timeLimit}
+              onChange={(e) => setTimeLimit(e.target.value)}
+              className="w-full p-3 border border-[#D8C4B6] rounded-full bg-white text-[#213555] outline-none focus:ring-1 focus:ring-[#3E5879]"
+              min="0"
+              placeholder="Masukkan waktu dalam menit"
+            />
+          </div>
 
-            <div className="flex justify-between">
-              <button
-                type="button"
-                onClick={() => navigate("/guru/subjek")}
-                className="bg-[#968d84] text-white px-6 py-2 rounded-md hover:bg-[#7a7168] transition-colors disabled:opacity-50"
-                disabled={loading}
-              >
-                Batalkan
-              </button>
-              <button
-                type="submit"
-                className="bg-[#3E5879] text-white px-6 py-2 rounded-md hover:bg-[#213555] transition-colors disabled:opacity-50"
-                disabled={loading || !subjectId}
-              >
-                {loading ? 'Menyimpan...' : 'Simpan'}
-              </button>
-            </div>
-          </form>
-        </div>
+          <hr className="border-t border-[#D8C4B6] my-8" />
+
+          <div className="flex justify-between items-center">
+            <button
+              type="button"
+              onClick={() => navigate("/guru/subjek")}
+              className="bg-gray-400 text-white px-8 py-2.5 rounded-full hover:bg-gray-500 transition-colors disabled:opacity-50"
+              disabled={loading}
+            >
+              Batalkan
+            </button>
+            <button
+              type="submit"
+              className="bg-[#3E5879] text-white px-8 py-2.5 rounded-full hover:bg-[#213555] transition-colors disabled:opacity-50"
+              disabled={loading || !subjectId}
+            >
+              {loading ? 'Menyimpan...' : 'Simpan'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   )

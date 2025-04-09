@@ -30,7 +30,7 @@ const Login = () => {
         if (response.data.userType === 'student') {
           navigate('/siswa/dashboard');
         } else {
-          navigate('/dashboard');
+          navigate('/guru/tryout');
         }
       } else {
         console.error("Login successful, but token or userType missing in response:", response.data);
