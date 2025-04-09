@@ -34,6 +34,8 @@ const EditTryout = () => {
     try {
       console.log(`Fetching tryout data for ID: ${id}`);
       const response = await axiosInstance.get(`/API/teacher/tryout/${id}`);
+      console.log('Raw API Response Data:', response.data);
+
       console.log('Fetched data:', response.data);
 
       if (response.data && typeof response.data === 'object' && response.data.tryout_name !== undefined) {
