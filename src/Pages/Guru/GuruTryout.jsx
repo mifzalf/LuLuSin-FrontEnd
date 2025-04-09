@@ -162,7 +162,11 @@ const GuruTryout = () => {
             </thead>
             <tbody>
               {tryouts.map((tryout, index) => (
-                <tr key={tryout.id} className="bg-white border-b hover:bg-gray-50">
+                <tr
+                  key={tryout.id}
+                  className="bg-white border-b hover:bg-gray-50 cursor-pointer"
+                  onClick={() => navigate(`/guru/tryoutdetail/${tryout.id}`)}
+                >
                   <td className="py-4 px-4 text-[#2f4a64] font-medium">{index + 1}</td>
                   <td className="py-4 px-4 text-[#2f4a64] font-medium">{tryout.tryout_name}</td>
                   <td className="py-4 px-4">
@@ -194,13 +198,19 @@ const GuruTryout = () => {
                     <div className="flex space-x-2">
                       <button
                         className="text-[#2f4a64] hover:text-[#1e364d] transition-colors"
-                        onClick={() => navigateToEditTryout(tryout)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigateToEditTryout(tryout);
+                        }}
                       >
                         <FiEdit size={18} />
                       </button>
                       <button 
                         className="text-[#2f4a64] hover:text-red-600 transition-colors"
-                        onClick={() => handleDeleteClick(tryout)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteClick(tryout);
+                        }}
                       >
                         <FiTrash2 size={18} />
                       </button>
