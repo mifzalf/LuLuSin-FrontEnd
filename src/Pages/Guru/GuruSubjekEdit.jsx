@@ -15,13 +15,21 @@ const GuruSubjekEdit = () => {
   const [loadingData, setLoadingData] = useState(true)
   const [error, setError] = useState(null)
   const [notification, setNotification] = useState(null)
+  const [originalSubjectData, setOriginalSubjectData] = useState(null)
 
   useEffect(() => {
-    const id = searchParams.get("id")
-    setSubjectId(id)
+    const compositeId = searchParams.get("id")
 
-    if (!id) {
-      setError("ID Subjek tidak ditemukan di URL.")
+    // Extract the actual subject ID if it's a composite ID (e.g., "1:1")
+    let actualSubjectId = compositeId;
+    if (compositeId && compositeId.includes(':')) {
+        actualSubjectId = compositeId.split(':')[1];
+    }
+    
+    setSubjectId(actualSubjectId) // Set state with the actual ID
+
+    if (!actualSubjectId) { // Check if we have an ID after parsing
+      setError("ID Subjek tidak ditemukan atau tidak valid di URL.")
       setLoadingData(false)
       return
     }
@@ -30,20 +38,42 @@ const GuruSubjekEdit = () => {
       try {
         setLoadingData(true)
         setError(null)
-        const response = await axiosInstance.get(`/API/teacher/subject/${id}`)
-        if (response.data && response.data.datasubject) {
-          const subjectData = response.data.datasubject; 
-          setKategori(subjectData.category_name || searchParams.get("kategori") || "")
-          setSubjek(subjectData.subject_name || "")
-          setTimeLimit(subjectData.time_limit || "")
+        // Fetch ALL subjects since there's no endpoint for a single one
+        const response = await axiosInstance.get(`/API/teacher/subject`)
+        
+        if (response.data && Array.isArray(response.data.datasubject)) {
+          // Find the specific subject from the list using the actualSubjectId
+          const allSubjects = response.data.datasubject;
+          // Ensure comparison handles potential type mismatch (string vs number)
+          const subjectData = allSubjects.find(subj => String(subj.subject_id) === String(actualSubjectId));
+
+          if (subjectData) {
+            // Found the subject, set the state
+            setOriginalSubjectData(subjectData);
+            setKategori(subjectData.category_name || searchParams.get("kategori") || "") // Assuming category_name exists, adjust if needed
+            setSubjek(subjectData.subject_name || "")
+            setTimeLimit(subjectData.time_limit || "")
+          } else {
+            // Subject with the ID not found in the list, use fallback
+            setOriginalSubjectData(null);
+            console.warn(`Subject with ID ${actualSubjectId} not found in the fetched list. Using URL parameters.`);
+            setError("Detail subjek tidak ditemukan dalam daftar. Menggunakan data dari URL.")
+            setKategori(searchParams.get("kategori") || "") 
+            setSubjek(searchParams.get("subjek") || "")
+            setTimeLimit("") 
+          }
         } else {
+          // Failed to fetch the list or data format is incorrect, use fallback
+          setOriginalSubjectData(null);
+          console.warn("Could not fetch subject list or format incorrect, using URL parameters as fallback.")
+          setError("Gagal memuat daftar subjek. Menggunakan data dari URL.")
           setKategori(searchParams.get("kategori") || "") 
           setSubjek(searchParams.get("subjek") || "")
           setTimeLimit("")
-          console.warn("Could not fetch subject details, using URL parameters as fallback.")
         }
       } catch (err) {
         console.error("Error fetching subject details:", err)
+        setOriginalSubjectData(null);
         setError("Gagal memuat detail subjek. Menggunakan data dari URL.")
         setKategori(searchParams.get("kategori") || "") 
         setSubjek(searchParams.get("subjek") || "")
@@ -68,8 +98,8 @@ const GuruSubjekEdit = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!subjectId) {
-      setError("Tidak dapat menyimpan, ID Subjek tidak valid.")
+    if (!subjectId || !originalSubjectData) {
+      setError("Tidak dapat menyimpan, data subjek asli tidak ditemukan atau ID tidak valid.")
       return
     }
 
@@ -79,6 +109,7 @@ const GuruSubjekEdit = () => {
 
     try {
       const payload = {
+        id_subject_category: originalSubjectData.id_subject_category,
         subject_name: subjek,
         time_limit: timeLimit === '' ? null : Number(timeLimit)
       }
@@ -89,7 +120,7 @@ const GuruSubjekEdit = () => {
 
       console.log("Update response:", response.data)
 
-      if (response.data.success) {
+      if (response.data.success || response.data.message === 'OK') {
         setNotification({ type: 'success', message: 'Subjek berhasil diperbarui!' })
         setTimeout(() => {
           navigate("/guru/subjek")
