@@ -38,9 +38,9 @@ const EditTryout = () => {
 
       console.log('Fetched data:', response.data);
 
-      if (response.data && typeof response.data === 'object' && response.data.tryout_name !== undefined) {
-        const tryoutData = response.data;
-        setNamaTryout(tryoutData.tryout_name || "");
+      if (response.data && response.data.result && typeof response.data.result === 'object' && response.data.result.tryout_title !== undefined) {
+        const tryoutData = response.data.result;
+        setNamaTryout(tryoutData.tryout_title || "");
         setInitialData(tryoutData);
       } else {
         console.error("Unexpected API response structure for get tryout by ID:", response.data);
@@ -67,7 +67,7 @@ const EditTryout = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!tryoutId || !initialData) {
+    if (!tryoutId) {
       setError("Data tryout tidak lengkap atau ID tidak valid.");
       return;
     }
@@ -78,15 +78,14 @@ const EditTryout = () => {
 
     try {
       const payload = {
-        ...initialData,
-        tryout_name: namaTryout,
+        tryout_name: namaTryout
       };
 
       console.log(`Updating tryout ID: ${tryoutId} with data:`, payload);
-      const response = await axiosInstance.put(`/API/teacher/tryout/update/${tryoutId}`, payload);
+      const response = await axiosInstance.patch(`/API/teacher/tryout/update/${tryoutId}`, payload);
       console.log('Update response:', response.data);
 
-      if (response.data.success) {
+      if (response.data.success || response.data.message === 'OK') {
         setNotification({ show: true, message: "Tryout berhasil diperbarui!" });
         setTimeout(() => {
           setNotification({ show: false, message: "" });
