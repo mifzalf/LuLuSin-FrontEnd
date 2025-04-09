@@ -165,7 +165,7 @@ const GuruTryout = () => {
                 <tr
                   key={tryout.id}
                   className="bg-white border-b hover:bg-gray-50 cursor-pointer"
-                  onClick={() => navigate(`/guru/tryoutdetail/${tryout.id}`)}
+                  onClick={() => navigate(`/guru/tryout/id`)}
                 >
                   <td className="py-4 px-4 text-[#2f4a64] font-medium">{index + 1}</td>
                   <td className="py-4 px-4 text-[#2f4a64] font-medium">{tryout.tryout_name}</td>
