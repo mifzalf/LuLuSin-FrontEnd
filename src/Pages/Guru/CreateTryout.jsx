@@ -54,10 +54,12 @@ const CreateTryout = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'total_questions' ? parseInt(value) : value
-    }))
+    if (name === 'tryout_name') {
+      setFormData(prev => ({
+        ...prev,
+        tryout_name: value
+      }))
+    }
   }
 
   return (
@@ -97,43 +99,12 @@ const CreateTryout = () => {
               />
             </div>
 
-            <div>
-              <label htmlFor="total_questions" className="block text-sm font-medium text-gray-700 mb-1">
-                Target Soal
-              </label>
-              <input
-                type="number"
-                id="total_questions"
-                name="total_questions"
-                value={formData.total_questions}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f4a64] focus:border-transparent text-gray-800"
-                min="1"
-                required
-              />
-            </div>
-
-            <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-                Status
-              </label>
-              <select
-                id="status"
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f4a64] focus:border-transparent text-gray-800"
-              >
-                <option value="Show">Show</option>
-                <option value="Hide">Hide</option>
-              </select>
-            </div>
-
             <div className="flex justify-end gap-3 pt-4">
               <button
                 type="button"
                 className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700"
                 onClick={() => navigate("/guru/tryout")}
+                disabled={loading}
               >
                 Batal
               </button>
