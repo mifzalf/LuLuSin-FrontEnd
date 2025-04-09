@@ -37,7 +37,7 @@ const GuruSubjek = () => {
         const categoryId = subject.id_subject_category;
         if (!groupedSubjects[categoryId]) {
           groupedSubjects[categoryId] = {
-            kategori: `Kategori ${categoryId}`,
+            kategori: subject.subject_category_name || `Kategori ${categoryId}`,
             subjek: []
           };
         }
