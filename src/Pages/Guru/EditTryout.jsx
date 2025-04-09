@@ -38,9 +38,9 @@ const EditTryout = () => {
 
       console.log('Fetched data:', response.data);
 
-      if (response.data && response.data.result && typeof response.data.result === 'object' && response.data.result.tryout_title !== undefined) {
+      if (response.data && response.data.result && typeof response.data.result === 'object' && response.data.result.tryout_name !== undefined) {
         const tryoutData = response.data.result;
-        setNamaTryout(tryoutData.tryout_title || "");
+        setNamaTryout(tryoutData.tryout_name || "");
         setInitialData(tryoutData);
       } else {
         console.error("Unexpected API response structure for get tryout by ID:", response.data);
