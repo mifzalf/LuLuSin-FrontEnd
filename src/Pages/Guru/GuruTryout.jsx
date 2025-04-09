@@ -1,11 +1,12 @@
 "use client"
 import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import { FiEdit, FiPlus, FiTrash2, FiX } from "react-icons/fi"
 import axiosInstance from "../../api/axiosInstance"
 
 const GuruTryout = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const [tryouts, setTryouts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -14,8 +15,12 @@ const GuruTryout = () => {
   const [tryoutToDelete, setTryoutToDelete] = useState(null)
 
   useEffect(() => {
+    if (location.state?.notification && !notification) {
+      setNotification(location.state.notification);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
     fetchTryouts()
-  }, [])
+  }, [location.state])
 
   const fetchTryouts = async () => {
     try {
