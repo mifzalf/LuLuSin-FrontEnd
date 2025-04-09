@@ -174,9 +174,10 @@ const GuruSubjek = () => {
             {tryouts && tryouts.length > 0 ? (
               tryouts.map((kategori, kategoriIdx) => (
                 <div key={kategoriIdx} className="bg-white shadow-md rounded-lg overflow-hidden">
-                  <div className="bg-[#213555] text-white p-4 text-lg font-semibold flex">
-                    <span className="w-2/3 text-center">{kategori.kategori}</span>
-                    <span className="w-1/3 text-center border-l">Aksi</span>
+                  <div className="bg-[#213555] text-white p-4 font-semibold flex items-center">
+                    <span className="w-3/5 pl-4 text-left">{kategori.kategori}</span>
+                    <span className="w-1/5 text-center">Waktu Pengerjaan</span>
+                    <span className="w-1/5 text-center">Aksi</span>
                   </div>
                   {kategori.subjek && kategori.subjek.length > 0 ? (
                     kategori.subjek.map((subjek, subjekIdx) => (
@@ -184,21 +185,24 @@ const GuruSubjek = () => {
                         key={subjekIdx}
                         className="flex items-center p-4 border-b last:border-none hover:bg-gray-50 transition"
                       >
-                        <span className="w-2/3 text-center text-[#2f4a64] font-medium">
+                        <span className="w-3/5 pl-4 text-left text-[#2f4a64] font-medium">
                           {subjek.subject_name}
                         </span>
-                        <div className="w-1/3 flex justify-center gap-3 border-l">
+                        <span className="w-1/5 text-center text-[#2f4a64]">
+                          {subjek.time_limit ? `${subjek.time_limit} Menit` : '-'}
+                        </span>
+                        <div className="w-1/5 flex justify-center items-center gap-3">
                           <button
                             onClick={() =>
-                              navigate(`/guru/subjek/edit?kategori=${kategori.kategori}&subjek=${subjek.subject_name}&id=${subjek.subject_id}`)
+                              navigate(`/guru/subjek/edit?kategori=${encodeURIComponent(kategori.kategori)}&subjek=${encodeURIComponent(subjek.subject_name)}&id=${subjek.subject_id}`)
                             }
-                            className="text-[#3E5879] hover:text-[#213555] transition p-2 hover:bg-gray-100 rounded-full"
+                            className="text-[#3E5879] hover:text-[#213555] transition p-1.5 hover:bg-gray-100 rounded-md"
                           >
                             <FiEdit size={18} />
                           </button>
                           <button
                             onClick={() => handleDelete(kategoriIdx, subjekIdx)}
-                            className="text-[#3E5879] hover:text-red-600 transition p-2 hover:bg-gray-100 rounded-full"
+                            className="text-[#3E5879] hover:text-red-600 transition p-1.5 hover:bg-gray-100 rounded-md"
                           >
                             <FiTrash2 size={18} />
                           </button>
