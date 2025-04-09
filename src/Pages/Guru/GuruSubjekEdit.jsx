@@ -51,7 +51,7 @@ const GuruSubjekEdit = () => {
 
       console.log("Sending update request for ID:", subjectId, "Payload:", payload)
 
-      const response = await axiosInstance.put(`/API/teacher/subject/${subjectId}`, payload)
+      const response = await axiosInstance.patch(`/API/teacher/subject/update/${subjectId}`, payload)
 
       console.log("Update response:", response.data)
 
@@ -66,19 +66,19 @@ const GuruSubjekEdit = () => {
 
     } catch (err) {
       console.error('Update Error:', err)
-      let errorMessage = 'Gagal memperbarui subjek.'
+      let errorMessage = err.response?.data?.message || err.message || 'Gagal memperbarui subjek.'
+
       if (err.response) {
-        errorMessage = `Error ${err.response.status}: ${err.response.data?.message || err.message}`
         if (err.response.status === 401) {
            setError("Sesi anda telah berakhir. Silakan login kembali.");
            navigate('/login');
            return;
         }
+        errorMessage = `Error ${err.response.status}: ${errorMessage}` 
       } else if (err.request) {
         errorMessage = 'Tidak dapat terhubung ke server.'
-      } else {
-        errorMessage = err.message
       }
+      
       setError(errorMessage)
       setNotification({ type: 'error', message: errorMessage })
     } finally {
