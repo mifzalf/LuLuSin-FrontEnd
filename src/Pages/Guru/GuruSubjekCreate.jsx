@@ -25,7 +25,7 @@ const GuruSubjekCreate = () => {
               type="text"
               value={kategori}
               onChange={(e) => setKategori(e.target.value)}
-              className="w-full p-2 border border-[#D8C4B6] rounded-lg bg-white outline-none focus:ring-1 focus:ring-[#3E5879]"
+              className="w-full p-2 border border-[#D8C4B6] rounded-lg bg-white text-[#213555] outline-none focus:ring-1 focus:ring-[#3E5879]"
             />
           </div>
 
@@ -35,7 +35,7 @@ const GuruSubjekCreate = () => {
               type="text"
               value={subjek}
               onChange={(e) => setSubjek(e.target.value)}
-              className="w-full p-2 border border-[#D8C4B6] rounded-lg bg-white outline-none focus:ring-1 focus:ring-[#3E5879]"
+              className="w-full p-2 border border-[#D8C4B6] rounded-lg bg-white text-[#213555] outline-none focus:ring-1 focus:ring-[#3E5879]"
             />
           </div>
 

@@ -61,21 +61,7 @@ const Header = () => {
           </nav>
 
           {/* Logout Button */}
-          <button 
-            onClick={handleLogout}
-            className="
-              bg-[#374151] hover:bg-[#4B5563] 
-              px-4 py-1.5 rounded-lg 
-              text-white font-medium
-              flex items-center gap-2 
-              transition-all duration-200
-              hover:shadow-md
-              active:transform active:scale-95
-            "
-          >
-            <span>Logout</span>
-            <FiLogOut className="w-4 h-4" />
-          </button>
+
         </div>
       </div>
     </header>
