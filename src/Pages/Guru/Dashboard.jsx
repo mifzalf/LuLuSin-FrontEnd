@@ -16,21 +16,24 @@ const Dashboard = () => {
         const response = await axiosInstance.get("/API/teacher/dashboard");
         console.log("Dashboard API Response:", response.data);
 
-        if (response.data && response.data.success && response.data.data) {
+        if (response.data && response.data.teacherData && response.data.tryouts) {
+          const teacherName = response.data.teacherData[0]?.teacher_name || response.data.teacherData?.teacher_name || "Nama Guru";
+          
           setDashboardData({
-            teacher_name: response.data.data.teacher_name || "Nama Guru",
-            tryouts: response.data.data.tryouts?.map(t => ({ 
-              nama: t.tryout_name, 
-              soalDibuat: t.total_questions_created, 
-              targetSoal: t.total_questions_target
-            })) || [] 
+            teacher_name: teacherName, 
+            tryouts: response.data.tryouts.map(t => ({ 
+              nama: t.tryout_name || "Nama Tryout Tidak Tersedia", 
+              soalDibuat: t.total_questions_created !== undefined ? t.total_questions_created : 'N/A', 
+              targetSoal: t.total_questions_target !== undefined ? t.total_questions_target : 'N/A'
+            })) 
           });
         } else {
-          throw new Error(response.data?.message || "Failed to fetch dashboard data or data format is incorrect");
+          throw new Error("Format data dashboard tidak sesuai harapan.");
         }
       } catch (err) {
-        console.error("Error fetching dashboard data:", err);
-        setError(err.message || "Terjadi kesalahan saat memuat data dashboard.");
+        console.error("Error fetching or processing dashboard data:", err);
+        const errorMessage = err.response?.data?.message || err.message || "Terjadi kesalahan saat memuat data dashboard.";
+        setError(errorMessage);
         setDashboardData({ teacher_name: "Error", tryouts: [] }); 
       } finally {
         setLoading(false);
