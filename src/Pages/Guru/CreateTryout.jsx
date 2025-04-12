@@ -24,8 +24,9 @@ const CreateTryout = () => {
       console.log('Sending data:', formData)
       const response = await axiosInstance.post("/API/teacher/tryout/create", formData)
       console.log('Response:', response.data)
+      console.log('Response Status:', response.status)
       
-      if (response.data.success) {
+      if (response.status === 201 || response.status === 200) {
         navigate("/guru/tryout", {
           state: {
             notification: {
@@ -35,13 +36,13 @@ const CreateTryout = () => {
           }
         })
       } else {
-        setError(response.data.message || "Gagal membuat tryout")
+        setError(response.data?.message || `Gagal membuat tryout (Status: ${response.status})`)
       }
     } catch (err) {
       console.error('Error creating tryout:', err)
       if (err.response) {
         console.error('Error response:', err.response.data)
-        setError(err.response.data.message || "Gagal membuat tryout")
+        setError(err.response.data?.message || `Gagal membuat tryout (Status: ${err.response.status})`)
       } else if (err.request) {
         setError("Tidak dapat terhubung ke server. Mohon periksa koneksi anda.")
       } else {
