@@ -1,12 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import axiosInstance from "../../api/axiosInstance"
 
 const GuruSubjekCreate = () => {
   const navigate = useNavigate()
-  const [kategori, setKategori] = useState("")
+  const [selectedKategoriId, setSelectedKategoriId] = useState("")
+  const [kategoriList, setKategoriList] = useState([])
+  const [loadingKategori, setLoadingKategori] = useState(true)
+  const [errorKategori, setErrorKategori] = useState(null)
   const [subjek, setSubjek] = useState("")
   const [timeLimit, setTimeLimit] = useState("")
   const [minSoal, setMinSoal] = useState("")
@@ -14,13 +17,34 @@ const GuruSubjekCreate = () => {
   const [error, setError] = useState(null)
   const [notification, setNotification] = useState(null)
 
+  useEffect(() => {
+    const fetchKategori = async () => {
+      setLoadingKategori(true);
+      setErrorKategori(null);
+      try {
+        const response = await axiosInstance.get("/API/teacher/subjectcategory");
+        if (response.data && response.data.dataSubjectCategory) {
+          setKategoriList(response.data.dataSubjectCategory);
+        } else {
+          setErrorKategori("Gagal memuat daftar kategori: Format data tidak sesuai.");
+        }
+      } catch (err) {
+        console.error("Error fetching kategori:", err);
+        setErrorKategori(err.response?.data?.message || "Gagal memuat daftar kategori.");
+      } finally {
+        setLoadingKategori(false);
+      }
+    };
+    fetchKategori();
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
     setNotification(null)
 
-    if (!kategori || !subjek) {
+    if (!selectedKategoriId || !subjek) {
       setError("Kategori dan Subjek wajib diisi.")
       setLoading(false)
       return
@@ -40,7 +64,7 @@ const GuruSubjekCreate = () => {
 
     try {
       const payload = {
-        kategori_name: kategori,
+        id_subject_category: Number(selectedKategoriId),
         subject_name: subjek,
         time_limit: timeLimit === '' ? null : Number(timeLimit),
         minimal_soal: minSoal === '' ? null : Number(minSoal),
@@ -52,7 +76,7 @@ const GuruSubjekCreate = () => {
 
       console.log("Create response:", response.data)
 
-      if (response.status === 201 || response.data.message === 'CREATED') {
+      if (response.status === 201 || response.data?.success || response.data?.message?.includes('CREATED')) {
         navigate("/guru/subjek", {
           state: {
             notification: {
@@ -62,7 +86,7 @@ const GuruSubjekCreate = () => {
           }
         })
       } else {
-        throw new Error(response.data.message || 'Gagal membuat subjek')
+        throw new Error(response.data?.message || 'Gagal membuat subjek')
       }
 
     } catch (err) {
@@ -98,23 +122,37 @@ const GuruSubjekCreate = () => {
              {error}
            </div>
         )}
+        {errorKategori && (
+           <div className="mb-4 p-3 rounded-lg text-sm bg-yellow-100 text-yellow-700">
+             Error memuat kategori: {errorKategori}
+           </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-[#213555] text-sm font-medium mb-1">Kategori Subjek</label>
-            <input
-              type="text"
-              value={kategori}
-              onChange={(e) => setKategori(e.target.value)}
-              className="w-full p-3 border border-[#D8C4B6] rounded-full bg-white text-[#213555] outline-none focus:ring-1 focus:ring-[#3E5879]"
-              placeholder="Masukkan atau pilih kategori"
+            <label htmlFor="kategori" className="block text-[#213555] text-sm font-medium mb-1">Kategori Subjek</label>
+            <select
+              id="kategori"
+              value={selectedKategoriId}
+              onChange={(e) => setSelectedKategoriId(e.target.value)}
+              className="w-full p-3 border border-[#D8C4B6] rounded-full bg-white text-[#213555] outline-none focus:ring-1 focus:ring-[#3E5879] disabled:bg-gray-100"
               required
-            />
+              disabled={loadingKategori}
+            >
+              <option value="" disabled> -- {loadingKategori ? 'Memuat kategori...' : 'Pilih Kategori Subjek'} -- </option>
+              {!loadingKategori && kategoriList.map((kat) => (
+                <option key={kat.subject_category_id} value={kat.subject_category_id}>
+                  {kat.subject_category_name}
+                </option>
+              ))}
+            </select>
+            {loadingKategori && <p className="text-xs text-gray-500 mt-1">Memuat daftar kategori...</p>}
           </div>
 
           <div>
-            <label className="block text-[#213555] text-sm font-medium mb-1">Subjek</label>
+            <label htmlFor="subjek" className="block text-[#213555] text-sm font-medium mb-1">Subjek</label>
             <input
+              id="subjek"
               type="text"
               value={subjek}
               onChange={(e) => setSubjek(e.target.value)}
@@ -125,8 +163,9 @@ const GuruSubjekCreate = () => {
           </div>
 
           <div>
-            <label className="block text-[#213555] text-sm font-medium mb-1">Waktu Pengerjaan <span className="text-xs text-gray-500">(Menit)</span></label>
+            <label htmlFor="timeLimit" className="block text-[#213555] text-sm font-medium mb-1">Waktu Pengerjaan <span className="text-xs text-gray-500">(Menit)</span></label>
             <input
+              id="timeLimit"
               type="number"
               value={timeLimit}
               onChange={(e) => setTimeLimit(e.target.value)}
@@ -137,8 +176,9 @@ const GuruSubjekCreate = () => {
           </div>
 
           <div>
-            <label className="block text-[#213555] text-sm font-medium mb-1">Minimal Soal</label>
+            <label htmlFor="minSoal" className="block text-[#213555] text-sm font-medium mb-1">Minimal Soal</label>
             <input
+              id="minSoal"
               type="number"
               value={minSoal}
               onChange={(e) => setMinSoal(e.target.value)}
@@ -162,7 +202,7 @@ const GuruSubjekCreate = () => {
             <button
               type="submit"
               className="bg-[#3E5879] text-white px-8 py-2.5 rounded-full hover:bg-[#213555] transition-colors disabled:opacity-50"
-              disabled={loading}
+              disabled={loading || loadingKategori}
             >
               {loading ? 'Membuat...' : 'Buat'}
             </button>
