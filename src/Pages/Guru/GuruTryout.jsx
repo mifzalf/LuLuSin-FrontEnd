@@ -167,61 +167,61 @@ const GuruTryout = () => {
             </thead>
             <tbody>
               {tryouts.map((tryout, index) => (
-                <tr
-                  key={tryout.id}
-                  className="bg-white border-b hover:bg-gray-50 cursor-pointer"
-                  onClick={() => navigate(`/guru/tryout/id`)}
-                >
-                  <td className="py-4 px-4 text-[#2f4a64] font-medium">{index + 1}</td>
-                  <td className="py-4 px-4 text-[#2f4a64] font-medium">{tryout.tryout_name}</td>
-                  <td className="py-4 px-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-24 h-6 bg-gray-200 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-[#2f4a64] rounded-full transition-all duration-300"
-                          style={{ 
-                            width: `${Math.min((tryout.soalDibuat / tryout.targetSoal) * 100, 100)}%` 
-                          }}
-                        />
+                  <tr
+                    key={tryout.id}
+                    className="bg-white border-b hover:bg-gray-50 cursor-pointer"
+                    onClick={() => navigate(`/guru/tryout/${tryout.id}`)}
+                  >
+                    <td className="py-4 px-4 text-[#2f4a64] font-medium">{index + 1}</td>
+                    <td className="py-4 px-4 text-[#2f4a64] font-medium">{tryout.tryout_name}</td>
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-24 h-6 bg-gray-200 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-[#2f4a64] rounded-full transition-all duration-300"
+                            style={{ 
+                              width: `${tryout.targetSoal > 0 ? Math.min((tryout.soalDibuat / tryout.targetSoal) * 100, 100) : 0}%`
+                            }}
+                          />
+                        </div>
+                        <span className="text-[#2f4a64] font-medium">
+                          {tryout.soalDibuat}/{tryout.targetSoal}
+                        </span>
                       </div>
-                      <span className="text-[#2f4a64] font-medium">
-                        {tryout.soalDibuat}/{tryout.targetSoal}
+                    </td>
+                    <td className="py-4 px-4 text-[#2f4a64] font-medium">{tryout.targetSoal}</td>
+                    <td className="py-4 px-4">
+                      <span className={`px-2 py-1 rounded-full text-sm font-medium ${
+                        tryout.status.toLowerCase() === "show"
+                          ? "bg-green-100 text-green-800" 
+                          : "bg-red-100 text-red-800"
+                      }`}>
+                        {tryout.status}
                       </span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4 text-[#2f4a64] font-medium">{tryout.targetSoal}</td>
-                  <td className="py-4 px-4">
-                    <span className={`px-2 py-1 rounded-full text-sm font-medium ${
-                      tryout.status.toLowerCase() === "show"
-                        ? "bg-green-100 text-green-800" 
-                        : "bg-red-100 text-red-800"
-                    }`}>
-                      {tryout.status}
-                    </span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <div className="flex space-x-2">
-                      <button
-                        className="text-[#2f4a64] hover:text-[#1e364d] transition-colors"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigateToEditTryout(tryout);
-                        }}
-                      >
-                        <FiEdit size={18} />
-                      </button>
-                      <button 
-                        className="text-[#2f4a64] hover:text-red-600 transition-colors"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteClick(tryout);
-                        }}
-                      >
-                        <FiTrash2 size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="flex space-x-2">
+                        <button
+                          className="text-[#2f4a64] hover:text-[#1e364d] transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation(); 
+                            navigateToEditTryout(tryout);
+                          }}
+                        >
+                          <FiEdit size={18} />
+                        </button>
+                        <button 
+                          className="text-[#2f4a64] hover:text-red-600 transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation(); 
+                            handleDeleteClick(tryout);
+                          }}
+                        >
+                          <FiTrash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
               ))}
             </tbody>
           </table>
