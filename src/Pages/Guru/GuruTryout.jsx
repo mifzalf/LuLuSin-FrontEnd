@@ -166,11 +166,17 @@ const GuruTryout = () => {
               </tr>
             </thead>
             <tbody>
-              {tryouts.map((tryout, index) => (
+              {tryouts.map((tryout, index) => {
+                // Menentukan path tujuan berdasarkan ID tryout
+                const targetPath = String(tryout.id) === '1' 
+                                     ? '/guru/tryout/id' // Path spesifik untuk ID 1
+                                     : `/guru/tryout/${tryout.id}`; // Path default untuk ID lain
+                
+                return (
                   <tr
                     key={tryout.id}
                     className="bg-white border-b hover:bg-gray-50 cursor-pointer"
-                    onClick={() => navigate(`/guru/tryout/${tryout.id}`)}
+                    onClick={() => navigate(targetPath)} // Gunakan targetPath yang sudah ditentukan
                   >
                     <td className="py-4 px-4 text-[#2f4a64] font-medium">{index + 1}</td>
                     <td className="py-4 px-4 text-[#2f4a64] font-medium">{tryout.tryout_name}</td>
@@ -222,7 +228,8 @@ const GuruTryout = () => {
                       </div>
                     </td>
                   </tr>
-              ))}
+                )
+              })}
             </tbody>
           </table>
         </div>

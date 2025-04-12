@@ -62,7 +62,7 @@ function App() {
         <Route path="createtryout" element={<CreateTryout />} />
         <Route path="tryout" element={<GuruTryout />} />
         <Route path="edittryout" element={<EditTryout />} />
-        <Route path="tryout/:id" element={<GuruTryoutDetail />} />
+        <Route path="tryout/id" element={<GuruTryoutDetail />} />
         <Route path="tryout/id/subjek" element={<GuruTryoutSubjek />} />
         <Route path="tryout/id/editsubjek" element={<EditTryoutSubjek />} />
         <Route path="kategorisubjek" element={<GuruKategori />} />
