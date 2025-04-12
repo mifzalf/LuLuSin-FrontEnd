@@ -9,6 +9,7 @@ const GuruSubjekCreate = () => {
   const [kategori, setKategori] = useState("")
   const [subjek, setSubjek] = useState("")
   const [timeLimit, setTimeLimit] = useState("")
+  const [minSoal, setMinSoal] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [notification, setNotification] = useState(null)
@@ -25,11 +26,24 @@ const GuruSubjekCreate = () => {
       return
     }
 
+    if (minSoal !== '' && Number(minSoal) < 0) {
+        setError("Minimal Soal tidak boleh negatif.");
+        setLoading(false);
+        return;
+    }
+
+    if (timeLimit !== '' && Number(timeLimit) < 0) {
+        setError("Waktu Pengerjaan tidak boleh negatif.");
+        setLoading(false);
+        return;
+    }
+
     try {
       const payload = {
         kategori_name: kategori,
         subject_name: subjek,
         time_limit: timeLimit === '' ? null : Number(timeLimit),
+        minimal_soal: minSoal === '' ? null : Number(minSoal),
       }
 
       console.log("Sending create request:", payload)
@@ -119,6 +133,18 @@ const GuruSubjekCreate = () => {
               className="w-full p-3 border border-[#D8C4B6] rounded-full bg-white text-[#213555] outline-none focus:ring-1 focus:ring-[#3E5879]"
               min="0"
               placeholder="Masukkan waktu dalam menit (opsional)"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[#213555] text-sm font-medium mb-1">Minimal Soal</label>
+            <input
+              type="number"
+              value={minSoal}
+              onChange={(e) => setMinSoal(e.target.value)}
+              className="w-full p-3 border border-[#D8C4B6] rounded-full bg-white text-[#213555] outline-none focus:ring-1 focus:ring-[#3E5879]"
+              min="0"
+              placeholder="Masukkan jumlah minimal soal (opsional)"
             />
           </div>
 
