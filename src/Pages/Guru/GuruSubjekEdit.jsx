@@ -10,6 +10,7 @@ const GuruSubjekEdit = () => {
   const [kategori, setKategori] = useState("")
   const [subjek, setSubjek] = useState("")
   const [timeLimit, setTimeLimit] = useState("")
+  const [minSoal, setMinSoal] = useState("")
   const [subjectId, setSubjectId] = useState(null)
   const [loading, setLoading] = useState(false)
   const [loadingData, setLoadingData] = useState(true)
@@ -52,7 +53,8 @@ const GuruSubjekEdit = () => {
             setOriginalSubjectData(subjectData);
             setKategori(subjectData.category_name || searchParams.get("kategori") || "") // Assuming category_name exists, adjust if needed
             setSubjek(subjectData.subject_name || "")
-            setTimeLimit(subjectData.time_limit || "")
+            setTimeLimit(subjectData.time_limit ?? "")
+            setMinSoal(subjectData.minimal_soal ?? "")
           } else {
             // Subject with the ID not found in the list, use fallback
             setOriginalSubjectData(null);
@@ -61,6 +63,7 @@ const GuruSubjekEdit = () => {
             setKategori(searchParams.get("kategori") || "") 
             setSubjek(searchParams.get("subjek") || "")
             setTimeLimit("") 
+            setMinSoal("")
           }
         } else {
           // Failed to fetch the list or data format is incorrect, use fallback
@@ -70,6 +73,7 @@ const GuruSubjekEdit = () => {
           setKategori(searchParams.get("kategori") || "") 
           setSubjek(searchParams.get("subjek") || "")
           setTimeLimit("")
+          setMinSoal("")
         }
       } catch (err) {
         console.error("Error fetching subject details:", err)
@@ -78,6 +82,7 @@ const GuruSubjekEdit = () => {
         setKategori(searchParams.get("kategori") || "") 
         setSubjek(searchParams.get("subjek") || "")
         setTimeLimit("") 
+        setMinSoal("")
       } finally {
         setLoadingData(false)
       }
@@ -107,11 +112,23 @@ const GuruSubjekEdit = () => {
     setError(null)
     setNotification(null)
 
+    if (minSoal !== '' && Number(minSoal) < 0) {
+        setError("Minimal Soal tidak boleh negatif.");
+        setLoading(false);
+        return;
+    }
+    if (timeLimit !== '' && Number(timeLimit) < 0) {
+        setError("Waktu Pengerjaan tidak boleh negatif.");
+        setLoading(false);
+        return;
+    }
+
     try {
       const payload = {
         id_subject_category: originalSubjectData.id_subject_category,
         subject_name: subjek,
-        time_limit: timeLimit === '' ? null : Number(timeLimit)
+        time_limit: timeLimit === '' ? null : Number(timeLimit),
+        minimal_soal: minSoal === '' ? null : Number(minSoal)
       }
 
       console.log("Sending update request for ID:", subjectId, "Payload:", payload)
@@ -154,7 +171,7 @@ const GuruSubjekEdit = () => {
   if (loadingData) {
     return (
       <div className="bg-[#F5EFE7] min-h-screen w-full flex items-center justify-center">
-        <div>Loading subject details...</div>
+        <div className="text-[#213555]">Memuat detail subjek...</div>
       </div>
     );
   }
@@ -206,6 +223,18 @@ const GuruSubjekEdit = () => {
               className="w-full p-3 border border-[#D8C4B6] rounded-full bg-white text-[#213555] outline-none focus:ring-1 focus:ring-[#3E5879]"
               min="0"
               placeholder="Masukkan waktu dalam menit"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[#213555] text-sm font-medium mb-1">Minimal Soal</label>
+            <input
+              type="number"
+              value={minSoal}
+              onChange={(e) => setMinSoal(e.target.value)}
+              className="w-full p-3 border border-[#D8C4B6] rounded-full bg-white text-[#213555] outline-none focus:ring-1 focus:ring-[#3E5879]"
+              min="0"
+              placeholder="Masukkan jumlah minimal soal"
             />
           </div>
 
