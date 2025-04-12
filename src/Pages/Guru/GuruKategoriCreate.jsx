@@ -25,12 +25,13 @@ const GuruKategoriCreate = () => {
         subject_category_name: kategoriSubjek
       });
 
-      if (response.data.success) {
+      console.log("Create Category Response Status:", response.status);
+      console.log("Create Category Response Data:", response.data);
+
+      if (response.status === 201 || response.status === 200) {
         setSuccess(true);
         setKategoriSubjek("");
-        // Tampilkan pesan sukses sebentar
         setTimeout(() => {
-          // Navigasi kembali ke halaman kategori dengan state untuk menampilkan notifikasi
           navigate("/guru/kategorisubjek", { 
             state: { 
               notification: {
@@ -40,6 +41,8 @@ const GuruKategoriCreate = () => {
             }
           });
         }, 1500);
+      } else {
+        setError(response.data?.message || `Gagal menambahkan kategori (Status: ${response.status})`);
       }
     } catch (err) {
       setError(err.response?.data?.message || "Gagal menambahkan kategori subjek");
