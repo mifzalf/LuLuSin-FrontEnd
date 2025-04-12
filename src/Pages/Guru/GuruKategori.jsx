@@ -65,11 +65,27 @@ const GuruKategori = () => {
     try {
       const response = await axiosInstance.delete(`/API/teacher/subjectcategory/delete/${selectedSubject.subject_category_id}`);
       
-      if (response.data.success) {
-        setSubjects(subjects.filter(s => s.subject_category_id !== selectedSubject.subject_category_id));
+      console.log("Delete Category Response Status:", response.status); // Log status
+
+      // Mengubah kondisi sukses berdasarkan status HTTP (200 atau 204)
+      if (response.status === 200 || response.status === 204) {
+        // Simpan array sebelum difilter (untuk logging)
+        const oldSubjects = [...subjects];
+        // Filter state untuk menghapus item (ini menyebabkan refresh UI)
+        const newSubjects = oldSubjects.filter(s => String(s.subject_category_id) !== String(selectedSubject.subject_category_id)); // Pastikan perbandingan tipe aman
+        console.log("Subjects after filter:", newSubjects); // Log hasil filter
+        setSubjects(newSubjects);
+        
+        // Set notifikasi sukses
         setNotification({
           type: 'success',
           message: 'Kategori subjek berhasil dihapus!'
+        });
+      } else {
+        // Handle kasus jika status bukan 200/204
+        setNotification({
+          type: 'error',
+          message: response.data?.message || `Gagal menghapus (Status: ${response.status})`
         });
       }
     } catch (err) {
