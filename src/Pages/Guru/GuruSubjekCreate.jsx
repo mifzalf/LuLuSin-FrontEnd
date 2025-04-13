@@ -64,10 +64,10 @@ const GuruSubjekCreate = () => {
 
     try {
       const payload = {
-        id_subject_category: Number(selectedKategoriId),
-        subject_name: subjek,
-        time_limit: timeLimit === '' ? null : Number(timeLimit),
-        minimal_soal: minSoal === '' ? null : Number(minSoal),
+        id_subject_category: selectedKategoriId,
+        subject_name: subjek.trim(),
+        time_limit: timeLimit ? parseInt(timeLimit) : 0,
+        min_soal: minSoal ? parseInt(minSoal) : 0
       }
 
       console.log("Sending create request:", payload)
