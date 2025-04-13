@@ -53,11 +53,21 @@ axiosInstance.interceptors.response.use(
       config: error.config
     });
     
-    // Jika error 401 (Unauthorized), redirect ke halaman login
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userType');
-      window.location.href = '/login';
+    // Handle unauthorized or token expired
+    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      // Clear all auth related data
+      localStorage.clear(); // Clear all localStorage data
+      
+      // Show notification to user
+      const message = error.response.data?.message || 'Sesi Anda telah berakhir. Silakan login kembali.';
+      alert(message);
+      
+      // Redirect to login page
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+      
+      return Promise.reject(new Error('Session expired'));
     }
     
     return Promise.reject(error);
