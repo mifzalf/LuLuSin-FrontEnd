@@ -19,8 +19,18 @@ const GuruTryout = () => {
       setNotification(location.state.notification);
       navigate(location.pathname, { replace: true, state: {} });
     }
-    fetchTryouts()
-  }, [location.state])
+    fetchTryouts();
+    
+    // Clear notification after 3 seconds
+    if (notification) {
+      const timer = setTimeout(() => {
+        setNotification(null);
+        // Clear the location state
+        window.history.replaceState({}, document.title);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.state, notification]);
 
   const fetchTryouts = async () => {
     try {
@@ -87,33 +97,42 @@ const GuruTryout = () => {
     try {
       const response = await axiosInstance.delete(`/API/teacher/tryout/delete/${tryoutToDelete.id}`)
       
-      if (response.data.success) {
-        setTryouts(tryouts.filter(t => t.id !== tryoutToDelete.id))
+      console.log("Delete Tryout Response Status:", response.status); // Log status
+      
+      // Check for successful deletion based on response status
+      if (response.data.success || response.status === 200 || response.status === 204) {
+        // Save old array before filtering (for logging)
+        const oldTryouts = [...tryouts];
+        // Filter state to remove item (this triggers UI refresh)
+        const newTryouts = oldTryouts.filter(t => String(t.id) !== String(tryoutToDelete.id));
+        console.log("Tryouts after filter:", newTryouts); // Log filtered results
+        setTryouts(newTryouts);
+        
         setNotification({
           type: 'success',
           message: 'Tryout berhasil dihapus!'
-        })
+        });
+        
+        // Fetch fresh data
+        await fetchTryouts();
+      } else {
+        // Handle case when status isn't 200/204
+        setNotification({
+          type: 'error',
+          message: response.data?.message || `Gagal menghapus (Status: ${response.status})`
+        });
       }
     } catch (err) {
+      console.error('Error deleting tryout:', err);
       setNotification({
         type: 'error',
         message: err.response?.data?.message || 'Gagal menghapus tryout'
-      })
+      });
     } finally {
-      setShowDeleteModal(false)
-      setTryoutToDelete(null)
+      setShowDeleteModal(false);
+      setTryoutToDelete(null);
     }
-  }
-
-  // Clear notification after 3 seconds
-  useEffect(() => {
-    if (notification) {
-      const timer = setTimeout(() => {
-        setNotification(null)
-      }, 3000)
-      return () => clearTimeout(timer)
-    }
-  }, [notification])
+  };
 
   if (loading) {
     return (
