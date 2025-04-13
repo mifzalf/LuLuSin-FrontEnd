@@ -11,6 +11,8 @@ const EditTryout = () => {
   const [searchParams] = useSearchParams();
   const [tryoutId, setTryoutId] = useState(null);
   const [namaTryout, setNamaTryout] = useState("");
+  const [subjects, setSubjects] = useState([]);
+  const [selectedSubjects, setSelectedSubjects] = useState([]);
   const [initialData, setInitialData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -21,45 +23,44 @@ const EditTryout = () => {
     const id = searchParams.get("id");
     if (id) {
       setTryoutId(id);
-      fetchTryoutData(id);
+      Promise.all([
+        fetchTryoutData(id),
+        fetchSubjects()
+      ]);
     } else {
       setError("ID Tryout tidak ditemukan di URL.");
       setLoading(false);
     }
   }, [searchParams]);
 
+  const fetchSubjects = async () => {
+    try {
+      const response = await axiosInstance.get("/API/teacher/subject");
+      if (response.data && response.data.datasubject) {
+        setSubjects(response.data.datasubject);
+      }
+    } catch (err) {
+      console.error('Error fetching subjects:', err);
+      setError("Gagal memuat data subjek");
+    }
+  };
+
   const fetchTryoutData = async (id) => {
     setLoading(true);
     setError(null);
     try {
-      console.log(`Fetching tryout data for ID: ${id}`);
       const response = await axiosInstance.get(`/API/teacher/tryout/${id}`);
-      console.log('Raw API Response Data:', response.data);
-
-      console.log('Fetched data:', response.data);
-
-      if (response.data && response.data.result && typeof response.data.result === 'object' && response.data.result.tryout_name !== undefined) {
+      
+      if (response.data && response.data.result) {
         const tryoutData = response.data.result;
         setNamaTryout(tryoutData.tryout_name || "");
+        setSelectedSubjects(tryoutData.subject_ids || []);
         setInitialData(tryoutData);
       } else {
-        console.error("Unexpected API response structure for get tryout by ID:", response.data);
         setError("Format data tryout tidak sesuai atau data tidak ditemukan.");
       }
     } catch (err) {
-      console.error('Error fetching tryout data:', err);
-      let message = "Gagal memuat data tryout.";
-      if (err.response) {
-        message = `Error ${err.response.status}: ${err.response.data?.message || err.message}`;
-         if (err.response.status === 401) {
-             setError("Sesi anda telah berakhir. Silakan login kembali.");
-             navigate('/login');
-             return;
-          }
-      } else if (err.request) {
-        message = "Tidak dapat terhubung ke server.";
-      }
-      setError(message);
+      setError(err.response?.data?.message || "Gagal memuat data tryout");
     } finally {
       setLoading(false);
     }
@@ -67,85 +68,75 @@ const EditTryout = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!tryoutId) {
-      setError("Data tryout tidak lengkap atau ID tidak valid.");
-      return;
-    }
-
     setSaving(true);
     setError(null);
-    setNotification({ show: false, message: "" });
 
     try {
-      const payload = {
-        tryout_name: namaTryout
-      };
+      const response = await axiosInstance.put(`/API/teacher/tryout/update/${tryoutId}`, {
+        tryout_name: namaTryout,
+        subject_ids: selectedSubjects
+      });
 
-      console.log(`Updating tryout ID: ${tryoutId} with data:`, payload);
-      const response = await axiosInstance.patch(`/API/teacher/tryout/update/${tryoutId}`, payload);
-      console.log('Update response:', response.data);
+      if (response.data.success) {
+        // Refresh GuruSubjek data
+        navigate("/guru/subjek", {
+          state: {
+            notification: {
+              type: 'success',
+              message: 'Data subjek telah diperbarui'
+            }
+          }
+        });
 
-      if (response.data.success || response.data.message === 'OK') {
-        setNotification({ show: true, message: "Tryout berhasil diperbarui!" });
-        setTimeout(() => {
-          setNotification({ show: false, message: "" });
-          navigate("/guru/tryout", {
-             state: {
-               notification: {
-                 type: 'success',
-                 message: 'Tryout berhasil diperbarui!'
-               }
-             }
-           });
-        }, 1500);
+        // Navigate back to tryout page
+        navigate("/guru/tryout", {
+          state: {
+            notification: {
+              type: 'success',
+              message: 'Tryout berhasil diperbarui!'
+            }
+          }
+        });
       } else {
-        throw new Error(response.data.message || 'Gagal memperbarui tryout');
+        setError("Gagal memperbarui tryout");
       }
     } catch (err) {
-      console.error('Error updating tryout:', err);
-      let message = "Gagal memperbarui tryout.";
-      if (err.response) {
-        message = `Error ${err.response.status}: ${err.response.data?.message || err.message}`;
-         if (err.response.status === 401) {
-             setError("Sesi anda telah berakhir. Silakan login kembali.");
-             navigate('/login');
-             return;
-          }
-      } else if (err.request) {
-        message = "Tidak dapat terhubung ke server.";
-      }
-      setError(message);
-      setNotification({ show: true, message: message, type: 'error' });
-       setTimeout(() => setNotification({ show: false, message: "" }), 3000);
+      setError(err.response?.data?.message || "Gagal memperbarui tryout");
     } finally {
       setSaving(false);
     }
   };
 
+  const handleSubjectChange = (subjectId) => {
+    setSelectedSubjects(prev => {
+      const selected = [...prev];
+      const index = selected.indexOf(subjectId);
+      
+      if (index === -1) {
+        selected.push(subjectId);
+      } else {
+        selected.splice(index, 1);
+      }
+
+      return selected;
+    });
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center bg-gradient-to-b from-[#f5f0e8] to-[#e8e0d0] min-h-screen w-screen p-4">
-        <div className="text-[#2e4460]">Loading data...</div>
+      <div className="min-h-screen bg-[#f5f0e6] flex items-center justify-center">
+        <div className="text-[#2f4a64]">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-center bg-gradient-to-b from-[#f5f0e8] to-[#e8e0d0] min-h-screen w-screen p-4">
+    <div className="min-h-screen bg-[#f5f0e6] p-6">
       <motion.div
-        className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 w-full max-w-md relative"
-        initial={{ opacity: 0, y: 30 }}
+        className="max-w-2xl mx-auto bg-white rounded-xl p-6 shadow-lg"
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
       >
-         <button
-           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-           onClick={() => navigate("/guru/tryout")}
-           aria-label="Close"
-         >
-           <FiX size={24} />
-         </button>
-
         <motion.h1
           className="text-xl font-bold text-gray-800 mb-6 relative"
           initial={{ opacity: 0, y: -10 }}
@@ -169,17 +160,6 @@ const EditTryout = () => {
             exit={{ opacity: 0, y: -10 }}
           >
             {error}
-          </motion.div>
-        )}
-
-        {notification.show && (
-          <motion.div
-            className={`mb-4 p-3 rounded-lg border ${notification.type === 'error' ? 'bg-red-100 text-red-700 border-red-200' : 'bg-green-100 text-green-700 border-green-200'}`}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-          >
-            {notification.message}
           </motion.div>
         )}
 
@@ -209,12 +189,36 @@ const EditTryout = () => {
             />
           </motion.div>
 
-          <motion.hr
-            className="border-gray-300 mb-6"
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-          />
+          <motion.div
+            className="mb-6"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Pilih Subjek
+            </label>
+            <div className="space-y-2 max-h-60 overflow-y-auto border border-gray-300 rounded-lg p-3">
+              {subjects.map(subject => (
+                <div key={subject.subject_id} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id={`subject-${subject.subject_id}`}
+                    checked={selectedSubjects.includes(subject.subject_id)}
+                    onChange={() => handleSubjectChange(subject.subject_id)}
+                    className="h-4 w-4 text-[#2e4460] border-gray-300 rounded focus:ring-[#2e4460]"
+                    disabled={saving || loading}
+                  />
+                  <label
+                    htmlFor={`subject-${subject.subject_id}`}
+                    className="ml-2 text-sm text-gray-700"
+                  >
+                    {subject.subject_name}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </motion.div>
 
           <motion.button
             type="submit"
@@ -224,7 +228,7 @@ const EditTryout = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            disabled={saving || loading || !tryoutId || error}
+            disabled={saving || loading || !tryoutId || error || selectedSubjects.length === 0}
           >
             <FiSave /> {saving ? "Memperbarui..." : "Perbarui"}
           </motion.button>

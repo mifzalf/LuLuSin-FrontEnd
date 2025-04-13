@@ -31,6 +31,18 @@ const GuruKategoriCreate = () => {
       if (response.status === 201 || response.status === 200) {
         setSuccess(true);
         setKategoriSubjek("");
+        
+        // Update GuruSubjek state
+        navigate("/guru/subjek", {
+          state: {
+            notification: {
+              type: 'success',
+              message: 'Kategori subjek baru telah ditambahkan!'
+            }
+          }
+        });
+
+        // Navigate back to kategori page
         setTimeout(() => {
           navigate("/guru/kategorisubjek", { 
             state: { 
@@ -40,7 +52,7 @@ const GuruKategoriCreate = () => {
               }
             }
           });
-        }, 1500);
+        }, 100);
       } else {
         setError(response.data?.message || `Gagal menambahkan kategori (Status: ${response.status})`);
       }

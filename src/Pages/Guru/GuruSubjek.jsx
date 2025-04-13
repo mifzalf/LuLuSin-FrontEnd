@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FiEdit, FiTrash2, FiPlus, FiAlertTriangle } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
 
 const GuruSubjek = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [tryouts, setTryouts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,6 +17,18 @@ const GuruSubjek = () => {
   const [subjectToDeleteInfo, setSubjectToDeleteInfo] = useState(null); // { kategoriIdx, subjekIdx, name, id }
 
   useEffect(() => {
+    // Check for location state notifications
+    if (location.state?.notification) {
+      setNotification(location.state.notification);
+      // Clear the location state
+      navigate(location.pathname, { replace: true, state: {} });
+      // Refresh data when notification comes from category changes
+      fetchSubjects();
+    }
+  }, [location.state]);
+
+  // Separate useEffect for initial load
+  useEffect(() => {
     fetchSubjects();
   }, []);
 
@@ -25,6 +38,11 @@ const GuruSubjek = () => {
       setError(null);
       console.log('Fetching subjects...');
       
+      // First, fetch categories to ensure we have the latest data
+      const categoryResponse = await axiosInstance.get("/API/teacher/subjectcategory");
+      const categories = categoryResponse.data.dataSubjectCategory || [];
+      
+      // Then fetch subjects
       const response = await axiosInstance.get("/API/teacher/subject");
       console.log('Raw API Response:', response.data);
       
@@ -35,6 +53,16 @@ const GuruSubjek = () => {
       console.log('Extracted subjects:', subjects);
 
       const groupedSubjects = {};
+      
+      // First, create entries for all categories
+      categories.forEach(category => {
+        groupedSubjects[category.subject_category_id] = {
+          kategori: category.subject_category_name,
+          subjek: []
+        };
+      });
+
+      // Then populate with subjects
       subjects.forEach(subject => {
         const categoryId = subject.id_subject_category;
         if (!groupedSubjects[categoryId]) {
@@ -43,7 +71,6 @@ const GuruSubjek = () => {
             subjek: []
           };
         }
-        // Ensure subject_id is included when pushing
         groupedSubjects[categoryId].subjek.push({
           subject_id: subject.subject_id, 
           subject_name: subject.subject_name,

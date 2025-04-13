@@ -79,11 +79,21 @@ const GuruTryout = () => {
   }
 
   const navigateToCreateTryout = () => {
-    navigate("/guru/createtryout")
+    navigate("/guru/createtryout", {
+      state: { 
+        returnTo: location.pathname,
+        refreshSubjek: true 
+      }
+    });
   }
 
   const navigateToEditTryout = (tryout) => {
-    navigate(`/guru/edittryout?id=${tryout.id}`)
+    navigate(`/guru/edittryout?id=${tryout.id}`, {
+      state: { 
+        returnTo: location.pathname,
+        refreshSubjek: true 
+      }
+    });
   }
 
   const handleDeleteClick = (tryout) => {
@@ -97,15 +107,12 @@ const GuruTryout = () => {
     try {
       const response = await axiosInstance.delete(`/API/teacher/tryout/delete/${tryoutToDelete.id}`)
       
-      console.log("Delete Tryout Response Status:", response.status); // Log status
+      console.log("Delete Tryout Response Status:", response.status);
       
-      // Check for successful deletion based on response status
       if (response.data.success || response.status === 200 || response.status === 204) {
-        // Save old array before filtering (for logging)
         const oldTryouts = [...tryouts];
-        // Filter state to remove item (this triggers UI refresh)
         const newTryouts = oldTryouts.filter(t => String(t.id) !== String(tryoutToDelete.id));
-        console.log("Tryouts after filter:", newTryouts); // Log filtered results
+        console.log("Tryouts after filter:", newTryouts);
         setTryouts(newTryouts);
         
         setNotification({
@@ -113,10 +120,18 @@ const GuruTryout = () => {
           message: 'Tryout berhasil dihapus!'
         });
         
-        // Fetch fresh data
+        // Update GuruSubjek state
+        navigate('/guru/subjek', {
+          state: { notification: { type: 'success', message: 'Data telah diperbarui' } }
+        });
+        
+        // Navigate back to current page
+        navigate(location.pathname, {
+          state: { notification: { type: 'success', message: 'Tryout berhasil dihapus!' } }
+        });
+        
         await fetchTryouts();
       } else {
-        // Handle case when status isn't 200/204
         setNotification({
           type: 'error',
           message: response.data?.message || `Gagal menghapus (Status: ${response.status})`
