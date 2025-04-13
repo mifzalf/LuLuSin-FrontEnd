@@ -41,72 +41,44 @@ const GuruTryoutDetail = () => {
         const response = await axiosInstance.get(`/API/teacher/tryout/${id}`)
         console.log("Tryout Detail API Response:", response.data)
 
-        // --- Penyesuaian Parsing: Mencari data di response.data.result --- 
-        let apiData = null;
-        // Cek apakah response.data.result ada dan merupakan objek
-        if (response.data && typeof response.data.result === 'object' && response.data.result !== null) {
-            apiData = response.data.result; // Ambil data dari 'result'
-            console.log("API data found in 'result' property.");
-        } else {
-            // Jika tidak ada 'result', coba cek format sebelumnya sebagai fallback (meskipun kecil kemungkinannya)
-            if (Array.isArray(response.data) && response.data.length > 0) {
-                apiData = response.data[0]; 
-                console.log("API data type: Array, using first element (fallback).");
-            } else if (typeof response.data === 'object' && !Array.isArray(response.data) && Object.keys(response.data).length > 0) {
-                apiData = response.data;
-                console.log("API data type: Object (fallback).");
-            }
+        // Improved error handling for empty or invalid response
+        if (!response.data) {
+          throw new Error("Data tidak ditemukan dari server")
         }
 
-        // Jika kita berhasil mendapatkan apiData yang valid
-        if (apiData) {
-          const formattedData = {
-            // Menggunakan apiData (dari response.data.result)
-            tryout_name: apiData.tryout_name || "Nama Tryout Tidak Ditemukan",
-            status: apiData.status || "Hide",
-            skolastik: [],
-            literasi: [],
-            matematika: [],
-          };
-
-          // Parsing kategori (asumsi tryout_category ada di dalam apiData/result)
-          if (apiData.tryout_category && Array.isArray(apiData.tryout_category)) {
-            apiData.tryout_category.forEach(category => {
-              const items = (category && category.items && Array.isArray(category.items))
-                ? category.items.map(item => ({
-                    id: item?.id_subject,
-                    name: item?.subject_name,
-                    created: item?.soal_dibuat,
-                    target: item?.target_soal ?? 'N/A' 
-                  })).filter(item => item.id !== undefined)
-                : []; 
-
-              const categoryName = category?.subject_category;
-              if (categoryName === "Tes Potensi Skolastik") {
-                formattedData.skolastik = items;
-              } else if (categoryName === "Tes Literasi") {
-                formattedData.literasi = items;
-              } else if (categoryName === "Penalaran Matematika") {
-                formattedData.matematika = items;
-              }
-            });
-          } else {
-            console.warn("tryout_category is missing or not an array in apiData (result)");
-          }
-          
-          console.log("Formatted Tryout Data:", formattedData);
-          setTryoutData(formattedData);
-          setError(null); // Hapus error jika parsing berhasil
-        } else {
-          // Jika apiData tetap null setelah pengecekan
-          console.error("Failed to extract valid apiData from response.");
-          throw new Error("Format data tryout tidak sesuai atau data tidak ditemukan.")
+        // Get the data from response
+        let apiData = response.data.result || response.data;
+        
+        if (!apiData) {
+          throw new Error("Format data dari server tidak sesuai yang diharapkan")
         }
-        // --- Akhir Penyesuaian Parsing --- 
+
+        // Create the formatted data structure
+        const formattedData = {
+          tryout_name: apiData.tryout_name || "Nama Tryout Tidak Ditemukan",
+          status: apiData.status || "Hide",
+          subject_categories: apiData.subject_categories || []
+        };
+
+        // Validate if we have the required data
+        if (!formattedData.tryout_name || !Array.isArray(formattedData.subject_categories)) {
+          throw new Error("Data tryout tidak lengkap");
+        }
+
+        console.log("Formatted Tryout Data:", formattedData);
+        setTryoutData(formattedData);
+        setError(null);
 
       } catch (err) {
         console.error("Error fetching or processing tryout detail:", err)
-        setError(err.response?.data?.message || err.message || "Gagal memuat detail tryout.")
+        let errorMessage = err.response?.data?.message || err.message || "Gagal memuat detail tryout."
+        if (err.response?.status === 404) {
+          errorMessage = "Data tryout tidak ditemukan."
+        } else if (err.response?.status === 401) {
+          errorMessage = "Sesi anda telah berakhir. Silakan login kembali."
+          navigate('/login')
+        }
+        setError(errorMessage)
         setTryoutData(null);
       } finally {
         setLoading(false)
@@ -120,7 +92,7 @@ const GuruTryoutDetail = () => {
       setLoading(false)
     }
 
-  }, [id])
+  }, [id, navigate])
 
   // Fungsi untuk handle publish (contoh, perlu implementasi API)
   const handlePublish = async () => {
@@ -174,55 +146,80 @@ const GuruTryoutDetail = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        {/* Judul Tryout Dinamis */}
+        {/* Judul Tryout */}
         <motion.h1
           className="text-3xl font-bold text-gray-800 mb-8 text-center"
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2, type: "spring", stiffness: 100 }}
         >
-          {tryoutData.tryout_name} 
+          {tryoutData.tryout_name}
         </motion.h1>
 
-        {/* Container untuk semua section tabel */} 
+        {/* Container untuk semua kategori */}
         <div className="w-full space-y-6">
-          {/* Section Tabel Skolastik (Data Dinamis) */}
-          {tryoutData.skolastik.length > 0 && (
-            <SectionTable
-              title="Tes Potensi Skolastik"
-              items={tryoutData.skolastik} 
-            />
-          )}
+          {/* Iterasi melalui setiap kategori */}
+          {tryoutData.subject_categories && tryoutData.subject_categories.map((category, index) => (
+            <motion.div
+              key={index}
+              className="bg-white rounded-lg shadow-md overflow-hidden"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <div className="bg-[#2e4460] text-white px-6 py-3">
+                <h2 className="text-lg font-semibold">{category.subject_category}</h2>
+              </div>
+              <table className="w-full text-sm text-left text-gray-700">
+                <thead className="text-xs text-gray-600 uppercase bg-gray-100">
+                  <tr>
+                    <th scope="col" className="px-6 py-3">Nama Subjek</th>
+                    <th scope="col" className="px-6 py-3 text-center">Soal Dibuat</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {category.items && category.items.map((item, itemIndex) => (
+                    <tr key={itemIndex} className="border-b hover:bg-gray-50">
+                      <td className="px-6 py-4 font-medium text-gray-900">
+                        {item.subject_name}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        {item.soal_dibuat || '0'}
+                      </td>
+                    </tr>
+                  ))}
+                  {(!category.items || category.items.length === 0) && (
+                    <tr>
+                      <td colSpan="2" className="px-6 py-4 text-center text-gray-500">
+                        Tidak ada data untuk kategori ini
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </motion.div>
+          ))}
 
-          {/* Section Tabel Literasi (Data Dinamis) */}
-          {tryoutData.literasi.length > 0 && (
-            <SectionTable
-              title="Tes Literasi"
-              items={tryoutData.literasi} 
-            />
-          )}
-
-          {/* Section Tabel Matematika (Data Dinamis) */}
-          {tryoutData.matematika.length > 0 && (
-            <SectionTable
-              title="Penalaran Matematika"
-              items={tryoutData.matematika} 
-            />
+          {(!tryoutData.subject_categories || tryoutData.subject_categories.length === 0) && (
+            <div className="text-center text-gray-500 py-4">
+              Tidak ada data kategori yang tersedia
+            </div>
           )}
         </div>
 
-        {/* Tombol Publish/Unpublish Dinamis */}
+        {/* Tombol Publish/Unpublish */}
         <div className="flex justify-end mt-8">
           <motion.button
-            onClick={handlePublish} // Tambahkan onClick handler
-            className={`${tryoutData.status === 'Show' ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white font-semibold py-2 px-6 rounded-lg shadow transition-colors duration-200`}
+            onClick={handlePublish}
+            className={`${
+              tryoutData.status === 'Show' ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'
+            } text-white font-semibold py-2 px-6 rounded-lg shadow transition-colors duration-200`}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
           >
-            {/* Ubah teks tombol berdasarkan status */}
             {tryoutData.status === 'Show' ? 'Unpublish' : 'Publish'}
           </motion.button>
         </div>
