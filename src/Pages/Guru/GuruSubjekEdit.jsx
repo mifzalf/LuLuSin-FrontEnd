@@ -128,7 +128,7 @@ const GuruSubjekEdit = () => {
         id_subject_category: originalSubjectData.id_subject_category,
         subject_name: subjek,
         time_limit: timeLimit === '' ? null : Number(timeLimit),
-        minimal_soal: minSoal === '' ? null : Number(minSoal)
+        minimal_questions: minSoal === '' ? null : Number(minSoal)
       }
 
       console.log("Sending update request for ID:", subjectId, "Payload:", payload)
