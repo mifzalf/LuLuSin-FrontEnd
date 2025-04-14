@@ -74,7 +74,8 @@ const GuruSubjek = () => {
         groupedSubjects[categoryId].subjek.push({
           subject_id: subject.subject_id, 
           subject_name: subject.subject_name,
-          time_limit: subject.time_limit
+          time_limit: subject.time_limit,
+          minimal_questions: subject.minimal_questions
         });
       });
       
@@ -250,7 +251,7 @@ const GuruSubjek = () => {
                           {subjek.time_limit ? `${subjek.time_limit} Menit` : '-'}
                         </span>
                         <span className="w-1/5 text-center text-[#2f4a64]">
-                          {subjek.min_questions || '-'}
+                          {subjek.minimal_questions || '-'}
                         </span>
                         <div className="w-1/5 flex justify-center items-center gap-3">
                           <button
