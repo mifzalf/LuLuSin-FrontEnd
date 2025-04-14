@@ -50,11 +50,12 @@ const GuruSubjekEdit = () => {
 
           if (subjectData) {
             // Found the subject, set the state
+            console.log("Subject Data received:", subjectData);
             setOriginalSubjectData(subjectData);
             setKategori(subjectData.category_name || searchParams.get("kategori") || "") // Assuming category_name exists, adjust if needed
             setSubjek(subjectData.subject_name || "")
             setTimeLimit(subjectData.time_limit ?? "")
-            setMinSoal(subjectData.minimal_soal ?? "")
+            setMinSoal(subjectData.minimal_questions ?? "") // Changed from minimal_soal to minimal_questions
           } else {
             // Subject with the ID not found in the list, use fallback
             setOriginalSubjectData(null);
