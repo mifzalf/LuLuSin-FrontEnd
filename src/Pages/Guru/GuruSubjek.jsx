@@ -232,21 +232,25 @@ const GuruSubjek = () => {
               tryouts.map((kategori, kategoriIdx) => (
                 <div key={kategori.kategori + '-' + kategoriIdx} className="bg-white shadow-md rounded-lg overflow-hidden"> {/* Improved key */}
                   <div className="bg-[#213555] text-white p-4 font-semibold flex items-center">
-                    <span className="w-3/5 pl-4 text-left">{kategori.kategori}</span>
+                    <span className="w-2/5 pl-4 text-left">{kategori.kategori}</span>
                     <span className="w-1/5 text-center">Waktu Pengerjaan</span>
+                    <span className="w-1/5 text-center">Minimal Soal</span>
                     <span className="w-1/5 text-center">Aksi</span>
                   </div>
                   {kategori.subjek && kategori.subjek.length > 0 ? (
                     kategori.subjek.map((subjek, subjekIdx) => (
                       <div
-                        key={subjek.subject_id || subjekIdx} // Prioritize subject_id for key
+                        key={subjek.subject_id || subjekIdx}
                         className="flex items-center p-4 border-b last:border-none hover:bg-gray-50 transition"
                       >
-                        <span className="w-3/5 pl-4 text-left text-[#2f4a64] font-medium">
+                        <span className="w-2/5 pl-4 text-left text-[#2f4a64] font-medium">
                           {subjek.subject_name}
                         </span>
                         <span className="w-1/5 text-center text-[#2f4a64]">
                           {subjek.time_limit ? `${subjek.time_limit} Menit` : '-'}
+                        </span>
+                        <span className="w-1/5 text-center text-[#2f4a64]">
+                          {subjek.min_questions || '-'}
                         </span>
                         <div className="w-1/5 flex justify-center items-center gap-3">
                           <button

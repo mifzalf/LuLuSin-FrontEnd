@@ -10,8 +10,14 @@ const Header = () => {
   }
 
   const handleLogout = () => {
-    // Here you can add any logout logic (clear tokens, etc.)
-    navigate("/login")
+    // Clear all authentication data
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('role');
+    // Add any other auth-related items to clear
+    
+    // Redirect to login page
+    navigate("/login", { replace: true });
   }
 
   const navItems = [
@@ -37,7 +43,7 @@ const Header = () => {
           </Link>
 
           {/* Navigation */}
-          <nav className="flex items-center space-x-1 ml-auto mr-8">
+          <nav className="flex items-center space-x-1">
             {navItems.map((item) => {
               const Icon = item.icon
               return (
@@ -58,9 +64,19 @@ const Header = () => {
                 </Link>
               )
             })}
-          </nav>
 
-          {/* Logout Button */}
+            {/* Logout Button */}
+            <button
+              onClick={handleLogout}
+              className="flex items-center space-x-2 px-4 py-2 rounded-lg ml-4
+                text-gray-300 hover:text-white hover:bg-white/5
+                transition-all duration-200"
+              title="Logout"
+            >
+              <FiLogOut className="w-5 h-5" />
+              <span className="font-medium">Logout</span>
+            </button>
+          </nav>
 
         </div>
       </div>
