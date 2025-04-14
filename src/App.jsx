@@ -97,7 +97,7 @@ function App() {
       </Route>
 
       {/* Landing Page Route */}
-      <Route path="/" element={
+      <Route path="/about" element={
         <div className="min-h-screen bg-[#213555] py-12">
           <div className="max-w-7xl mx-auto px-4">
             <h1 className="text-center text-4xl font-bold text-white mb-12 mt-8">
