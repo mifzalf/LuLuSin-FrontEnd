@@ -179,9 +179,26 @@ const GuruTryoutDetail = () => {
                 </thead>
                 <tbody>
                   {category.items && category.items.map((item, itemIndex) => (
-                    <tr key={itemIndex} className="border-b hover:bg-gray-50">
+                    <tr 
+                      key={itemIndex} 
+                      className="border-b hover:bg-gray-50 cursor-pointer"
+                      onClick={() => {
+                        if (!item.subject_id) {
+                          console.error("Missing subject_id for item:", item);
+                          return;
+                        }
+                        navigate(`/guru/tryout/${id}/subjek/${item.subject_id}`, { 
+                          state: { 
+                            subjectId: item.subject_id,
+                            subjectName: item.subject_name || "Untitled Subject",
+                            tryoutName: tryoutData?.tryout_name || "Untitled Tryout",
+                            tryoutId: id
+                          }
+                        });
+                      }}
+                    >
                       <td className="px-6 py-4 font-medium text-gray-900">
-                        {item.subject_name}
+                        {item.subject_name || "Untitled Subject"}
                       </td>
                       <td className="px-6 py-4 text-center">
                         {item.soal_dibuat || '0'}
