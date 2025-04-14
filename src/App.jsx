@@ -43,6 +43,11 @@ function App() {
 
   return (
     <Routes>
+
+      {/* Landing Page Route */}
+      <Route path="/" element={<SiswaLandingPage />} />
+     
+    
       {/* Auth Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
@@ -81,7 +86,7 @@ function App() {
       <Route path="/siswa" element={<LayoutSiswa />}>
         <Route index element={<SiswaDashBoard />} />
         <Route path="dashboard" element={<SiswaDashBoard />} />
-        <Route path="landingpage" element={<SiswaLandingPage />} />
+
         <Route path="tryout" element={<SiswaTryout />} />
         <Route path="tryout/id/detail" element={<SiswaTryoutDetail />} />
         <Route path="tryout/id/hasil" element={<SiswaTryoutHasil />} />
