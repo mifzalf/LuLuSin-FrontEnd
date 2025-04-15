@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function SiswaLandingPage() {
   const featuresRef = useRef(null);
@@ -13,7 +14,6 @@ export default function SiswaLandingPage() {
   const stepsRef = useRef(null);
   const stepsInView = useInView(stepsRef, { once: true, amount: 0.2 });
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -30,7 +30,7 @@ export default function SiswaLandingPage() {
     visible: {
       y: 0,
       opacity: 1,
-      transition: { type: "spring",   stiffness: 100 },
+      transition: { type: "spring", stiffness: 100 },
     },
   };
 
@@ -64,8 +64,34 @@ export default function SiswaLandingPage() {
 
   return (
     <div className="flex flex-col min-h-screen w-screen">
+      {/* === Navbar === */}
+      <nav className="bg-[#1B2B44] text-white px-6 py-4 shadow-md">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          {/* Logo */}
+          <div className="flex flex-col leading-tight">
+            <span className="text-xl font-bold text-white">LuLuSin</span>
+            <span className="text-xs text-gray-300 -mt-1">Education Academi</span>
+          </div>
+
+          {/* Navigation */}
+          <div className="hidden md:flex gap-8 items-center text-white font-semibold text-lg">
+            <a href="#home" className="hover:text-gray-300 transition">Home</a>
+            <a href="#about" className="hover:text-gray-300 transition">About</a>
+            <a href="#tutorial" className="hover:text-gray-300 transition">Tutorial</a>
+            <Link
+              to="/login"
+              className="bg-[#324c76] hover:bg-[#3a5785] transition px-4 py-2 rounded-full font-bold shadow"
+            >
+              Login
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* === Main Content === */}
       <main className="flex-grow w-full bg-amber-50">
         <motion.section
+          id="home"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
@@ -81,11 +107,12 @@ export default function SiswaLandingPage() {
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.5, duration: 0.8, type: "spring" }}
-              className="   cofont-bold text-3xl md:text-4xl leading-tight"
+              className="font-bold text-3xl md:text-4xl leading-tight"
             >
               Bersiaplah Menempuh Jenjang Pendidikan Yang Lebih Tinggi
             </motion.h2>
           </motion.div>
+
           <motion.div
             initial={{ x: 50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
@@ -104,7 +131,7 @@ export default function SiswaLandingPage() {
           </motion.div>
         </motion.section>
 
-        <section className="relative bg-[#1B2B44] py-10 px-6 mt-[-40px] rounded-t-2xl">
+        <section id="about" className="relative bg-[#1B2B44] py-10 px-6 mt-[-40px] rounded-t-2xl">
           <motion.div
             ref={featuresRef}
             initial="hidden"
@@ -112,7 +139,7 @@ export default function SiswaLandingPage() {
             variants={containerVariants}
             className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto"
           >
-            {[
+            {[ 
               {
                 title: " Learning Untuk Lulus Seleksi Nasional",
                 text: "Persiapan SNBT kini lebih mudah dan terarah! Dengan materi lengkap, tryout interaktif, serta analisis skor yang akurat, Lulusin siap membantumu melewati seleksi masuk perguruan tinggi dengan percaya diri.",
@@ -165,7 +192,8 @@ export default function SiswaLandingPage() {
               </motion.div>
             ))}
           </motion.div>
-          <div className="bg-[#1B2B44] py-10 px-6 text-white">
+
+          <div id="tutorial" className="bg-[#1B2B44] py-10 px-6 text-white">
             <motion.h3
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -205,6 +233,45 @@ export default function SiswaLandingPage() {
             </motion.div>
           </div>
         </section>
+
+        <footer>
+              <motion.footer
+                className="bg-[#1B2B44] text-white p-6 mt-8 w-full text-sm"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start">
+                  <div className="mb-4 md:mb-0">
+                    <img
+                      src="/santoso tk lulus kuliah.png"
+                      alt="Logo"
+                      className="w-16 h-16 mb-2"
+                    />
+                    <h4 className="font-bold text-lg">LuLuSin</h4>
+                    <p className="text-gray-300">Education Academy</p>
+                    <p className="text-gray-400">Learning Untuk Lulus Seleksi Nasional</p>
+                  </div>
+                  <div className="mb-4 md:mb-0">
+                    <p>Jl. Raya Lenteng No.km, RW.2,</p>
+                    <p>Aredake, Batuan, Kec. Batuan,</p>
+                    <p>Kabupaten Sumenep, Jawa Timur 80582</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold">Hubungi Kami :</p>
+                    <p>
+                      Email: <span className="text-gray-300">dewaruci393@gmail.com</span>
+                    </p>
+                    <p>
+                      Kontak: <span className="text-gray-300">+62 812-3516-3528</span>
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 text-center text-gray-400 text-xs">
+                  © 2025 LuLuSin. All Rights Reserved PT. Mesir Timur Tengah
+                </div>
+              </motion.footer>
+        </footer>
       </main>
     </div>
   );

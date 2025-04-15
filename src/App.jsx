@@ -86,7 +86,7 @@ function App() {
       <Route path="/siswa" element={<LayoutSiswa />}>
         <Route index element={<SiswaDashBoard />} />
         <Route path="dashboard" element={<SiswaDashBoard />} />
-
+        
         <Route path="tryout" element={<SiswaTryout />} />
         <Route path="tryout/id/detail" element={<SiswaTryoutDetail />} />
         <Route path="tryout/id/hasil" element={<SiswaTryoutHasil />} />
