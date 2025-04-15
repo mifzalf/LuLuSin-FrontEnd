@@ -110,7 +110,7 @@ const GuruKategori = () => {
     <div className="min-h-screen flex flex-col bg-[#F5EFE7]">
       {/* Konten */}
       <div className="flex-grow p-10">
-        <h1 className="text-2xl font-bold text-[#213555] mb-6">Subjek UTBK SNBT 2025</h1>
+        <h1 className="text-2xl font-bold text-[#213555] mb-6">Data Kategori Subjek</h1>
 
         {/* Notifikasi */}
         {notification && (
