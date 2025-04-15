@@ -1,13 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { FiUpload, FiArrowLeft, FiSave } from "react-icons/fi";
+import { FiUpload, FiArrowLeft, FiSave, FiX } from "react-icons/fi";
+import { useNavigate, useParams } from "react-router-dom";
+import axiosInstance from "../../api/axiosInstance";
 
 const CreateTryoutSubjek = () => {
+  const navigate = useNavigate();
+  const { tryout_id, subject_id } = useParams();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     soal: "",
     gambar: null,
-    opsi: ["", "", "", ""],
+    opsi: ["", "", "", "", ""],
     jawabanBenar: "",
     pembahasan: "",
     skor: ""
@@ -18,10 +23,52 @@ const CreateTryoutSubjek = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData({ ...formData, gambar: reader.result });
+        setFormData({ ...formData, gambar: file });
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append('question', formData.soal);
+      formDataToSend.append('score', formData.skor);
+      formData.opsi.forEach((option) => {
+        formDataToSend.append('answer_options', JSON.stringify({ answer_option: option }));
+      });
+      formDataToSend.append('correct_answer', formData.jawabanBenar);
+      if (formData.gambar) {
+        formDataToSend.append('question_image', formData.gambar);
+      }
+
+      const response = await axiosInstance.post(
+        `/API/teacher/tryout/${tryout_id}/${subject_id}/create_question`,
+        formDataToSend,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        alert('Soal berhasil disimpan!');
+        navigate(`/guru/tryout/${tryout_id}/${subject_id}`);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert(error.response?.data?.message || 'Gagal menyimpan soal. Silakan coba lagi.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBack = () => {
+    navigate(`/guru/tryout/${tryout_id}/${subject_id}`);
   };
 
   return (
@@ -95,7 +142,7 @@ const CreateTryoutSubjek = () => {
                     </div>
                   )}
                 </div>
-                    </div>
+              </div>
 
               {/* Opsi */}
               <div className="mb-6">
@@ -161,13 +208,20 @@ const CreateTryoutSubjek = () => {
 
             {/* Buttons */}
             <div className="flex justify-end gap-4 pt-4 border-t">
-              <button className="px-6 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2">
+              <button 
+                onClick={handleBack}
+                className="px-6 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
+              >
                 <FiArrowLeft size={16} />
                 Kembali
               </button>
-              <button className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2 shadow-md hover:shadow-lg">
+              <button 
+                onClick={handleSubmit}
+                disabled={loading}
+                className={`px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2 shadow-md hover:shadow-lg ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
                 <FiSave size={16} />
-                Simpan
+                {loading ? 'Menyimpan...' : 'Simpan'}
               </button>
             </div>
           </div>

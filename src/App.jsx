@@ -84,6 +84,7 @@ function App() {
         <Route path="edittryout" element={<EditTryout />} />
         <Route path="tryout/:id" element={<GuruTryoutDetail />} />
         <Route path="tryout/:tryout_id/:subject_id" element={<GuruTryoutSubjek />} />
+        <Route path="tryout/:tryout_id/:subject_id/create" element={<CreateTryoutSubjek />} />
         <Route path="tryout/id/editsubjek" element={<EditTryoutSubjek />} />
         <Route path="kategorisubjek" element={<GuruKategori />} />
         <Route path="kategorisubjek/create" element={<GuruKategoriCreate />} />
