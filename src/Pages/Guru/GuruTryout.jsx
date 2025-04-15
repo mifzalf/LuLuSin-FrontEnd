@@ -16,21 +16,21 @@ const GuruTryout = () => {
 
   useEffect(() => {
     if (location.state?.notification && !notification) {
-      setNotification(location.state.notification);
-      navigate(location.pathname, { replace: true, state: {} });
+      setNotification(location.state.notification)
+      navigate(location.pathname, { replace: true, state: {} })
     }
-    fetchTryouts();
+    fetchTryouts()
     
     // Clear notification after 3 seconds
     if (notification) {
       const timer = setTimeout(() => {
-        setNotification(null);
+        setNotification(null)
         // Clear the location state
-        window.history.replaceState({}, document.title);
-      }, 3000);
-      return () => clearTimeout(timer);
+        window.history.replaceState({}, document.title)
+      }, 3000)
+      return () => clearTimeout(timer)
     }
-  }, [location.state, notification]);
+  }, [location.state, notification])
 
   const fetchTryouts = async () => {
     try {
@@ -41,13 +41,17 @@ const GuruTryout = () => {
       console.log('Tryout response:', response.data)
       
       if (response.data && (response.data.dataTryout || response.data.datatryout)) {
-        const tryoutData = response.data.dataTryout || response.data.datatryout;
+        const tryoutData = response.data.dataTryout || response.data.datatryout
+
+        // Perbaikan mapping: gunakan properti dengan penulisan yang tepat dan konversi ke number jika diperlukan
         const mappedTryouts = tryoutData.map(tryout => ({
           id: tryout.tryout_id,
           tryout_name: tryout.tryout_name,
           status: tryout.status || 'Hide',
-          targetSoal: tryout.total_questions || 0,
-          soalDibuat: tryout.total_questions || 0
+          // Total soal yang sudah dibuat
+          soalDibuat: tryout.total_questions || 0,
+          // Target soal diambil dari total_minimal_questions dan dikonversi ke number
+          targetSoal: tryout.total_minimal_questions ? Number(tryout.total_minimal_questions) : 0
         }))
         console.log('Mapped tryouts:', mappedTryouts)
         if (mappedTryouts.length === 0) {
@@ -84,7 +88,7 @@ const GuruTryout = () => {
         returnTo: location.pathname,
         refreshSubjek: true 
       }
-    });
+    })
   }
 
   const navigateToEditTryout = (tryout) => {
@@ -93,7 +97,7 @@ const GuruTryout = () => {
         returnTo: location.pathname,
         refreshSubjek: true 
       }
-    });
+    })
   }
 
   const handleDeleteClick = (tryout) => {
@@ -106,48 +110,45 @@ const GuruTryout = () => {
 
     try {
       const response = await axiosInstance.delete(`/API/teacher/tryout/delete/${tryoutToDelete.id}`)
-      
-      console.log("Delete Tryout Response Status:", response.status);
+      console.log("Delete Tryout Response Status:", response.status)
       
       if (response.data.success || response.status === 200 || response.status === 204) {
-        const oldTryouts = [...tryouts];
-        const newTryouts = oldTryouts.filter(t => String(t.id) !== String(tryoutToDelete.id));
-        console.log("Tryouts after filter:", newTryouts);
-        setTryouts(newTryouts);
-        
+        const newTryouts = tryouts.filter(t => String(t.id) !== String(tryoutToDelete.id))
+        console.log("Tryouts after filter:", newTryouts)
+        setTryouts(newTryouts)
         setNotification({
           type: 'success',
           message: 'Tryout berhasil dihapus!'
-        });
+        })
         
         // Update GuruSubjek state
         navigate('/guru/subjek', {
           state: { notification: { type: 'success', message: 'Data telah diperbarui' } }
-        });
+        })
         
         // Navigate back to current page
         navigate(location.pathname, {
           state: { notification: { type: 'success', message: 'Tryout berhasil dihapus!' } }
-        });
+        })
         
-        await fetchTryouts();
+        await fetchTryouts()
       } else {
         setNotification({
           type: 'error',
           message: response.data?.message || `Gagal menghapus (Status: ${response.status})`
-        });
+        })
       }
     } catch (err) {
-      console.error('Error deleting tryout:', err);
+      console.error('Error deleting tryout:', err)
       setNotification({
         type: 'error',
         message: err.response?.data?.message || 'Gagal menghapus tryout'
-      });
+      })
     } finally {
-      setShowDeleteModal(false);
-      setTryoutToDelete(null);
+      setShowDeleteModal(false)
+      setTryoutToDelete(null)
     }
-  };
+  }
 
   if (loading) {
     return (
@@ -301,4 +302,3 @@ const GuruTryout = () => {
 }
 
 export default GuruTryout
-

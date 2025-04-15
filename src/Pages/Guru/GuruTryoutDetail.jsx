@@ -3,25 +3,6 @@ import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import axiosInstance from "../../api/axiosInstance" // Pastikan path ini benar
-// Hapus import state dan ikon yang tidak digunakan jika ada
-// import { ChevronDown, ChevronRight, BookOpen, Brain, Calculator } from "lucide-react"
-
-// Data Dummy (ganti dengan data asli nanti)
-// const skolastikData = [
-//   { name: "Penalaran Umum", created: 20, target: 30 },
-//   { name: "Pemahaman Bacaan dan Menulis", created: 10, target: 20 },
-//   { name: "Pengetahuan dan Pemahaman Umum", created: 15, target: 20 },
-//   { name: "Penalaran Kuantitatif", created: 15, target: 20 },
-// ];
-
-// const literasiData = [
-//   { name: "Literasi Bahasa Indonesia", created: 25, target: 30 },
-//   { name: "Literasi Bahasa Inggris", created: 15, target: 20 },
-// ];
-
-// const matematikaData = [
-//   { name: "Penalaran Matematika", created: 10, target: 20 },
-// ];
 
 const GuruTryoutDetail = () => {
   const { id } = useParams() // Ambil ID dari URL
@@ -103,7 +84,6 @@ const GuruTryoutDetail = () => {
     try {
       console.warn("API call for updating status not implemented yet.");
       setTryoutData(prev => ({...prev, status: newStatus }));
-      alert(`Status tryout diubah menjadi ${newStatus} (simulasi).`);
     } catch (err) {
       console.error("Error updating status:", err);
       alert(`Gagal mengubah status: ${err.message}`);
