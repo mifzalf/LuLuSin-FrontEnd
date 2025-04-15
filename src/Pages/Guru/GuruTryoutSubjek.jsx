@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { PlusCircle, X, Upload, ChevronDown, ChevronUp, Trash2, Edit } from "lucide-react"
 import { useParams, useNavigate } from "react-router-dom"
 import axiosInstance from "../../api/axiosInstance"
+import { FiArrowLeft, FiArrowRight } from "react-icons/fi"
 
 // Main component
 function GuruTryoutSubjek() {
@@ -351,137 +352,6 @@ function GuruTryoutSubjek() {
               </div>
             </div>
           )}
-
-          {/* Create New Question Form */}
-          <div className="border-t pt-8">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold text-gray-800">Buat Soal Baru</h3>
-            </div>
-
-            {/* Form Section */}
-            <form onSubmit={handleSubmit} className="border rounded-lg p-4">
-              <div className="mb-4">
-                <label className="block font-medium mb-2 text-gray-700">Soal</label>
-                <motion.div whileTap={{ scale: 0.995 }}>
-                  <textarea
-                    name="question"
-                    value={formData.question}
-                    onChange={(e) => handleInputChange(e)}
-                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all text-gray-800"
-                    rows={3}
-                    placeholder="Masukkan soal disini"
-                    required
-                  />
-                </motion.div>
-              </div>
-
-              <div className="mb-4">
-                <label className="block font-medium mb-2 text-gray-700">Gambar (Opsional)</label>
-                <div className="border rounded-md p-4">
-                  <div className="flex items-center justify-center mb-2">
-                    <label className="cursor-pointer flex items-center text-sm text-gray-600">
-                      <Upload className="w-4 h-4 mr-1" />
-                      Pilih file
-                      <input 
-                        type="file" 
-                        className="hidden" 
-                        accept="image/*" 
-                        onChange={handleFileChange}
-                        name="question_image"
-                      />
-                    </label>
-                  </div>
-
-                  <motion.div
-                    className="bg-gray-100 rounded-md flex items-center justify-center"
-                    style={{ height: "120px" }}
-                    whileHover={{ boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)" }}
-                  >
-                    {preview ? (
-                      <img
-                        src={preview}
-                        alt="Preview"
-                        className="max-h-full max-w-full object-contain"
-                      />
-                    ) : (
-                      <span className="text-gray-500">Preview gambar</span>
-                    )}
-                  </motion.div>
-                </div>
-              </div>
-
-              <div className="mb-4">
-                <label className="block font-medium mb-2 text-gray-700">Opsi Jawaban</label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {['A', 'B', 'C', 'D', 'E'].map((option, index) => (
-                    <motion.div key={option} whileTap={{ scale: 0.98 }}>
-                      <input
-                        type="text"
-                        name="answer_options"
-                        value={formData.answer_options[index]}
-                        onChange={(e) => handleInputChange(e, index)}
-                        className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all text-gray-800"
-                        placeholder={`Opsi ${option}`}
-                        required
-                      />
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mb-4">
-                <label className="block font-medium mb-2 text-gray-700">Jawaban yang Benar</label>
-                <motion.div whileTap={{ scale: 0.98 }}>
-                  <input
-                    type="text"
-                    name="correct_answer"
-                    value={formData.correct_answer}
-                    onChange={(e) => handleInputChange(e)}
-                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all text-gray-800"
-                    placeholder="Masukkan jawaban yang benar"
-                    required
-                  />
-                </motion.div>
-              </div>
-
-              <div className="mb-6">
-                <label className="block font-medium mb-2 text-gray-700">Nilai</label>
-                <motion.div whileTap={{ scale: 0.98 }}>
-                  <input
-                    type="number"
-                    name="score"
-                    value={formData.score}
-                    onChange={(e) => handleInputChange(e)}
-                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all text-gray-800"
-                    placeholder="Masukkan nilai"
-                    required
-                  />
-                </motion.div>
-              </div>
-
-              <div className="flex justify-between">
-                <motion.button
-                  type="submit"
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  disabled={loading}
-                >
-                  {loading ? 'Menyimpan...' : 'Simpan'}
-                </motion.button>
-                <motion.button
-                  type="button"
-                  onClick={handleBack}
-                  className="bg-red-500 px-4 py-2 rounded hover:bg-red-600 transition-colors text-white font-medium"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  disabled={loading}
-                >
-                  Kembali
-                </motion.button>
-              </div>
-            </form>
-          </div>
         </div>
       </main>
     </div>
