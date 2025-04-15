@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { PlusCircle, X, Upload, ChevronDown, ChevronUp, Trash2, Edit } from "lucide-react"
 import { useParams, useNavigate } from "react-router-dom"
 import axiosInstance from "../../api/axiosInstance"
+import { FiArrowLeft, FiArrowRight } from "react-icons/fi"
 
 // Main component
 function GuruTryoutSubjek() {
@@ -353,134 +354,203 @@ function GuruTryoutSubjek() {
           )}
 
           {/* Create New Question Form */}
-          <div className="border-t pt-8">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold text-gray-800">Buat Soal Baru</h3>
-            </div>
+          <div className="flex justify-center items-center bg-gradient-to-b from-amber-50 to-amber-100 p-4 rounded-lg">
+            <motion.div
+              className="border-2 border-[#213555] rounded-2xl p-8 w-full max-w-xl bg-white shadow-lg"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            >
+              <motion.h2
+                className="text-xl font-bold mb-6 text-[#213555] relative"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                Buat Soal Baru
+                <motion.div
+                  className="absolute -bottom-2 left-0 h-1 bg-[#4F709C] rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: "60px" }}
+                  transition={{ delay: 0.4, duration: 0.4 }}
+                />
+              </motion.h2>
 
-            {/* Form Section */}
-            <form onSubmit={handleSubmit} className="border rounded-lg p-4">
-              <div className="mb-4">
-                <label className="block font-medium mb-2 text-gray-700">Soal</label>
-                <motion.div whileTap={{ scale: 0.995 }}>
-                  <textarea
-                    name="question"
-                    value={formData.question}
-                    onChange={(e) => handleInputChange(e)}
-                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all text-gray-800"
-                    rows={3}
-                    placeholder="Masukkan soal disini"
-                    required
-                  />
-                </motion.div>
-              </div>
-
-              <div className="mb-4">
-                <label className="block font-medium mb-2 text-gray-700">Gambar (Opsional)</label>
-                <div className="border rounded-md p-4">
-                  <div className="flex items-center justify-center mb-2">
-                    <label className="cursor-pointer flex items-center text-sm text-gray-600">
-                      <Upload className="w-4 h-4 mr-1" />
-                      Pilih file
-                      <input 
-                        type="file" 
-                        className="hidden" 
-                        accept="image/*" 
-                        onChange={handleFileChange}
-                        name="question_image"
-                      />
-                    </label>
+              <form onSubmit={handleSubmit}>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="space-y-6"
+                >
+                  {/* Question Input */}
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-[#213555]">Soal</label>
+                    <motion.textarea
+                      name="question"
+                      value={formData.question}
+                      onChange={(e) => handleInputChange(e)}
+                      className="w-full p-3 border border-[#213555] bg-[#F8F9FA] rounded-lg h-32 focus:outline-none focus:ring-2 focus:ring-[#4F709C] focus:border-transparent transition-all text-black"
+                      placeholder="Masukkan soal disini"
+                      required
+                      whileFocus={{ boxShadow: "0 0 0 3px rgba(33, 53, 85, 0.2)" }}
+                    />
                   </div>
 
-                  <motion.div
-                    className="bg-gray-100 rounded-md flex items-center justify-center"
-                    style={{ height: "120px" }}
-                    whileHover={{ boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)" }}
-                  >
-                    {preview ? (
-                      <img
-                        src={preview}
-                        alt="Preview"
-                        className="max-h-full max-w-full object-contain"
-                      />
-                    ) : (
-                      <span className="text-gray-500">Preview gambar</span>
-                    )}
-                  </motion.div>
-                </div>
-              </div>
+                  {/* Image Upload */}
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-[#213555]">Gambar (Opsional)</label>
+                    <motion.div
+                      className="border-2 border-dashed border-[#213555] rounded-lg p-4 bg-[#F8F9FA]"
+                      whileHover={{ borderColor: "rgba(79, 112, 156, 0.8)" }}
+                    >
+                      <div className="flex items-center justify-center mb-2">
+                        <label className="cursor-pointer flex items-center space-x-2 text-sm text-[#213555] hover:text-[#4F709C] transition-colors">
+                          <Upload className="w-5 h-5" />
+                          <span>Pilih file</span>
+                          <input 
+                            type="file" 
+                            className="hidden" 
+                            accept="image/*" 
+                            onChange={handleFileChange}
+                            name="question_image"
+                          />
+                        </label>
+                      </div>
 
-              <div className="mb-4">
-                <label className="block font-medium mb-2 text-gray-700">Opsi Jawaban</label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {['A', 'B', 'C', 'D', 'E'].map((option, index) => (
-                    <motion.div key={option} whileTap={{ scale: 0.98 }}>
-                      <input
-                        type="text"
-                        name="answer_options"
-                        value={formData.answer_options[index]}
-                        onChange={(e) => handleInputChange(e, index)}
-                        className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all text-gray-800"
-                        placeholder={`Opsi ${option}`}
-                        required
-                      />
+                      <motion.div
+                        className="bg-white rounded-md flex items-center justify-center"
+                        style={{ height: "120px" }}
+                        whileHover={{ boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)" }}
+                      >
+                        {preview ? (
+                          <img
+                            src={preview}
+                            alt="Preview"
+                            className="max-h-full max-w-full object-contain rounded-md"
+                          />
+                        ) : (
+                          <span className="text-gray-400">Preview gambar</span>
+                        )}
+                      </motion.div>
                     </motion.div>
-                  ))}
-                </div>
-              </div>
+                  </div>
 
-              <div className="mb-4">
-                <label className="block font-medium mb-2 text-gray-700">Jawaban yang Benar</label>
-                <motion.div whileTap={{ scale: 0.98 }}>
-                  <input
-                    type="text"
-                    name="correct_answer"
-                    value={formData.correct_answer}
-                    onChange={(e) => handleInputChange(e)}
-                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all text-gray-800"
-                    placeholder="Masukkan jawaban yang benar"
-                    required
-                  />
+                  {/* Answer Options */}
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <label className="block text-sm font-bold text-[#213555]">Opsi Jawaban</label>
+                    </div>
+                    <motion.div
+                      className="border border-[#213555] bg-[#F8F9FA] p-4 rounded-lg space-y-3"
+                      variants={{
+                        visible: {
+                          transition: {
+                            staggerChildren: 0.05
+                          }
+                        }
+                      }}
+                    >
+                      {['A', 'B', 'C', 'D', 'E'].map((option, index) => (
+                        <motion.div
+                          key={option}
+                          className="flex items-center gap-2"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <div className="flex-grow relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-[#213555]">
+                              {option}.
+                            </span>
+                            <motion.input
+                              type="text"
+                              name="answer_options"
+                              value={formData.answer_options[index]}
+                              onChange={(e) => handleInputChange(e, index)}
+                              className="w-full pl-8 pr-3 py-2 border border-[#213555] bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F709C] focus:border-transparent text-black"
+                              placeholder={`Opsi ${option}`}
+                              required
+                              whileFocus={{
+                                boxShadow: "0 0 0 3px rgba(33, 53, 85, 0.2)",
+                              }}
+                            />
+                          </div>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  </div>
+
+                  {/* Correct Answer */}
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-[#213555]">Jawaban yang Benar</label>
+                    <motion.input
+                      type="text"
+                      name="correct_answer"
+                      value={formData.correct_answer}
+                      onChange={(e) => handleInputChange(e)}
+                      className="w-full p-3 border border-[#213555] bg-[#F8F9FA] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F709C] focus:border-transparent text-black"
+                      placeholder="Masukkan jawaban yang benar"
+                      required
+                      whileFocus={{ boxShadow: "0 0 0 3px rgba(33, 53, 85, 0.2)" }}
+                    />
+                  </div>
+
+                  {/* Score */}
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-[#213555]">Nilai</label>
+                    <motion.input
+                      type="number"
+                      name="score"
+                      value={formData.score}
+                      onChange={(e) => handleInputChange(e)}
+                      className="w-full p-3 border border-[#213555] bg-[#F8F9FA] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4F709C] focus:border-transparent text-black"
+                      placeholder="Masukkan nilai"
+                      required
+                      whileFocus={{ boxShadow: "0 0 0 3px rgba(33, 53, 85, 0.2)" }}
+                    />
+                  </div>
+
+                  {/* Action Buttons */}
+                  <motion.div
+                    variants={{
+                      hidden: { opacity: 0, x: -10 },
+                      visible: {
+                        opacity: 1,
+                        x: 0,
+                        transition: { type: "spring", stiffness: 100 },
+                      },
+                    }}
+                    className="flex justify-between mt-8 gap-4"
+                  >
+                    <motion.button
+                      type="button"
+                      onClick={handleBack}
+                      className="bg-gray-500 text-white px-5 py-2 rounded-lg hover:bg-gray-600 flex items-center gap-2 shadow-md"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <FiArrowLeft size={16} /> Batalkan
+                    </motion.button>
+                    <motion.button
+                      type="submit"
+                      className="bg-gradient-to-r from-[#213555] to-[#4F709C] text-white px-5 py-2 rounded-lg hover:bg-[#4F709C] flex items-center gap-2 shadow-md"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        "Menyimpan..."
+                      ) : (
+                        <>
+                          Simpan <FiArrowRight size={16} />
+                        </>
+                      )}
+                    </motion.button>
+                  </motion.div>
                 </motion.div>
-              </div>
-
-              <div className="mb-6">
-                <label className="block font-medium mb-2 text-gray-700">Nilai</label>
-                <motion.div whileTap={{ scale: 0.98 }}>
-                  <input
-                    type="number"
-                    name="score"
-                    value={formData.score}
-                    onChange={(e) => handleInputChange(e)}
-                    className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all text-gray-800"
-                    placeholder="Masukkan nilai"
-                    required
-                  />
-                </motion.div>
-              </div>
-
-              <div className="flex justify-between">
-                <motion.button
-                  type="submit"
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  disabled={loading}
-                >
-                  {loading ? 'Menyimpan...' : 'Simpan'}
-                </motion.button>
-                <motion.button
-                  type="button"
-                  onClick={handleBack}
-                  className="bg-red-500 px-4 py-2 rounded hover:bg-red-600 transition-colors text-white font-medium"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  disabled={loading}
-                >
-                  Kembali
-                </motion.button>
-              </div>
-            </form>
+              </form>
+            </motion.div>
           </div>
         </div>
       </main>
