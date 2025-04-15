@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FiUpload, FiArrowLeft, FiSave, FiX } from "react-icons/fi";
+import { FiUpload, FiArrowLeft, FiSave, FiX, FiArrowRight } from "react-icons/fi";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
 
@@ -13,8 +13,6 @@ const CreateTryoutSubjek = () => {
     soal: "",
     gambar: null,
     opsi: ["", "", "", "", ""],
-    jawabanBenar: "",
-    pembahasan: "",
     skor: ""
   });
 
@@ -40,7 +38,6 @@ const CreateTryoutSubjek = () => {
       formData.opsi.forEach((option) => {
         formDataToSend.append('answer_options', JSON.stringify({ answer_option: option }));
       });
-      formDataToSend.append('correct_answer', formData.jawabanBenar);
       if (formData.gambar) {
         formDataToSend.append('question_image', formData.gambar);
       }
@@ -169,30 +166,6 @@ const CreateTryoutSubjek = () => {
                 </div>
               </div>
 
-              {/* Jawaban yang Benar */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Jawaban yang Benar</label>
-                <input
-                  type="text"
-                  className="w-full p-3 border border-gray-300 rounded-lg text-gray-800 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                  value={formData.jawabanBenar}
-                  onChange={(e) => setFormData({ ...formData, jawabanBenar: e.target.value })}
-                  placeholder="Masukkan jawaban yang benar"
-                />
-              </div>
-
-              {/* Pembahasan */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Pembahasan</label>
-                <textarea
-                  className="w-full p-3 border border-gray-300 rounded-lg text-gray-800 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                  rows="3"
-                  value={formData.pembahasan}
-                  onChange={(e) => setFormData({ ...formData, pembahasan: e.target.value })}
-                  placeholder="Masukkan pembahasan jawaban"
-                />
-              </div>
-
               {/* Skor */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Skor</label>
@@ -220,8 +193,11 @@ const CreateTryoutSubjek = () => {
                 disabled={loading}
                 className={`px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2 shadow-md hover:shadow-lg ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                <FiSave size={16} />
-                {loading ? 'Menyimpan...' : 'Simpan'}
+                {loading ? 'Menyimpan...' : (
+                  <>
+                    Selanjutnya <FiArrowRight size={16} />
+                  </>
+                )}
               </button>
             </div>
           </div>
