@@ -183,18 +183,20 @@ const GuruTryoutDetail = () => {
                       key={itemIndex} 
                       className="border-b hover:bg-gray-50 cursor-pointer"
                       onClick={() => {
-                        if (!item.subject_id) {
-                          console.error("Missing subject_id for item:", item);
+                        if (!item.id_subject) {
                           return;
                         }
-                        navigate(`/guru/tryout/${id}/subjek/${item.subject_id}`, { 
-                          state: { 
-                            subjectId: item.subject_id,
-                            subjectName: item.subject_name || "Untitled Subject",
-                            tryoutName: tryoutData?.tryout_name || "Untitled Tryout",
-                            tryoutId: id
-                          }
-                        });
+
+                        if (!id) {
+                          return;
+                        }
+
+                        try {
+                          const path = `/guru/tryout/${id}/${item.id_subject}`;
+                          window.location.href = path;
+                        } catch (error) {
+                          console.error("Navigation error:", error);
+                        }
                       }}
                     >
                       <td className="px-6 py-4 font-medium text-gray-900">
