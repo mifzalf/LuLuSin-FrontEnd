@@ -17,6 +17,8 @@ const GuruSubjekEdit = () => {
   const [error, setError] = useState(null)
   const [notification, setNotification] = useState(null)
   const [originalSubjectData, setOriginalSubjectData] = useState(null)
+  const [categoryList, setCategoryList] = useState([])
+  const [selectedCategoryId, setSelectedCategoryId] = useState("")
 
   useEffect(() => {
     const compositeId = searchParams.get("id")
@@ -35,10 +37,22 @@ const GuruSubjekEdit = () => {
       return
     }
 
-    const fetchSubjectDetails = async () => {
+    // Fetch category list and subject details
+    const fetchData = async () => {
       try {
         setLoadingData(true)
         setError(null)
+
+        // Fetch category list
+        const categoryResponse = await axiosInstance.get('/API/teacher/subjectcategory')
+        if (categoryResponse.data && Array.isArray(categoryResponse.data.dataSubjectCategory)) {
+          console.log("Category data received:", categoryResponse.data.dataSubjectCategory);
+          setCategoryList(categoryResponse.data.dataSubjectCategory)
+        } else {
+          console.warn("Could not fetch category list or format incorrect")
+          setCategoryList([])
+        }
+
         // Fetch ALL subjects since there's no endpoint for a single one
         const response = await axiosInstance.get(`/API/teacher/subject`)
         
@@ -53,6 +67,7 @@ const GuruSubjekEdit = () => {
             console.log("Subject Data received:", subjectData);
             setOriginalSubjectData(subjectData);
             setKategori(subjectData.category_name || searchParams.get("kategori") || "") // Assuming category_name exists, adjust if needed
+            setSelectedCategoryId(subjectData.id_subject_category || "")
             setSubjek(subjectData.subject_name || "")
             setTimeLimit(subjectData.time_limit ?? "")
             setMinSoal(subjectData.minimal_questions ?? "") // Changed from minimal_soal to minimal_questions
@@ -77,9 +92,9 @@ const GuruSubjekEdit = () => {
           setMinSoal("")
         }
       } catch (err) {
-        console.error("Error fetching subject details:", err)
+        console.error("Error fetching data:", err)
         setOriginalSubjectData(null);
-        setError("Gagal memuat detail subjek. Menggunakan data dari URL.")
+        setError("Gagal memuat data. Menggunakan data dari URL.")
         setKategori(searchParams.get("kategori") || "") 
         setSubjek(searchParams.get("subjek") || "")
         setTimeLimit("") 
@@ -89,7 +104,7 @@ const GuruSubjekEdit = () => {
       }
     }
 
-    fetchSubjectDetails()
+    fetchData()
 
   }, [searchParams])
 
@@ -102,23 +117,51 @@ const GuruSubjekEdit = () => {
     }
   }, [notification])
 
+  // Update category name when category id changes
+  useEffect(() => {
+    if (selectedCategoryId && categoryList.length > 0) {
+      const selectedCategory = categoryList.find(cat => String(cat.subject_category_id) === String(selectedCategoryId))
+      if (selectedCategory) {
+        setKategori(selectedCategory.subject_category_name || "")
+      }
+    }
+  }, [selectedCategoryId, categoryList])
+
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!subjectId || !originalSubjectData) {
-      setError("Tidak dapat menyimpan, data subjek asli tidak ditemukan atau ID tidak valid.")
+    if (!subjectId) {
+      setError("Tidak dapat menyimpan, ID subjek tidak valid.")
       return
+    }
+
+    // Validasi field yang wajib diisi
+    if (!selectedCategoryId) {
+      setError("Kategori Subjek wajib dipilih.");
+      return;
+    }
+    if (!subjek.trim()) {
+      setError("Nama Subjek wajib diisi.");
+      return;
+    }
+    if (!timeLimit || timeLimit === '') {
+      setError("Waktu Pengerjaan wajib diisi.");
+      return;
+    }
+    if (!minSoal || minSoal === '') {
+      setError("Minimal Soal wajib diisi.");
+      return;
     }
 
     setLoading(true)
     setError(null)
     setNotification(null)
 
-    if (minSoal !== '' && Number(minSoal) < 0) {
+    if (Number(minSoal) < 0) {
         setError("Minimal Soal tidak boleh negatif.");
         setLoading(false);
         return;
     }
-    if (timeLimit !== '' && Number(timeLimit) < 0) {
+    if (Number(timeLimit) < 0) {
         setError("Waktu Pengerjaan tidak boleh negatif.");
         setLoading(false);
         return;
@@ -126,10 +169,10 @@ const GuruSubjekEdit = () => {
 
     try {
       const payload = {
-        id_subject_category: originalSubjectData.id_subject_category,
+        id_subject_category: Number(selectedCategoryId),
         subject_name: subjek,
-        time_limit: timeLimit === '' ? null : Number(timeLimit),
-        minimal_questions: minSoal === '' ? null : Number(minSoal)
+        time_limit: Number(timeLimit),
+        minimal_questions: Number(minSoal)
       }
 
       console.log("Sending update request for ID:", subjectId, "Payload:", payload)
@@ -155,6 +198,11 @@ const GuruSubjekEdit = () => {
         if (err.response.status === 401) {
            setError("Sesi anda telah berakhir. Silakan login kembali.");
            navigate('/login');
+           return;
+        } else if (err.response.status === 400) {
+           // Menampilkan pesan spesifik untuk validasi yang gagal
+           setError(err.response.data.message || "Data tidak lengkap. Harap isi semua field yang wajib.");
+           setLoading(false);
            return;
         }
         errorMessage = `Error ${err.response.status}: ${errorMessage}` 
@@ -195,17 +243,24 @@ const GuruSubjekEdit = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-[#213555] text-sm font-medium mb-1">Kategori Subjek</label>
-            <input
-              type="text"
-              value={kategori}
-              readOnly 
-              className="w-full p-3 border border-[#D8C4B6] rounded-full bg-gray-100 text-[#213555] outline-none cursor-not-allowed"
-            />
+            <label className="block text-[#213555] text-sm font-medium mb-1">Kategori Subjek <span className="text-red-500">*</span></label>
+            <select
+              value={selectedCategoryId}
+              onChange={(e) => setSelectedCategoryId(e.target.value)}
+              className="w-full p-3 border border-[#D8C4B6] rounded-full bg-white text-[#213555] outline-none focus:ring-1 focus:ring-[#3E5879]"
+              required
+            >
+              <option value="">Pilih Kategori</option>
+              {categoryList.map((cat) => (
+                <option key={cat.subject_category_id} value={cat.subject_category_id}>
+                  {cat.subject_category_name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
-            <label className="block text-[#213555] text-sm font-medium mb-1">Subjek</label>
+            <label className="block text-[#213555] text-sm font-medium mb-1">Subjek <span className="text-red-500">*</span></label>
             <input
               type="text"
               value={subjek}
@@ -216,27 +271,33 @@ const GuruSubjekEdit = () => {
           </div>
 
           <div>
-            <label className="block text-[#213555] text-sm font-medium mb-1">Waktu Pengerjaan <span className="text-xs text-gray-500">(Menit)</span></label>
+            <label className="block text-[#213555] text-sm font-medium mb-1">Waktu Pengerjaan (Menit) <span className="text-red-500">*</span></label>
             <input
               type="number"
               value={timeLimit}
               onChange={(e) => setTimeLimit(e.target.value)}
               className="w-full p-3 border border-[#D8C4B6] rounded-full bg-white text-[#213555] outline-none focus:ring-1 focus:ring-[#3E5879]"
-              min="0"
+              min="1"
               placeholder="Masukkan waktu dalam menit"
+              required
             />
           </div>
 
           <div>
-            <label className="block text-[#213555] text-sm font-medium mb-1">Minimal Soal</label>
+            <label className="block text-[#213555] text-sm font-medium mb-1">Minimal Soal <span className="text-red-500">*</span></label>
             <input
               type="number"
               value={minSoal}
               onChange={(e) => setMinSoal(e.target.value)}
               className="w-full p-3 border border-[#D8C4B6] rounded-full bg-white text-[#213555] outline-none focus:ring-1 focus:ring-[#3E5879]"
-              min="0"
+              min="1"
               placeholder="Masukkan jumlah minimal soal"
+              required
             />
+          </div>
+
+          <div className="text-xs text-gray-500 italic">
+            <span className="text-red-500">*</span> Field wajib diisi
           </div>
 
           <hr className="border-t border-[#D8C4B6] my-8" />
