@@ -210,7 +210,7 @@ const GuruSubjek = () => {
         )}
         
         <div className="w-full flex justify-between items-center py-6">
-          <h1 className="text-2xl font-bold text-[#213555]">Subjek UTBK SNBT 2025</h1>
+          <h1 className="text-2xl font-bold text-[#213555]">Data Subjek</h1>
           <button
             onClick={() => navigate("/guru/subjek/create")}
             className="bg-[#3E5879] text-white px-6 py-2.5 rounded-lg flex items-center gap-2 hover:bg-[#213555] transition"
