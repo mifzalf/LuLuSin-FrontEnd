@@ -37,31 +37,46 @@ import GuruSubjekEdit from "./Pages/Guru/GuruSubjekEdit";
 import SiswaTryoutId from "./Pages/Siswa/TryoutId";
 import GuruDashboard from "./Pages/Guru/Dashboard";
 import { motion } from "framer-motion";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <Routes>
-
-      {/* Landing Page Route */}
+      {/* Landing Page Route - accessible to all */}
       <Route path="/" element={<SiswaLandingPage />} />
      
-    
-      {/* Auth Routes */}
+      {/* Auth Routes - accessible to all */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* Admin Routes */}
-      <Route path="/admin/dashboard" element={<Dashboard />} />
-      <Route path="/admin/detailguru" element={<DetailGuru />} />
-      <Route path="/admin/detailmurid" element={<DetailMurid />} />
+      {/* Admin Routes - only admin */}
+      <Route path="/admin/dashboard" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <Dashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/detailguru" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <DetailGuru />
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/detailmurid" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <DetailMurid />
+        </ProtectedRoute>
+      } />
 
       {/* Redirect /Guru to /guru */}
       <Route path="/Guru" element={<Navigate to="/guru" replace />} />
 
-      {/* Guru Routes with GuruLayout */}
-      <Route path="/guru" element={<LayoutGuru />}>
+      {/* Guru Routes - only teacher */}
+      <Route path="/guru" element={
+        <ProtectedRoute allowedRoles={['teacher']}>
+          <LayoutGuru />
+        </ProtectedRoute>
+      }>
         <Route index element={<Home />} />
         <Route path="home" element={<Home />} />
         <Route path="createtryout" element={<CreateTryout />} />
@@ -82,11 +97,14 @@ function App() {
         <Route path="dashboard" element={<GuruDashboard />} />
       </Route>
 
-      {/* Siswa Routes with LayoutSiswa */}
-      <Route path="/siswa" element={<LayoutSiswa />}>
+      {/* Siswa Routes - only student */}
+      <Route path="/siswa" element={
+        <ProtectedRoute allowedRoles={['student']}>
+          <LayoutSiswa />
+        </ProtectedRoute>
+      }>
         <Route index element={<SiswaDashBoard />} />
         <Route path="dashboard" element={<SiswaDashBoard />} />
-
         <Route path="tryout" element={<SiswaTryout />} />
         <Route path="tryout/id/detail" element={<SiswaTryoutDetail />} />
         <Route path="tryout/id/hasil" element={<SiswaTryoutHasil />} />
@@ -96,7 +114,7 @@ function App() {
         <Route path="tryout/:id" element={<SiswaTryoutId />} />
       </Route>
 
-      {/* Landing Page Route */}
+      {/* About Route - accessible to all */}
       <Route path="/about" element={
         <div className="min-h-screen bg-[#213555] py-12">
           <div className="max-w-7xl mx-auto px-4">

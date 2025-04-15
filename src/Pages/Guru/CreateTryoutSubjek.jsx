@@ -95,7 +95,7 @@ const CreateTryoutSubjek = () => {
                     </div>
                   )}
                 </div>
-              </div>
+                    </div>
 
               {/* Opsi */}
               <div className="mb-6">
@@ -107,17 +107,17 @@ const CreateTryoutSubjek = () => {
                         {String.fromCharCode(65 + index)}
                       </div>
                       <input
-                        type="text"
+                                type="text"
                         className="w-full pl-12 pr-3 py-3 border border-gray-300 rounded-lg text-gray-800 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                         placeholder={`Opsi ${index + 1}`}
                         value={opsi}
-                        onChange={(e) => {
+                                onChange={(e) => {
                           const newOpsi = [...formData.opsi];
                           newOpsi[index] = e.target.value;
                           setFormData({ ...formData, opsi: newOpsi });
                         }}
                       />
-                    </div>
+                            </div>
                   ))}
                 </div>
               </div>
