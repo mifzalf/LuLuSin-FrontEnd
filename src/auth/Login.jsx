@@ -27,10 +27,21 @@ const Login = () => {
         localStorage.setItem('userType', response.data.userType);
         console.log("Token and userType saved to localStorage");
 
-        if (response.data.userType === 'student') {
-          navigate('/siswa/dashboard');
-        } else {
-          navigate('/guru/dashboard');
+        // Redirect based on user type
+        switch (response.data.userType) {
+          case 'student':
+            navigate('/siswa/dashboard');
+            break;
+          case 'teacher':
+            navigate('/guru/dashboard');
+            break;
+          case 'admin':
+            navigate('/admin/dashboard');
+            break;
+          default:
+            console.error("Invalid user type:", response.data.userType);
+            setError("Tipe pengguna tidak valid.");
+            return;
         }
       } else {
         console.error("Login successful, but token or userType missing in response:", response.data);

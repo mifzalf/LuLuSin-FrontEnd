@@ -4,12 +4,15 @@ function authorize(AllowedRoles = []) {
             return res.status(401).json({ message: 'User not authenticated' });
         }
 
+        // Convert single role to array for consistency
+        const roles = Array.isArray(AllowedRoles) ? AllowedRoles : [AllowedRoles];
+        
         console.log('authorize - Checking user:', req.user); 
-        console.log('authorize - Allowed Roles:', AllowedRoles); 
+        console.log('authorize - Allowed Roles:', roles); 
         console.log('authorize - User Type:', req.user.type); 
-        console.log('authorize - Is role allowed?', AllowedRoles.includes(req.user.type)); 
+        console.log('authorize - Is role allowed?', roles.includes(req.user.type)); 
 
-        if (!req.user.type || !AllowedRoles.includes(req.user.type)) {
+        if (!req.user.type || !roles.includes(req.user.type)) {
              console.log('authorize - Access Denied!'); 
              return res.status(403).json({ message: 'Access denied: You do not have permission for this resource' });
         }
@@ -18,3 +21,5 @@ function authorize(AllowedRoles = []) {
         next();
     }
 } 
+
+module.exports = authorize; 
