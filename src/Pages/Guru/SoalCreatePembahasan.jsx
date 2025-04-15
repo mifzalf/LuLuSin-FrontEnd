@@ -1,8 +1,9 @@
 "use client";
 import { motion } from "framer-motion";
-import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
+import { FiArrowLeft, FiSave } from "react-icons/fi";
 import { useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import axiosInstance from "../../api/axiosInstance";
 
 const SoalCreatePembahasan = () => {
   const navigate = useNavigate();
@@ -18,9 +19,25 @@ const SoalCreatePembahasan = () => {
     navigate(`/guru/tryout/${tryout_id}/${subject_id}/createsoal`);
   };
 
-  const handleNext = () => {
-    // Navigate to the next page with createpembahasan
-    navigate(`/guru/tryout/${tryout_id}/${subject_id}/createsoal/createpembahasan`);
+  const handleNext = async () => {
+    try {
+      // Validate form data
+      if (!formData.jawaban.trim() || !formData.pembahasan.trim()) {
+        alert('Mohon lengkapi jawaban dan pembahasan');
+        return;
+      }
+
+      // Here you would typically send the data to your API
+      const response = await axiosInstance.post(`/API/teacher/tryout/${tryout_id}/${subject_id}/create_pembahasan`, formData);
+
+      if (response.status === 201 || response.status === 200) {
+        // After successful submission, navigate back to the subject page
+        navigate(`/guru/tryout/${tryout_id}/${subject_id}`);
+      }
+    } catch (error) {
+      console.error('Error submitting pembahasan:', error);
+      alert(error.response?.data?.message || 'Gagal menyimpan pembahasan. Silakan coba lagi.');
+    }
   };
 
   // Check if we're on the createpembahasan page
@@ -86,8 +103,8 @@ const SoalCreatePembahasan = () => {
                 onClick={handleNext}
                 className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2 shadow-md hover:shadow-lg"
               >
-                Selanjutnya
-                <FiArrowRight size={16} />
+                Simpan
+                <FiSave size={16} />
               </button>
             </div>
           </div>
