@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { PlusCircle, X, Upload } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { PlusCircle, X, Upload, ChevronDown, ChevronUp, Trash2, Edit } from "lucide-react"
 import { useParams, useNavigate } from "react-router-dom"
 import axiosInstance from "../../api/axiosInstance"
 
@@ -11,10 +11,11 @@ function GuruTryoutSubjek() {
   const { tryout_id, subject_id } = useParams()
   const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(true)
+  const [expandedQuestions, setExpandedQuestions] = useState({})
   const [formData, setFormData] = useState({
     question: '',
     score: '',
-    answer_options: ['', '', '', '', ''], // Changed to 5 options
+    answer_options: ['', '', '', '', ''],
     correct_answer: ''
   })
   const [file, setFile] = useState(null)
@@ -22,6 +23,8 @@ function GuruTryoutSubjek() {
   const [loading, setLoading] = useState(false)
   const [subjectData, setSubjectData] = useState(null)
   const [error, setError] = useState(null)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [questionToDelete, setQuestionToDelete] = useState(null)
 
   useEffect(() => {
     const fetchSubjectData = async () => {
@@ -124,6 +127,49 @@ function GuruTryoutSubjek() {
     navigate(`/guru/tryout/${tryout_id}`)
   }
 
+  const toggleQuestion = (index) => {
+    setExpandedQuestions(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }))
+  }
+
+  const handleEdit = (question) => {
+    setFormData({
+      question: question.question,
+      score: question.score,
+      answer_options: question.answer_options.map(opt => opt.answer_option),
+      correct_answer: question.correct_answer
+    })
+    
+    window.scrollTo({
+      top: document.querySelector('form').offsetTop - 100,
+      behavior: 'smooth'
+    })
+  }
+
+  const handleDelete = async (questionId) => {
+    try {
+      await axiosInstance.delete(`/API/teacher/tryout/${tryout_id}/${subject_id}/delete_question/${questionId}`)
+      
+      const response = await axiosInstance.get(`/API/teacher/tryout/${tryout_id}/${subject_id}`)
+      setSubjectData(response.data)
+      
+      setShowDeleteConfirm(false)
+      setQuestionToDelete(null)
+      
+      alert('Soal berhasil dihapus!')
+    } catch (error) {
+      console.error('Error deleting question:', error)
+      alert(error.response?.data?.message || 'Gagal menghapus soal. Silakan coba lagi.')
+    }
+  }
+
+  const openDeleteConfirm = (question) => {
+    setQuestionToDelete(question)
+    setShowDeleteConfirm(true)
+  }
+
   if (!tryout_id || !subject_id) {
     return (
       <div className="min-h-screen bg-slate-100 flex items-center justify-center">
@@ -146,45 +192,140 @@ function GuruTryoutSubjek() {
 
   return (
     <div className="min-h-screen bg-slate-100">
-      {/* Main Content */}
       <main className="container mx-auto py-6 px-4">
         <h2 className="text-2xl font-bold mb-4 text-gray-800">
           {subjectData?.subject?.[0]?.subject_name || "Loading..."}
         </h2>
 
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          {/* Delete Confirmation Modal */}
+          {showDeleteConfirm && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+                <h3 className="text-lg font-semibold mb-4">Konfirmasi Hapus</h3>
+                <p className="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus soal ini?</p>
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => setShowDeleteConfirm(false)}
+                    className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    onClick={() => handleDelete(questionToDelete)}
+                    className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+                  >
+                    Hapus
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Existing Questions Section */}
           {subjectData && subjectData.tryoutQuestionBySubject && subjectData.tryoutQuestionBySubject.length > 0 && (
             <div className="mb-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Soal yang Sudah Ada</h3>
               <div className="space-y-4">
                 {subjectData.tryoutQuestionBySubject.map((question, index) => (
-                  <div key={index} className="border rounded-lg p-4">
-                    <p className="font-medium mb-2">Soal {index + 1}</p>
-                    <p className="text-gray-700 mb-2">{question.question}</p>
-                    {question.question_image && (
-                      <img src={question.question_image} alt="Question" className="max-w-md mb-2" />
-                    )}
-                    <div className="space-y-1 mb-3">
-                      <p className="font-medium text-gray-700 mb-1">Pilihan Jawaban:</p>
-                      {question.answer_options.map((option, optIndex) => (
-                        <p key={optIndex} className="text-gray-600 pl-4">
-                          {String.fromCharCode(65 + optIndex)}. {option.answer_option}
-                        </p>
-                      ))}
+                  <motion.div
+                    key={index}
+                    className="border rounded-lg overflow-hidden"
+                    initial={false}
+                  >
+                    <div className={`p-4 hover:bg-gray-50 transition-colors ${
+                      expandedQuestions[index] ? 'bg-gray-50' : ''
+                    }`}>
+                      <div className="flex justify-between items-center">
+                        <div 
+                          className="flex items-center space-x-3 flex-grow cursor-pointer"
+                          onClick={() => toggleQuestion(index)}
+                        >
+                          <span className="font-medium text-gray-700">Soal {index + 1}</span>
+                          <span className="text-gray-500 text-sm">
+                            {question.question.length > 100
+                              ? question.question.substring(0, 100) + "..."
+                              : question.question}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2 ml-4">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleEdit(question)
+                            }}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+                            title="Edit Soal"
+                          >
+                            <Edit className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              openDeleteConfirm(question)
+                            }}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                            title="Hapus Soal"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => toggleQuestion(index)}
+                            className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
+                          >
+                            {expandedQuestions[index] ? (
+                              <ChevronUp className="w-5 h-5" />
+                            ) : (
+                              <ChevronDown className="w-5 h-5" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="bg-gray-50 p-3 rounded-md mb-2">
-                      <p className="font-medium text-gray-700">Jawaban Benar:</p>
-                      <p className="text-green-600 mt-1">{question.correct_answer}</p>
-                    </div>
-                    <p className="text-sm text-gray-500">Nilai: {question.score}</p>
-                  </div>
+
+                    <AnimatePresence>
+                      {expandedQuestions[index] && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="border-t"
+                        >
+                          <div className="p-4">
+                            <div className="mb-4">
+                              <p className="text-gray-700 whitespace-pre-line">{question.question}</p>
+                              {question.question_image && (
+                                <img src={question.question_image} alt="Question" className="max-w-md mt-2" />
+                              )}
+                            </div>
+
+                            <div className="space-y-1 mb-3">
+                              <p className="font-medium text-gray-700 mb-1">Pilihan Jawaban:</p>
+                              {question.answer_options.map((option, optIndex) => (
+                                <p key={optIndex} className="text-gray-600 pl-4">
+                                  {String.fromCharCode(65 + optIndex)}. {option.answer_option}
+                                </p>
+                              ))}
+                            </div>
+
+                            <div className="bg-gray-50 p-3 rounded-md mb-2">
+                              <p className="font-medium text-gray-700">Jawaban Benar:</p>
+                              <p className="text-green-600 mt-1">{question.correct_answer}</p>
+                            </div>
+
+                            <p className="text-sm text-gray-500">Nilai: {question.score}</p>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Create New Question Section */}
+          {/* Create New Question Form */}
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold text-gray-800">Buat Soal Baru</h3>
           </div>
