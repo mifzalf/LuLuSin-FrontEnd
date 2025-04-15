@@ -215,7 +215,7 @@ const GuruSubjek = () => {
             onClick={() => navigate("/guru/subjek/create")}
             className="bg-[#3E5879] text-white px-6 py-2.5 rounded-lg flex items-center gap-2 hover:bg-[#213555] transition"
           >
-            <FiPlus size={16} /> Tambahkan
+            <FiPlus size={16} /> Buat Subjek
           </button>
         </div>
 
