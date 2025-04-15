@@ -31,7 +31,7 @@ const CreateTryoutSubjek = () => {
   };
 
   const handleNext = () => {
-    navigate(`/guru/tryout/${tryout_id}/${subject_id}/pembahasan`);
+    navigate(`/guru/tryout/${tryout_id}/${subject_id}/createsoal/createpembahasan`);
   };
 
   return (

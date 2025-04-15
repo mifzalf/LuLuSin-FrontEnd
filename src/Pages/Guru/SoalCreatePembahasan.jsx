@@ -2,11 +2,12 @@
 import { motion } from "framer-motion";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 const SoalCreatePembahasan = () => {
   const navigate = useNavigate();
   const { tryout_id, subject_id } = useParams();
+  const location = useLocation();
   const [formData, setFormData] = useState({
     jawaban: "",
     pembahasan: ""
@@ -14,16 +15,19 @@ const SoalCreatePembahasan = () => {
 
   const handleBack = () => {
     // Go back to the create question page
-    navigate(`/guru/tryout/${tryout_id}/${subject_id}/create`);
+    navigate(`/guru/tryout/${tryout_id}/${subject_id}/createsoal`);
   };
 
   const handleNext = () => {
-    // Navigate to the next page (e.g., back to tryout list or wherever needed)
-    navigate(`/guru/tryout/${tryout_id}/${subject_id}`);
+    // Navigate to the next page with createpembahasan
+    navigate(`/guru/tryout/${tryout_id}/${subject_id}/createsoal/createpembahasan`);
   };
 
+  // Check if we're on the createpembahasan page
+  const isCreatePembahasan = location.pathname.includes('createpembahasan');
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 p-6">
+    <div className={`min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 p-6 ${isCreatePembahasan ? 'block' : 'hidden'}`}>
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-xl shadow-lg p-8">
           <div className="mb-8 flex justify-between items-center">

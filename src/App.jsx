@@ -85,12 +85,12 @@ function App() {
         <Route path="tryout/:id" element={<GuruTryoutDetail />} />
         <Route path="tryout/:tryout_id/:subject_id" element={<GuruTryoutSubjek />} />
         <Route path="tryout/:tryout_id/:subject_id/createSoal" element={<CreateTryoutSubjek />} />
+        <Route path="tryout/:tryout_id/:subject_id/createsoal/createpembahasan" element={<SoalCreatePembahasan />} />
         <Route path="tryout/id/editsubjek" element={<EditTryoutSubjek />} />
         <Route path="kategorisubjek" element={<GuruKategori />} />
         <Route path="kategorisubjek/create" element={<GuruKategoriCreate />} />
         <Route path="kategorisubjek/edit/:id" element={<EditKategoriSubjek />} />
         <Route path="tryout/id/subjek/pembahasan/edit" element={<EditPembahasanSoalTryout />} />
-        <Route path="tryout/id/subjek/pembahasan/create" element={<SoalCreatePembahasan />} />
         <Route path="subjek" element={<GuruSubjek />} />
         <Route path="subjek/create" element={<GuruSubjekCreate />} />
         <Route path="subjek/edit" element={<GuruSubjekEdit />} />
