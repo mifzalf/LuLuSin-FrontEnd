@@ -1,80 +1,91 @@
 "use client";
 import { motion } from "framer-motion";
-import { FiArrowLeft, FiCheck } from "react-icons/fi";
+import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
-const EditSoalCreatePembahasan = () => {
-  // State untuk jawaban dan pembahasan
-  const [jawaban, setJawaban] = useState("");
-  const [pembahasan, setPembahasan] = useState("");
+const SoalCreatePembahasan = () => {
+  const navigate = useNavigate();
+  const { tryout_id, subject_id } = useParams();
+  const [formData, setFormData] = useState({
+    jawaban: "",
+    pembahasan: ""
+  });
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        when: "beforeChildren",
-        staggerChildren: 0.1,
-      },
-    },
+  const handleBack = () => {
+    // Go back to the create question page
+    navigate(`/guru/tryout/${tryout_id}/${subject_id}/create`);
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { type: "spring", stiffness: 100 },
-    },
+  const handleNext = () => {
+    // Navigate to the next page (e.g., back to tryout list or wherever needed)
+    navigate(`/guru/tryout/${tryout_id}/${subject_id}`);
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] p-4">
-      <div className="bg-white rounded-3xl p-6 max-w-3xl mx-auto shadow-sm">
-        <div className="flex items-center mb-6">
-          <button className="p-2 rounded-full bg-gray-100 mr-4">
-            <FiArrowLeft className="w-5 h-5" />
-          </button>
-          <div>
-            <h3 className="text-sm text-gray-600 mb-1">Pembahasan Soal Tryout</h3>
-            <h2 className="text-xl font-semibold">Tambah Pembahasan Soal Tryout</h2>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <label className="block text-gray-700 mb-2">
-              Jawaban
-            </label>
-            <input
-              type="text"
-              value={jawaban}
-              onChange={(e) => setJawaban(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 p-6">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-xl shadow-lg p-8">
+          <div className="mb-8 flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-1">Pembahasan Soal</h2>
+              <p className="text-sm text-gray-600">Tambahkan pembahasan untuk soal yang telah dibuat</p>
+            </div>
           </div>
 
-          <div>
-            <label className="block text-gray-700 mb-2">
-              Pembahasan
-            </label>
-            <textarea
-              value={pembahasan}
-              onChange={(e) => setPembahasan(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              rows="5"
-            ></textarea>
-          </div>
+          <div className="border border-gray-200 rounded-xl p-8 bg-white shadow-sm">
+            <div className="mb-8">
+              <div className="flex items-center mb-6">
+                <div className="w-2 h-6 bg-blue-600 rounded-full mr-3"></div>
+                <h3 className="text-lg font-semibold text-gray-800">Pembahasan</h3>
+              </div>
 
-          <div className="flex justify-between mt-6">
-            <button className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-              Sebelumnya
-            </button>
-            <button className="px-6 py-2 bg-[#2B4365] text-white rounded-lg hover:bg-[#1a2a40]">
-              Buat
-            </button>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Jawaban
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.jawaban}
+                    onChange={(e) => setFormData({ ...formData, jawaban: e.target.value })}
+                    className="w-full p-3 border border-gray-300 rounded-lg text-gray-800 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                    placeholder="Masukkan jawaban yang benar"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Pembahasan
+                  </label>
+                  <textarea
+                    value={formData.pembahasan}
+                    onChange={(e) => setFormData({ ...formData, pembahasan: e.target.value })}
+                    className="w-full p-3 border border-gray-300 rounded-lg text-gray-800 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                    rows="5"
+                    placeholder="Masukkan pembahasan soal"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex justify-end gap-4 pt-4 border-t">
+              <button 
+                onClick={handleBack}
+                className="px-6 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
+              >
+                <FiArrowLeft size={16} />
+                Kembali
+              </button>
+              <button 
+                onClick={handleNext}
+                className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2 shadow-md hover:shadow-lg"
+              >
+                Selanjutnya
+                <FiArrowRight size={16} />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -82,4 +93,4 @@ const EditSoalCreatePembahasan = () => {
   );
 };
 
-export default EditSoalCreatePembahasan;
+export default SoalCreatePembahasan;

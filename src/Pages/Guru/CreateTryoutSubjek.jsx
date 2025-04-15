@@ -8,7 +8,6 @@ import axiosInstance from "../../api/axiosInstance";
 const CreateTryoutSubjek = () => {
   const navigate = useNavigate();
   const { tryout_id, subject_id } = useParams();
-  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     soal: "",
     gambar: null,
@@ -27,45 +26,12 @@ const CreateTryoutSubjek = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const formDataToSend = new FormData();
-      formDataToSend.append('question', formData.soal);
-      formDataToSend.append('score', formData.skor);
-      formData.opsi.forEach((option) => {
-        formDataToSend.append('answer_options', JSON.stringify({ answer_option: option }));
-      });
-      if (formData.gambar) {
-        formDataToSend.append('question_image', formData.gambar);
-      }
-
-      const response = await axiosInstance.post(
-        `/API/teacher/tryout/${tryout_id}/${subject_id}/create_question`,
-        formDataToSend,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
-
-      if (response.status === 201) {
-        alert('Soal berhasil disimpan!');
-        navigate(`/guru/tryout/${tryout_id}/${subject_id}`);
-      }
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      alert(error.response?.data?.message || 'Gagal menyimpan soal. Silakan coba lagi.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleBack = () => {
     navigate(`/guru/tryout/${tryout_id}/${subject_id}`);
+  };
+
+  const handleNext = () => {
+    navigate(`/guru/tryout/${tryout_id}/${subject_id}/pembahasan`);
   };
 
   return (
@@ -77,9 +43,6 @@ const CreateTryoutSubjek = () => {
               <h2 className="text-2xl font-bold text-gray-800 mb-1">Tes Potensi Skolastik</h2>
               <p className="text-sm text-gray-600">Buat soal baru untuk tes potensi skolastik</p>
             </div>
-            <button className="bg-blue-600 text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors duration-200 shadow-md hover:shadow-lg">
-              Buat Soal
-            </button>
           </div>
 
           <div className="border border-gray-200 rounded-xl p-8 bg-white shadow-sm">
@@ -108,7 +71,7 @@ const CreateTryoutSubjek = () => {
                   {formData.gambar ? (
                     <div className="relative p-4">
                       <img
-                        src={formData.gambar}
+                        src={URL.createObjectURL(formData.gambar)}
                         alt="Preview"
                         className="max-h-48 mx-auto rounded-lg shadow-sm"
                       />
@@ -151,17 +114,17 @@ const CreateTryoutSubjek = () => {
                         {String.fromCharCode(65 + index)}
                       </div>
                       <input
-                                type="text"
+                        type="text"
                         className="w-full pl-12 pr-3 py-3 border border-gray-300 rounded-lg text-gray-800 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                         placeholder={`Opsi ${index + 1}`}
                         value={opsi}
-                                onChange={(e) => {
+                        onChange={(e) => {
                           const newOpsi = [...formData.opsi];
                           newOpsi[index] = e.target.value;
                           setFormData({ ...formData, opsi: newOpsi });
                         }}
                       />
-                            </div>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -189,15 +152,11 @@ const CreateTryoutSubjek = () => {
                 Kembali
               </button>
               <button 
-                onClick={handleSubmit}
-                disabled={loading}
-                className={`px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2 shadow-md hover:shadow-lg ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={handleNext}
+                className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2 shadow-md hover:shadow-lg"
               >
-                {loading ? 'Menyimpan...' : (
-                  <>
-                    Selanjutnya <FiArrowRight size={16} />
-                  </>
-                )}
+                Selanjutnya
+                <FiArrowRight size={16} />
               </button>
             </div>
           </div>

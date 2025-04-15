@@ -12,7 +12,7 @@ import DetailGuru from "./Pages/Admin/DetailGuru";
 import DetailMurid from "./Pages/Admin/DetailMurid";
 import CreateTryout from "./Pages/Guru/CreateTryout";
 import EditPembahasanSoalTryout from "./Pages/Guru/editpembahasansoaltryout";
-import EditSoalCreatePembahasan from "./Pages/Guru/EditSoalCreatePembahasan";
+import SoalCreatePembahasan from "./Pages/Guru/SoalCreatePembahasan";
 import EditTryout from "./Pages/Guru/EditTryout";
 import EditTryoutSubjek from "./Pages/Guru/EditTryoutSubjek";
 import GuruTryout from "./Pages/Guru/GuruTryout";
@@ -84,13 +84,13 @@ function App() {
         <Route path="edittryout" element={<EditTryout />} />
         <Route path="tryout/:id" element={<GuruTryoutDetail />} />
         <Route path="tryout/:tryout_id/:subject_id" element={<GuruTryoutSubjek />} />
-        <Route path="tryout/:tryout_id/:subject_id/create" element={<CreateTryoutSubjek />} />
+        <Route path="tryout/:tryout_id/:subject_id/createSoal" element={<CreateTryoutSubjek />} />
         <Route path="tryout/id/editsubjek" element={<EditTryoutSubjek />} />
         <Route path="kategorisubjek" element={<GuruKategori />} />
         <Route path="kategorisubjek/create" element={<GuruKategoriCreate />} />
         <Route path="kategorisubjek/edit/:id" element={<EditKategoriSubjek />} />
         <Route path="tryout/id/subjek/pembahasan/edit" element={<EditPembahasanSoalTryout />} />
-        <Route path="tryout/id/subjek/editpembahasan/create" element={<EditSoalCreatePembahasan />} />
+        <Route path="tryout/id/subjek/pembahasan/create" element={<SoalCreatePembahasan />} />
         <Route path="subjek" element={<GuruSubjek />} />
         <Route path="subjek/create" element={<GuruSubjekCreate />} />
         <Route path="subjek/edit" element={<GuruSubjekEdit />} />
