@@ -177,13 +177,13 @@ const GuruTryout = () => {
         )}
 
         <div className="mb-8 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-[#2f4a64]">Tryout UTBK SNBT 2025</h1>
+          <h1 className="text-2xl font-bold text-[#2f4a64]">Data Tryout</h1>
 
           <button
             className="bg-[#2f4a64] text-white px-4 py-2 rounded-lg hover:bg-[#1e364d] transition-all flex items-center gap-2"
             onClick={navigateToCreateTryout}
           >
-            <FiPlus size={16} /> Tambah Tryout Baru
+            <FiPlus size={16} /> Buat Tryout
           </button>
         </div>
 

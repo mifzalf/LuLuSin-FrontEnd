@@ -132,7 +132,7 @@ const GuruKategori = () => {
             onClick={() => navigate("/guru/kategorisubjek/create")}
             className="bg-[#213555] text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-md hover:opacity-90 transition"
           >
-            <FaPlus /> Tambah Kategori Subjek
+            <FaPlus /> Buat Kategori Subjek
           </button>
         </div>
 
