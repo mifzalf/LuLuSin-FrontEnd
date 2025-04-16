@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
 
 const Dashboard = () => {
@@ -30,8 +31,8 @@ const Dashboard = () => {
             tryouts: response.data.tryouts.map(t => ({ 
               id: t.tryout_id || null,
               nama: t.tryout_name || "Nama Tryout Tidak Tersedia", 
-              soalDibuat: t.total_questions_created !== undefined ? t.total_questions_created : 'N/A', 
-              targetSoal: t.total_questions_target !== undefined ? t.total_questions_target : 'N/A'
+              soalDibuat: t.total_questions ?? 'N/A',
+              targetSoal: t.total_minimal_questions ?? 'N/A'
             })) 
           });
         } else {
@@ -99,28 +100,36 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody className="text-sm">
-                {dashboardData.tryouts.length > 0 ? (
-                  dashboardData.tryouts.map((tryout, index) => (
-                    <motion.tr
-                      key={tryout.id || index}
-                      className="border-b last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
-                    >
-                      <td className="py-3 px-4 md:px-6 text-[#2f4a64] font-medium">{tryout.nama}</td>
-                      <td className="py-3 px-4 md:px-6 text-[#2f4a64] text-center">{tryout.soalDibuat}</td>
-                      <td className="py-3 px-4 md:px-6 text-[#2f4a64] text-center">{tryout.targetSoal}</td>
-                    </motion.tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="3" className="py-4 px-6 text-center text-gray-500">
-                      Tidak ada data tryout untuk ditampilkan.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
+  {dashboardData.tryouts.length > 0 ? (
+    dashboardData.tryouts.map((tryout, index) => (
+      <motion.tr
+        key={tryout.id || index}
+        className="border-b last:border-b-0 hover:bg-gray-50 transition-colors duration-200"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3, delay: index * 0.05 }}
+      >
+        <td className="py-3 px-4 md:px-6 text-[#2f4a64] font-medium">
+          <Link 
+            to={`/guru/tryout/${tryout.id}`} 
+            className="text-blue-600 hover:underline"
+          >
+            {tryout.nama}
+          </Link>
+        </td>
+        <td className="py-3 px-4 md:px-6 text-[#2f4a64] text-center">{tryout.soalDibuat}</td>
+        <td className="py-3 px-4 md:px-6 text-[#2f4a64] text-center">{tryout.targetSoal}</td>
+      </motion.tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan="3" className="py-4 px-6 text-center text-gray-500">
+        Tidak ada data tryout untuk ditampilkan.
+      </td>
+    </tr>
+  )}
+</tbody>
+
             </table>
           </motion.div>
         )}

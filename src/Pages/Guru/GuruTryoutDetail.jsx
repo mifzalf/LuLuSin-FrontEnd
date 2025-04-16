@@ -3,25 +3,6 @@ import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import axiosInstance from "../../api/axiosInstance" // Pastikan path ini benar
-// Hapus import state dan ikon yang tidak digunakan jika ada
-// import { ChevronDown, ChevronRight, BookOpen, Brain, Calculator } from "lucide-react"
-
-// Data Dummy (ganti dengan data asli nanti)
-// const skolastikData = [
-//   { name: "Penalaran Umum", created: 20, target: 30 },
-//   { name: "Pemahaman Bacaan dan Menulis", created: 10, target: 20 },
-//   { name: "Pengetahuan dan Pemahaman Umum", created: 15, target: 20 },
-//   { name: "Penalaran Kuantitatif", created: 15, target: 20 },
-// ];
-
-// const literasiData = [
-//   { name: "Literasi Bahasa Indonesia", created: 25, target: 30 },
-//   { name: "Literasi Bahasa Inggris", created: 15, target: 20 },
-// ];
-
-// const matematikaData = [
-//   { name: "Penalaran Matematika", created: 10, target: 20 },
-// ];
 
 const GuruTryoutDetail = () => {
   const { id } = useParams() // Ambil ID dari URL
@@ -59,6 +40,10 @@ const GuruTryoutDetail = () => {
           status: apiData.status || "Hide",
           subject_categories: apiData.subject_categories || []
         };
+
+        // Log status yang diterima untuk debugging
+        console.log("Status yang diterima dari API:", apiData.status);
+        console.log("Status yang disimpan ke state:", formattedData.status);
 
         // Validate if we have the required data
         if (!formattedData.tryout_name || !Array.isArray(formattedData.subject_categories)) {
@@ -98,15 +83,45 @@ const GuruTryoutDetail = () => {
   const handlePublish = async () => {
     if (!tryoutData) return;
     
-    const newStatus = tryoutData.status === 'Show' ? 'Hide' : 'Show';
-    console.log(`Attempting to change status to: ${newStatus} for tryout ID: ${id}`);
+    console.log("Status tryout saat ini:", tryoutData.status, typeof tryoutData.status);
+    
+    // Tentukan status baru berdasarkan status saat ini
+    // Pastikan memeriksa status dengan case insensitive dan whitespace handling
+    const currentStatus = String(tryoutData.status || "").trim();
+    let newStatus;
+    
+    if (currentStatus.toLowerCase() === 'show') {
+      newStatus = 'Hide';
+      console.log('Status saat ini "Show", akan diubah menjadi "Hide"');
+    } else {
+      newStatus = 'Show';
+      console.log('Status saat ini bukan "Show", akan diubah menjadi "Show"');
+    }
+    
+    console.log(`Status saat ini: ${currentStatus}, akan diubah menjadi: ${newStatus}`);
+    
     try {
-      console.warn("API call for updating status not implemented yet.");
-      setTryoutData(prev => ({...prev, status: newStatus }));
-      alert(`Status tryout diubah menjadi ${newStatus} (simulasi).`);
+      // Kirim permintaan ke API untuk mengubah status
+      console.log(`Mengirim permintaan ke API /API/teacher/tryout/${id}/update_status dengan body:`, { status: newStatus });
+      
+      const response = await axiosInstance.patch(`/API/teacher/tryout/${id}/update_status`, {
+        status: newStatus
+      });
+      
+      console.log('Respons dari API:', response);
+      
+      if (response.status === 200) {
+        // Jika API berhasil, perbarui state lokal
+        console.log(`Berhasil mengubah status dari ${currentStatus} menjadi ${newStatus}`);
+        setTryoutData(prev => ({...prev, status: newStatus }));
+      } else {
+        throw new Error(`Gagal mengubah status: ${response.data.message || 'Terjadi kesalahan'}`);
+      }
     } catch (err) {
       console.error("Error updating status:", err);
-      alert(`Gagal mengubah status: ${err.message}`);
+      const errorMessage = err.response?.data?.message || err.message || "Gagal mengubah status tryout";
+      // Menghapus alert error
+      // alert(`Gagal mengubah status: ${errorMessage}`);
     }
   }
 
@@ -155,6 +170,20 @@ const GuruTryoutDetail = () => {
         >
           {tryoutData.tryout_name}
         </motion.h1>
+
+        {/* Status Tryout */}
+        <motion.div
+          className="flex justify-center mb-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <div className={`text-sm font-medium px-3 py-1 rounded-full ${
+            tryoutData.status === 'Show' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+          }`}>
+            Status: {tryoutData.status === 'Show' ? 'Dipublikasikan' : 'Disembunyikan'}
+          </div>
+        </motion.div>
 
         {/* Container untuk semua kategori */}
         <div className="w-full space-y-6">
@@ -228,10 +257,13 @@ const GuruTryoutDetail = () => {
 
         {/* Tombol Publish/Unpublish */}
         <div className="flex justify-end mt-8">
+          {console.log("Status saat render tombol:", tryoutData.status)}
           <motion.button
             onClick={handlePublish}
             className={`${
-              tryoutData.status === 'Show' ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'
+              String(tryoutData.status || "").trim().toLowerCase() === 'show' 
+                ? 'bg-red-600 hover:bg-red-700' 
+                : 'bg-green-600 hover:bg-green-700'
             } text-white font-semibold py-2 px-6 rounded-lg shadow transition-colors duration-200`}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
@@ -239,7 +271,10 @@ const GuruTryoutDetail = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
           >
-            {tryoutData.status === 'Show' ? 'Unpublish' : 'Publish'}
+            {/* Tampilkan teks tombol berdasarkan status saat ini dengan penanganan yang lebih robust */}
+            {String(tryoutData.status || "").trim().toLowerCase() === 'show' 
+              ? 'Sembunyikan Tryout' 
+              : 'Publikasikan Tryout'}
           </motion.button>
         </div>
       </motion.div>
