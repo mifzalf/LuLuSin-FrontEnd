@@ -11,7 +11,7 @@ import Dashboard from "./Pages/Admin/DashBoard";
 import DetailGuru from "./Pages/Admin/DetailGuru";
 import DetailMurid from "./Pages/Admin/DetailMurid";
 import CreateTryout from "./Pages/Guru/CreateTryout";
-import EditPembahasanSoalTryout from "./Pages/Guru/editpembahasansoaltryout";
+import EditPembahasanSoalTryout from "./Pages/Guru/EditPembahasanSoalTryout";
 import SoalCreatePembahasan from "./Pages/Guru/SoalCreatePembahasan";
 import EditTryout from "./Pages/Guru/EditTryout";
 import EditTryoutSubjek from "./Pages/Guru/EditTryoutSubjek";
@@ -96,6 +96,7 @@ function App() {
         <Route path="subjek/edit" element={<GuruSubjekEdit />} />
         <Route path="tryout/id/subjek/create" element={<CreateTryoutSubjek />} />
         <Route path="dashboard" element={<GuruDashboard />} />
+        
       </Route>
 
       {/* Siswa Routes - only student */}
