@@ -22,7 +22,7 @@ import Home from "./Pages/Guru/Home";
 import SiswaDashBoard from "./Pages/Siswa/DashBoard";
 import SiswaLandingPage from "./Pages/Siswa/landingpage";
 import SiswaTryout from "./Pages/Siswa/Tryout";
-import SiswaTryoutDetail from "./Pages/Siswa/Tryoutdetail";
+import SiswaTryoutDetail from "./Pages/Siswa/TryoutDetail";
 import SiswaTryoutHasil from "./Pages/Siswa/TryoutHasil";
 import SiswaTryoutPembahasan from "./Pages/Siswa/TryoutPembahasan";
 import SiswaTryoutPengerjaan from "./Pages/Siswa/TryoutPengerjaan";
