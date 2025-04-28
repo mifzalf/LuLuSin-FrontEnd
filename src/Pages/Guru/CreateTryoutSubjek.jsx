@@ -93,11 +93,13 @@ const CreateTryoutSubjek = () => {
 
       if (!formData.question.trim()) {
         setError('Pertanyaan tidak boleh kosong');
+        setLoading(false);
         return;
       }
 
       if (!formData.score.trim()) {
         setError('Skor tidak boleh kosong');
+        setLoading(false);
         return;
       }
 
@@ -105,11 +107,13 @@ const CreateTryoutSubjek = () => {
       
       if (nonEmptyOptions.length < 2) {
         setError('Minimal harus ada 2 opsi jawaban');
+        setLoading(false);
         return;
       }
 
       if (nonEmptyOptions.length > 5) {
         setError('Maksimal 5 opsi jawaban yang diperbolehkan');
+        setLoading(false);
         return;
       }
 
@@ -124,9 +128,16 @@ const CreateTryoutSubjek = () => {
       if (formData.question_image) {
         formDataToSend.append('question_image', formData.question_image);
       }
+      
+      console.log('------- CREATE QUESTION DEBUG INFO -------');
+      console.log('Params:', { tryout_id, subject_id });
+      console.log('Form data:', formData);
+      console.log('Non-empty options:', nonEmptyOptions);
+      console.log('API URL:', `/API/teacher/tryout/${tryout_id}/${subject_id}/create_question`);
+      console.log('----------------------------------------');
 
       const response = await axiosInstance.post(
-        `/teacher/tryout/${tryout_id}/${subject_id}/create_question`,
+        `/API/teacher/tryout/${tryout_id}/${subject_id}/create_question`,
         formDataToSend,
         {
           headers: {
@@ -134,6 +145,8 @@ const CreateTryoutSubjek = () => {
           }
         }
       );
+      
+      console.log('Response from server:', response);
 
       if (response.status === 201) {
         const dataToSave = {
@@ -142,12 +155,25 @@ const CreateTryoutSubjek = () => {
           answer_options: nonEmptyOptions,
           question_image: formData.question_image ? formData.question_image.name : null
         };
+        
+        console.log('Saving data to localStorage:', dataToSave);
         localStorage.setItem(`tryout_form_${tryout_id}_${subject_id}`, JSON.stringify(dataToSave));
         
-        navigate(`/guru/tryout/${tryout_id}/${subject_id}/createsoal/createpembahasan`);
+        alert('Soal berhasil disimpan! Klik OK untuk lanjut ke pembahasan.');
+        
+        navigate(`/guru/tryout/${tryout_id}/${subject_id}/createsoal/createpembahasan`, {
+          state: { fromCreateSoal: true, timestamp: new Date().getTime() }
+        });
       }
     } catch (error) {
       console.error('Error creating question:', error);
+      
+      console.log('------- CREATE QUESTION ERROR DETAILS -------');
+      console.log('Status:', error.response?.status);
+      console.log('Data:', error.response?.data);
+      console.log('Message:', error.message);
+      console.log('--------------------------------------------');
+      
       setError(error.response?.data?.message || 'Gagal menyimpan soal. Silakan coba lagi.');
     } finally {
       setLoading(false);

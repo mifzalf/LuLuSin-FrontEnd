@@ -6,8 +6,12 @@ const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'; //
 const axiosInstance = axios.create({
   baseURL: baseURL,
   timeout: 10000, // Timeout 10 detik
+  withCredentials: false, // Ubah ke false untuk mengatasi masalah CORS
   headers: {
     'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0'
   }
 });
 
@@ -20,6 +24,14 @@ axiosInstance.interceptors.request.use(
     // Jika token ada, tambahkan ke header
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    
+    // Tambahkan timestamp ke setiap GET request untuk menghindari cache
+    if (config.method === 'get') {
+      config.params = {
+        ...config.params,
+        _t: new Date().getTime()
+      };
     }
     
     console.log('Request Config:', {
