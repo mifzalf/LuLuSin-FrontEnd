@@ -1,11 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 
 export default defineConfig({
   plugins: [
-    tailwindcss(),
     react()
   ],
   resolve: {
@@ -13,5 +11,13 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
-  base: "/LuLuSin-FrontEnd/",
+  base: "./",
+  css: {
+    postcss: './postcss.config.cjs',
+  },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    emptyOutDir: true,
+  },
 });
