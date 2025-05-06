@@ -18,7 +18,6 @@ const Header = () => {
   const navItems = [
     { path: "/dashboard", label: "Dashboard", icon: FiHome },
     { path: "/tryout", label: "Tryout", icon: FiBook },
-    { path: "/profile", label: "Profile", icon: FiUser },
   ]
 
   return (

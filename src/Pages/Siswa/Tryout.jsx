@@ -1,13 +1,68 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ArrowLeft, BookOpen, CheckCircle, Clock } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import axios from "axios"
 
 export default function SiswaTryout() {
   const [activeTab, setActiveTab] = useState("pending")
+  const [tryoutData, setTryoutData] = useState({ done: [], not_done: [] })
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const fetchTryoutData = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        
+        if (!token) {
+          throw new Error('Token tidak ditemukan. Silakan login kembali.');
+        }
+        
+        const config = {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        };
+        
+        const response = await axios.get('http://localhost:3000/API/student/tryout', config);
+        console.log('Response API:', response.data);
+
+        if (response.data) {
+          setTryoutData({
+            done: response.data.done || [],
+            not_done: response.data.not_done || []
+          });
+        } else {
+          throw new Error('Format data dari server tidak valid');
+        }
+        setLoading(false);
+      } catch (err) {
+        console.error('Error lengkap:', err);
+        if (err.response) {
+          if (err.response.status === 403) {
+            setError('Token tidak valid atau kadaluarsa. Silakan login ulang.');
+            navigate('/login');
+          } else if (err.response.status === 401) {
+            setError('Anda belum login. Silakan login terlebih dahulu.');
+            navigate('/login');
+          } else {
+            setError(`Error dari server: ${err.response.data.message || 'Unknown error'}`);
+          }
+        } else if (err.request) {
+          setError('Tidak dapat terhubung ke server. Periksa koneksi Anda.');
+        } else {
+          setError(err.message || 'Terjadi kesalahan saat mengambil data.');
+        }
+        setLoading(false);
+      }
+    };
+
+    fetchTryoutData();
+  }, [navigate]);
 
   // Animation variants
   const containerVariants = {
@@ -33,6 +88,22 @@ export default function SiswaTryout() {
         stiffness: 100,
       },
     }),
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#F5F0E9] to-[#EAE5DE]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1E3A5F]"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#F5F0E9] to-[#EAE5DE]">
+        <div className="text-red-600">Error: {error}</div>
+      </div>
+    );
   }
 
   return (
@@ -95,7 +166,7 @@ export default function SiswaTryout() {
             >
               <div className="flex items-center">
                 <Clock size={16} className="mr-2" />
-                Belum Dikerjakan
+                Belum Dikerjakan ({tryoutData.not_done.length})
               </div>
             </motion.button>
             <motion.button
@@ -110,7 +181,7 @@ export default function SiswaTryout() {
             >
               <div className="flex items-center">
                 <CheckCircle size={16} className="mr-2" />
-                Telah Dikerjakan
+                Telah Dikerjakan ({tryoutData.done.length})
               </div>
             </motion.button>
           </div>
@@ -121,7 +192,7 @@ export default function SiswaTryout() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.5 }}
-            className="bg-gradient-to-br from-[#1E3A5F] to-[#2E4A7F] text-white p-6 rounded-2xl shadow-lg"
+            className="bg-gradient-to-br from-[#1E3A5F] to-[#2E4A7F] text-white p-6 rounded-2xl shadow-lg w-full max-w-4xl"
             style={{ boxShadow: "0 10px 25px -5px rgba(30, 58, 95, 0.4)" }}
           >
             <motion.div
@@ -139,9 +210,9 @@ export default function SiswaTryout() {
               animate="visible"
               className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4"
             >
-              {[6, 7, 8, 9].map((ep, index) => (
+              {tryoutData.not_done.map((tryout, index) => (
                 <motion.div
-                  key={ep}
+                  key={tryout.tryout_id}
                   custom={index}
                   variants={itemVariants}
                   whileHover={{
@@ -155,11 +226,11 @@ export default function SiswaTryout() {
                   <div className="absolute top-0 left-0 w-20 h-20 bg-gray-300 rounded-br-full opacity-50"></div>
                   <div className="z-10">
                     <span className="bg-[#1E3A5F] text-white text-xs font-bold px-2 py-1 rounded-full mb-1 inline-block">
-                      EP.{ep}
+                      Tryout #{tryout.tryout_id}
                     </span>
                     <p className="text-sm font-medium mt-1 flex items-center">
                       <BookOpen size={16} className="mr-2 text-[#1E3A5F]" />
-                      tryout utbk snbt 2025 ep.{ep}
+                      {tryout.tryout_name}
                     </p>
                   </div>
                   <motion.button
@@ -170,10 +241,11 @@ export default function SiswaTryout() {
                     }}
                     whileTap={{ scale: 0.95 }}
                     transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    onClick={() => navigate(`/siswa/tryout/${tryout.tryout_id}`)}
                     className="bg-gradient-to-r from-[#1E3A5F] to-[#2E4A7F] text-white px-5 py-2 rounded-xl text-sm font-medium z-10"
                     style={{ boxShadow: "0 4px 6px -1px rgba(30, 58, 95, 0.3)" }}
                   >
-                    Lihat
+                    Mulai
                   </motion.button>
                 </motion.div>
               ))}
@@ -186,7 +258,7 @@ export default function SiswaTryout() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.5 }}
-            className="bg-gradient-to-br from-[#2E3A5F] to-[#3E4A7F] text-white p-6 rounded-2xl shadow-lg"
+            className="bg-gradient-to-br from-[#2E3A5F] to-[#3E4A7F] text-white p-6 rounded-2xl shadow-lg w-full max-w-4xl"
             style={{ boxShadow: "0 10px 25px -5px rgba(46, 58, 95, 0.4)" }}
           >
             <motion.div
@@ -204,9 +276,9 @@ export default function SiswaTryout() {
               animate="visible"
               className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4"
             >
-              {[4, 5].map((ep, index) => (
+              {tryoutData.done.map((tryout, index) => (
                 <motion.div
-                  key={ep}
+                  key={tryout.tryout_id}
                   custom={index}
                   variants={itemVariants}
                   whileHover={{
@@ -221,13 +293,13 @@ export default function SiswaTryout() {
                   <div className="z-10">
                     <div className="flex items-center">
                       <span className="bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-full mb-1 inline-block">
-                        EP.{ep}
+                        Tryout #{tryout.tryout_id}
                       </span>
                       <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Selesai</span>
                     </div>
                     <p className="text-sm font-medium mt-1 flex items-center">
                       <BookOpen size={16} className="mr-2 text-[#1E3A5F]" />
-                      tryout utbk snbt 2025 ep.{ep}
+                      {tryout.tryout_name}
                     </p>
                   </div>
                   <motion.button
@@ -238,11 +310,11 @@ export default function SiswaTryout() {
                     }}
                     whileTap={{ scale: 0.95 }}
                     transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                    onClick={() => navigate(`/siswa/tryout/id/hasil`)}
+                    onClick={() => navigate(`/siswa/tryout/${tryout.tryout_id}/hasil`)}
                     className="bg-gradient-to-r from-[#1E3A5F] to-[#2E4A7F] text-white px-5 py-2 rounded-xl text-sm font-medium z-10"
                     style={{ boxShadow: "0 4px 6px -1px rgba(30, 58, 95, 0.3)" }}
                   >
-                    Lihat
+                    Lihat Hasil
                   </motion.button>
                 </motion.div>
               ))}
