@@ -108,12 +108,10 @@ function App() {
         <Route index element={<SiswaDashBoard />} />
         <Route path="dashboard" element={<SiswaDashBoard />} />
         <Route path="tryout" element={<SiswaTryout />} />
-        <Route path="tryout/id/detail" element={<SiswaTryoutDetail />} />
-        <Route path="tryout/id/hasil" element={<SiswaTryoutHasil />} />
-        <Route path="tryout/id/subjek/pembahasan" element={<SiswaTryoutPembahasan />} />
-        <Route path="tryout/id/subjek/pengerjaan" element={<SiswaTryoutPengerjaan />} />
-        <Route path="peralihan" element={<Peralihan />} />
         <Route path="tryout/:id" element={<SiswaTryoutId />} />
+        <Route path="tryout/:id/:subjectId/pengerjaan" element={<SiswaTryoutPengerjaan />} />
+        <Route path="tryout/:id/hasil" element={<SiswaTryoutHasil />} />
+        <Route path="tryout/:id/:subjectId/pembahasan" element={<SiswaTryoutPembahasan />} />
       </Route>
 
       {/* About Route - accessible to all */}

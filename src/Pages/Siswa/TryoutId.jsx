@@ -294,7 +294,7 @@ export default function TryoutId() {
             variants={buttonVariants}
             whileHover="hover"
             whileTap="tap"
-            onClick={() => navigate(`/siswa/tryout/${id}/subjek/pengerjaan`)}
+            onClick={() => navigate(`/siswa/tryout/${id}/${id}/pengerjaan`)}
             className="w-full bg-gradient-to-r from-[#1E3A5F] to-[#2E4A7F] text-white py-4 px-8 rounded-xl text-lg font-semibold shadow-lg transform transition-all duration-300 hover:shadow-xl"
           >
             MULAI TRYOUT
