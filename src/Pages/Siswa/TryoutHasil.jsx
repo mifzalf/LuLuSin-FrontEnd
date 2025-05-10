@@ -2,12 +2,49 @@
 
 import { motion } from "framer-motion"
 import { CheckCircle, XCircle, HelpCircle, BarChart3, BookOpen, Award, ArrowLeft } from "lucide-react"
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
+import { useNavigate, useParams } from "react-router-dom"
+import axiosInstance from "../../api/axiosInstance"
 
 export default function SiswaTryoutHasil() {
   const [hoveredCard, setHoveredCard] = useState(null)
+  const [tryoutResults, setTryoutResults] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const navigate = useNavigate()
+  const { id } = useParams()
+
+  useEffect(() => {
+    const fetchTryoutResults = async () => {
+      try {
+        const response = await axiosInstance.get(`/API/student/tryout/${id}/result`)
+        // Map response to expected structure
+        const raw = response.data
+        const summary = Array.isArray(raw.summary) ? raw.summary[0] : raw.summary
+        const perCategorySubject = Array.isArray(raw.perCategorySubject)
+          ? raw.perCategorySubject.map(item => {
+              const result = item.result || {}
+              const subjek = result.subjek || {}
+              return {
+                category_name: result.nama_kategori || '-',
+                subject_name: subjek.nama_subjek || '-',
+                average_score: subjek.nilai_rata_rata || 0,
+                total_correct: subjek.total_jawaban_benar || 0,
+                total_wrong: subjek.total_jawaban_salah || 0,
+                total_empty: subjek.total_jawaban_kosong || 0,
+              }
+            })
+          : []
+        setTryoutResults({ summary, perCategorySubject })
+        setLoading(false)
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to fetch tryout results')
+        setLoading(false)
+      }
+    }
+
+    fetchTryoutResults()
+  }, [id])
 
   // Animation variants
   const containerVariants = {
@@ -54,13 +91,38 @@ export default function SiswaTryoutHasil() {
     },
   ]
 
-  // Metrics data
-  const metrics = [
-    { title: "Nilai", value: "763", icon: <Award size={18} className="text-yellow-300" /> },
-    { title: "Total Jawaban Benar", value: "23", icon: <CheckCircle size={18} className="text-green-400" /> },
-    { title: "Total Jawaban Salah", value: "5", icon: <XCircle size={18} className="text-red-400" /> },
-    { title: "Total Jawaban Kosong", value: "2", icon: <HelpCircle size={18} className="text-gray-400" /> },
-  ]
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1E3A5F]"></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-red-500 text-center">
+          <p className="text-xl font-semibold mb-2">Error</p>
+          <p>{error}</p>
+          <button 
+            onClick={() => navigate('/siswa/tryout')}
+            className="mt-4 bg-[#1E3A5F] text-white px-4 py-2 rounded-lg"
+          >
+            Back to Tryout
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Get metrics from API data
+  const metrics = tryoutResults?.summary ? [
+    { title: "Nilai", value: tryoutResults.summary.average_score.toString(), icon: <Award size={18} className="text-yellow-300" /> },
+    { title: "Total Jawaban Benar", value: tryoutResults.summary.total_correct.toString(), icon: <CheckCircle size={18} className="text-green-400" /> },
+    { title: "Total Jawaban Salah", value: tryoutResults.summary.total_wrong.toString(), icon: <XCircle size={18} className="text-red-400" /> },
+    { title: "Total Jawaban Kosong", value: tryoutResults.summary.total_empty.toString(), icon: <HelpCircle size={18} className="text-gray-400" /> },
+  ] : []
 
   return (
     <div className="bg-gradient-to-b from-[#F5F0E9] to-[#EAE5DE] flex flex-col items-center p-6 min-h-screen w-screen">
@@ -107,20 +169,7 @@ export default function SiswaTryoutHasil() {
           className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-gradient-to-br from-[#1E3A5F] to-[#2E4A7F] text-white p-6 rounded-xl shadow-lg"
           style={{ boxShadow: "0 10px 25px -5px rgba(30, 58, 95, 0.4)" }}
         >
-          {[
-            { title: "Nilai rata-rata", value: "763", icon: <Award size={24} className="text-yellow-300 mb-2" /> },
-            {
-              title: "Total Jawaban Benar",
-              value: "67",
-              icon: <CheckCircle size={24} className="text-green-400 mb-2" />,
-            },
-            { title: "Total Jawaban Salah", value: "9", icon: <XCircle size={24} className="text-red-400 mb-2" /> },
-            {
-              title: "Total Jawaban Kosong",
-              value: "2",
-              icon: <HelpCircle size={24} className="text-gray-400 mb-2" />,
-            },
-          ].map((item, index) => (
+          {metrics.map((item, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, scale: 0.9 }}
@@ -147,7 +196,7 @@ export default function SiswaTryoutHasil() {
           ))}
         </motion.div>
 
-        {testCategories.map((category, categoryIndex) => (
+        {tryoutResults?.perCategorySubject?.map((category, categoryIndex) => (
           <motion.div
             key={categoryIndex}
             initial={{ opacity: 0, y: 20 }}
@@ -162,127 +211,63 @@ export default function SiswaTryoutHasil() {
               transition={{ delay: 0.6 + categoryIndex * 0.1, duration: 0.5 }}
               className="text-center text-xl font-semibold mb-4 flex items-center justify-center"
             >
-              {category.icon}
-              {category.title}
+              {category.category_name}
             </motion.h2>
 
-            {category.subcategories.length > 0 ? (
-              category.subcategories.map((subcategory, subcategoryIndex) => (
-                <motion.div
-                  key={subcategoryIndex}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7 + categoryIndex * 0.1 + subcategoryIndex * 0.05, duration: 0.5 }}
-                  className="mt-4 bg-[#1A3352]/50 p-4 rounded-xl"
-                >
-                  <h3 className="text-lg font-semibold mb-3 flex items-center">
-                    <span className="bg-blue-200 text-[#1E3A5F] w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-2">
-                      {subcategoryIndex + 1}
-                    </span>
-                    {subcategory}
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 p-2">
-                    {metrics.map((metric, metricIndex) => (
-                      <motion.div
-                        key={metricIndex}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{
-                          delay: 0.8 + categoryIndex * 0.1 + subcategoryIndex * 0.05 + metricIndex * 0.05,
-                          duration: 0.5,
-                        }}
-                        whileHover={{
-                          scale: 1.05,
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          transition: { type: "spring", stiffness: 300 },
-                        }}
-                        onHoverStart={() => setHoveredCard(`${categoryIndex}-${subcategoryIndex}-${metricIndex}`)}
-                        onHoverEnd={() => setHoveredCard(null)}
-                        className="bg-gradient-to-br from-[#2C4A6E] to-[#3A5A80] p-4 rounded-xl text-center shadow-md relative overflow-hidden"
-                      >
-                        <div className="absolute top-0 right-0 w-16 h-16 bg-white rounded-bl-full opacity-5"></div>
-                        <div className="flex items-center justify-center mb-2">
-                          {metric.icon}
-                          <p className="ml-1 text-sm">{metric.title}</p>
-                        </div>
-                        <motion.span
-                          initial={{ scale: 0.8, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{
-                            delay: 0.9 + categoryIndex * 0.1 + subcategoryIndex * 0.05 + metricIndex * 0.05,
-                            duration: 0.5,
-                            type: "spring",
-                          }}
-                          className={`text-xl font-bold ${
-                            metric.title === "Nilai"
-                              ? "text-yellow-300"
-                              : metric.title.includes("Benar")
-                                ? "text-green-400"
-                                : metric.title.includes("Salah")
-                                  ? "text-red-400"
-                                  : "text-gray-400"
-                          }`}
-                        >
-                          {metric.value}
-                        </motion.span>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
-              ))
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 + categoryIndex * 0.1, duration: 0.5 }}
-                className="mt-4 bg-[#1A3352]/50 p-4 rounded-xl"
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 p-2">
-                  {metrics.map((metric, metricIndex) => (
-                    <motion.div
-                      key={metricIndex}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.8 + categoryIndex * 0.1 + metricIndex * 0.05, duration: 0.5 }}
-                      whileHover={{
-                        scale: 1.05,
-                        backgroundColor: "rgba(255, 255, 255, 0.1)",
-                        transition: { type: "spring", stiffness: 300 },
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 + categoryIndex * 0.1, duration: 0.5 }}
+              className="mt-4 bg-[#1A3352]/50 p-4 rounded-xl"
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 p-2">
+                {[
+                  { title: "Nilai", value: category.average_score.toString(), icon: <Award size={24} className="text-yellow-300 mb-2" /> },
+                  { title: "Total Jawaban Benar", value: category.total_correct.toString(), icon: <CheckCircle size={24} className="text-green-400 mb-2" /> },
+                  { title: "Total Jawaban Salah", value: category.total_wrong.toString(), icon: <XCircle size={24} className="text-red-400 mb-2" /> },
+                  { title: "Total Jawaban Kosong", value: category.total_empty.toString(), icon: <HelpCircle size={24} className="text-gray-400 mb-2" /> },
+                ].map((metric, metricIndex) => (
+                  <motion.div
+                    key={metricIndex}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.8 + categoryIndex * 0.1 + metricIndex * 0.05, duration: 0.5 }}
+                    whileHover={{
+                      scale: 1.05,
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      transition: { type: "spring", stiffness: 300 },
+                    }}
+                    className="bg-gradient-to-br from-[#2C4A6E] to-[#3A5A80] p-4 rounded-xl text-center shadow-md relative overflow-hidden"
+                  >
+                    <div className="absolute top-0 right-0 w-16 h-16 bg-white rounded-bl-full opacity-5"></div>
+                    <div className="flex items-center justify-center mb-2">
+                      {metric.icon}
+                      <p className="ml-1 text-sm">{metric.title}</p>
+                    </div>
+                    <motion.span
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{
+                        delay: 0.9 + categoryIndex * 0.1 + metricIndex * 0.05,
+                        duration: 0.5,
+                        type: "spring",
                       }}
-                      onHoverStart={() => setHoveredCard(`${categoryIndex}-${metricIndex}`)}
-                      onHoverEnd={() => setHoveredCard(null)}
-                      className="bg-gradient-to-br from-[#2C4A6E] to-[#3A5A80] p-4 rounded-xl text-center shadow-md relative overflow-hidden"
+                      className={`text-xl font-bold ${
+                        metric.title === "Nilai"
+                          ? "text-yellow-300"
+                          : metric.title.includes("Benar")
+                            ? "text-green-400"
+                            : metric.title.includes("Salah")
+                              ? "text-red-400"
+                              : "text-gray-400"
+                      }`}
                     >
-                      <div className="absolute top-0 right-0 w-16 h-16 bg-white rounded-bl-full opacity-5"></div>
-                      <div className="flex items-center justify-center mb-2">
-                        {metric.icon}
-                        <p className="ml-1 text-sm">{metric.title}</p>
-                      </div>
-                      <motion.span
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{
-                          delay: 0.9 + categoryIndex * 0.1 + metricIndex * 0.05,
-                          duration: 0.5,
-                          type: "spring",
-                        }}
-                        className={`text-xl font-bold ${
-                          metric.title === "Nilai"
-                            ? "text-yellow-300"
-                            : metric.title.includes("Benar")
-                              ? "text-green-400"
-                              : metric.title.includes("Salah")
-                                ? "text-red-400"
-                                : "text-gray-400"
-                        }`}
-                      >
-                        {metric.value}
-                      </motion.span>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
+                      {metric.value}
+                    </motion.span>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
           </motion.div>
         ))}
 
