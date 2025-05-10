@@ -3,15 +3,37 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { useNavigate } from "react-router-dom"
+import axiosInstance from "../../api/axiosInstance"
 
 export default function SiswaDashBoard() {
   const [progressValues, setProgressValues] = useState([0, 0, 0])
+  const [notDoneTryouts, setNotDoneTryouts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const navigate = useNavigate()
   const scoreData = [
     { rank: 1, score: 800 },
     { rank: 2, score: 804 },
     { rank: 3, score: 500 },
   ]
+
+  // Fetch dashboard data
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true)
+        const response = await axiosInstance.get('/API/student/dashboard')
+        setNotDoneTryouts(response.data.notDoneTryouts || [])
+        setLoading(false)
+      } catch (err) {
+        console.error('Error fetching dashboard data:', err)
+        setError(err.response?.data?.message || 'Failed to fetch dashboard data')
+        setLoading(false)
+      }
+    }
+
+    fetchDashboardData()
+  }, [])
 
   // Animation variants
   const containerVariants = {
@@ -56,6 +78,22 @@ export default function SiswaDashBoard() {
 
     return () => clearTimeout(timer)
   }, [])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#F5F0E9]">
+        <div className="text-xl font-semibold text-gray-700">Loading...</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#F5F0E9]">
+        <div className="text-xl font-semibold text-red-600">Error: {error}</div>
+      </div>
+    )
+  }
 
   return (
     <div className="bg-[#F5F0E9] min-h-screen p-6 screen w-screen">
@@ -196,9 +234,9 @@ export default function SiswaDashBoard() {
           transition={{ delayChildren: 0.8 }}
           className="grid grid-cols-2 gap-4 mt-6"
         >
-          {[6, 7, 8, 9].map((ep, index) => (
+          {notDoneTryouts.map((tryout, index) => (
             <motion.div
-              key={ep}
+              key={tryout.tryout_id}
               custom={index}
               variants={cardVariants}
               whileHover={{
@@ -212,9 +250,9 @@ export default function SiswaDashBoard() {
               <div className="absolute top-0 left-0 w-20 h-20 bg-gray-300 rounded-br-full opacity-50"></div>
               <motion.div variants={itemVariants} className="z-10">
                 <span className="bg-[#1E3A5F] text-white text-xs font-bold px-2 py-1 rounded-full mb-1 inline-block">
-                  EP.{ep}
+                  EP.{tryout.tryout_id}
                 </span>
-                <p className="text-sm font-medium mt-1">tryout utbk snbt 2025 ep.{ep}</p>
+                <p className="text-sm font-medium mt-1">{tryout.tryout_name}</p>
               </motion.div>
               <motion.button
                 whileHover={{
@@ -224,7 +262,7 @@ export default function SiswaDashBoard() {
                 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                onClick={() => navigate('/siswa/tryout')}
+                onClick={() => navigate(`/siswa/tryout/${tryout.tryout_id}`)}
                 className="bg-gradient-to-r from-[#1E3A5F] to-[#2E4A7F] text-white px-5 py-2 rounded-xl text-sm font-medium z-10"
                 style={{ boxShadow: "0 4px 6px -1px rgba(30, 58, 95, 0.3)" }}
               >

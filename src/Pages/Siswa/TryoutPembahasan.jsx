@@ -1,15 +1,60 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ArrowLeft, ArrowRight, User, BookOpen, CheckCircle, XCircle, AlertCircle, ArrowLeftCircle } from "lucide-react"
+import { useParams, useNavigate } from "react-router-dom"
+import axiosInstance from "../../api/axiosInstance"
 
 export default function SiswaTryoutPembahasan() {
+  const { idTryout, idSubject } = useParams()
+  const navigate = useNavigate()
   const [currentQuestion, setCurrentQuestion] = useState(1)
   const [hoveredAnswer, setHoveredAnswer] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [examData, setExamData] = useState({
+    studentData: {},
+    subjectExpData: {},
+    detail: []
+  })
 
   // Total number of questions
-  const totalQuestions = 35
+  const totalQuestions = examData.detail?.length || 0
+
+  useEffect(() => {
+    const fetchTryoutData = async () => {
+      try {
+        setLoading(true)
+        const response = await axiosInstance.get(`/API/student/tryout/${idTryout}/${idSubject}/explanation`)
+        console.log('Response API:', response.data)
+
+        if (!response.data) {
+          throw new Error('Data tidak ditemukan')
+        }
+
+        setExamData({
+          studentData: response.data.studentData || {},
+          subjectExpData: response.data.subjectExpData || {},
+          detail: Array.isArray(response.data.detail) ? response.data.detail : []
+        })
+
+        setLoading(false)
+      } catch (err) {
+        console.error('Error:', err)
+        const errorMessage = err.response?.data?.message || err.message || 'Terjadi kesalahan saat memuat data'
+        setError(errorMessage)
+        
+        if (err.response?.status === 401 || err.response?.status === 403) {
+          navigate('/login')
+        }
+        
+        setLoading(false)
+      }
+    }
+
+    fetchTryoutData()
+  }, [idTryout, idSubject, navigate])
 
   // Function to handle question navigation
   const navigateQuestion = (direction) => {
@@ -46,17 +91,33 @@ export default function SiswaTryoutPembahasan() {
     },
   }
 
-  // Mock data for answer status
-  const answerStatus = Array.from({ length: totalQuestions }, (_, i) => {
-    if (i === 0) return "correct"
-    if (i === 3) return "incorrect"
-    if (i === 7) return "correct"
-    if (i === 12) return "incorrect"
-    if (i === 18) return "correct"
-    if (i === 24) return "incorrect"
-    if (i === 30) return "correct"
-    return "unanswered"
-  })
+  // Get answer status for each question
+  const getAnswerStatus = (question) => {
+    if (!question) return "unanswered"
+    return question.is_correct ? "correct" : "incorrect"
+  }
+
+  // Get current question data
+  const currentQuestionData = examData.detail[currentQuestion - 1] || null
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1E3A5F]"></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-red-500 text-center">
+          <p className="text-xl font-semibold mb-2">Error</p>
+          <p>{error}</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="bg-gradient-to-b from-[#F5F0E9] to-[#EAE5DE] flex flex-col items-center p-6 min-h-screen w-screen">
@@ -116,16 +177,16 @@ export default function SiswaTryoutPembahasan() {
               <div className="bg-blue-400/20 p-3 rounded-full mb-2">
                 <User size={24} className="text-blue-200" />
               </div>
-              Aqil Yogi Pramanto
-              <p className="text-sm text-blue-200 mt-1">006527262899</p>
+              {examData.studentData?.student_name || "Nama Siswa"}
+              <p className="text-sm text-blue-200 mt-1">{examData.studentData?.student_id || "ID Siswa"}</p>
             </motion.div>
 
             <motion.div variants={itemVariants} className="bg-[#2C4A6E] p-4 rounded-xl text-center mb-6 shadow-md">
               <div className="flex items-center justify-center mb-1">
                 <BookOpen size={18} className="text-blue-200 mr-2" />
-                <p className="font-semibold">Tes Potensi Skolastik</p>
+                <p className="font-semibold">{examData.subjectExpData?.subject_name || "Nama Subjek"}</p>
               </div>
-              <p className="text-sm text-blue-200">Literasi dalam bahasa indonesia tahun 2025</p>
+              <p className="text-sm text-blue-200">{examData.subjectExpData?.subject_category_name || "Kategori Subjek"}</p>
             </motion.div>
 
             <motion.p variants={itemVariants} className="text-sm text-blue-200 mb-2 font-medium">
@@ -146,20 +207,20 @@ export default function SiswaTryoutPembahasan() {
                   className={`p-2 rounded-lg flex items-center justify-center relative ${
                     currentQuestion === i + 1 ? "ring-2 ring-white" : ""
                   } ${
-                    answerStatus[i] === "correct"
+                    getAnswerStatus(examData.detail[i]) === "correct"
                       ? "bg-gradient-to-br from-green-400 to-green-500 text-black font-medium"
-                      : answerStatus[i] === "incorrect"
+                      : getAnswerStatus(examData.detail[i]) === "incorrect"
                         ? "bg-gradient-to-br from-red-400 to-red-500 text-black font-medium"
                         : "bg-gradient-to-br from-[#2C4A6E] to-[#3A5A80]"
                   }`}
                 >
                   {i + 1}
-                  {answerStatus[i] === "correct" && (
+                  {getAnswerStatus(examData.detail[i]) === "correct" && (
                     <div className="absolute -top-1 -right-1 bg-white rounded-full p-0.5">
                       <CheckCircle size={8} className="text-green-500" />
                     </div>
                   )}
-                  {answerStatus[i] === "incorrect" && (
+                  {getAnswerStatus(examData.detail[i]) === "incorrect" && (
                     <div className="absolute -top-1 -right-1 bg-white rounded-full p-0.5">
                       <XCircle size={8} className="text-red-500" />
                     </div>
@@ -172,15 +233,15 @@ export default function SiswaTryoutPembahasan() {
               <div className="flex justify-between text-sm text-blue-200">
                 <div className="flex items-center">
                   <div className="w-3 h-3 rounded-full bg-green-400 mr-1"></div>
-                  <span>Benar: 4</span>
+                  <span>Benar: {examData.detail.filter(q => q.is_correct).length}</span>
                 </div>
                 <div className="flex items-center">
                   <div className="w-3 h-3 rounded-full bg-red-400 mr-1"></div>
-                  <span>Salah: 3</span>
+                  <span>Salah: {examData.detail.filter(q => !q.is_correct).length}</span>
                 </div>
                 <div className="flex items-center">
                   <div className="w-3 h-3 rounded-full bg-[#3A5A80] mr-1"></div>
-                  <span>Belum: 28</span>
+                  <span>Belum: {totalQuestions - examData.detail.filter(q => q.is_correct).length - examData.detail.filter(q => !q.is_correct).length}</span>
                 </div>
               </div>
             </motion.div>
@@ -205,11 +266,19 @@ export default function SiswaTryoutPembahasan() {
                   Soal {currentQuestion} dari {totalQuestions}
                 </span>
                 <span className="bg-blue-200 text-[#1E3A5F] px-2 py-0.5 rounded-full text-xs font-bold">
-                  Literasi Bahasa Indonesia
+                  {examData.subjectExpData?.subject_name || "Subjek"}
                 </span>
               </div>
               <div className="h-40 bg-gray-300 flex items-center justify-center">
-                <p className="text-gray-600">Gambar atau teks soal akan ditampilkan di sini</p>
+                {currentQuestionData?.question_image ? (
+                  <img 
+                    src={currentQuestionData.question_image} 
+                    alt="Gambar Soal" 
+                    className="max-h-full max-w-full object-contain"
+                  />
+                ) : (
+                  <p className="text-gray-600">Gambar soal tidak tersedia</p>
+                )}
               </div>
             </motion.div>
 
@@ -219,8 +288,7 @@ export default function SiswaTryoutPembahasan() {
               transition={{ delay: 0.7, duration: 0.5 }}
               className="text-center text-sm mb-6 bg-[#2C4A6E]/50 p-4 rounded-xl w-full"
             >
-              Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-              industry's standard dummy text ever since the 1500s.
+              {currentQuestionData?.question_text || "Teks soal tidak tersedia"}
             </motion.p>
 
             <motion.div
@@ -230,12 +298,7 @@ export default function SiswaTryoutPembahasan() {
               transition={{ delayChildren: 0.8 }}
               className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full"
             >
-              {[
-                { text: "Lorem Ipsum is simply dummy", status: "correct" },
-                { text: "Lorem Ipsum is simply dummy", status: "normal" },
-                { text: "Lorem Ipsum is simply dummy", status: "normal" },
-                { text: "Lorem Ipsum is simply dummy", status: "incorrect" },
-              ].map((answer, index) => (
+              {currentQuestionData?.answer_options?.map((option, index) => (
                 <motion.button
                   key={index}
                   variants={itemVariants}
@@ -248,9 +311,9 @@ export default function SiswaTryoutPembahasan() {
                   onHoverStart={() => setHoveredAnswer(index)}
                   onHoverEnd={() => setHoveredAnswer(null)}
                   className={`p-4 rounded-xl text-left flex items-center shadow-md relative overflow-hidden ${
-                    answer.status === "correct"
+                    option.is_correct
                       ? "bg-gradient-to-br from-green-400 to-green-500 text-black"
-                      : answer.status === "incorrect"
+                      : option.is_selected && !option.is_correct
                         ? "bg-gradient-to-br from-red-400 to-red-500 text-black"
                         : "bg-gradient-to-br from-[#2C4A6E] to-[#3A5A80]"
                   }`}
@@ -259,9 +322,9 @@ export default function SiswaTryoutPembahasan() {
                   <span className="bg-white/20 w-6 h-6 rounded-full flex items-center justify-center mr-3 text-sm font-medium">
                     {String.fromCharCode(65 + index)}
                   </span>
-                  {answer.text}
-                  {answer.status === "correct" && <CheckCircle size={18} className="ml-auto text-black" />}
-                  {answer.status === "incorrect" && <XCircle size={18} className="ml-auto text-black" />}
+                  {option.option_text}
+                  {option.is_correct && <CheckCircle size={18} className="ml-auto text-black" />}
+                  {option.is_selected && !option.is_correct && <XCircle size={18} className="ml-auto text-black" />}
                 </motion.button>
               ))}
             </motion.div>
@@ -277,8 +340,7 @@ export default function SiswaTryoutPembahasan() {
                 <h3 className="font-semibold text-[#1E3A5F]">Pembahasan</h3>
               </div>
               <p className="text-sm text-gray-700">
-                Lorem Ipsum is simply dummy text of the printing and typesetting industry. The correct answer is option
-                A because it accurately represents the main idea discussed in the passage.
+                {currentQuestionData?.explanation || "Pembahasan tidak tersedia"}
               </p>
             </motion.div>
 
