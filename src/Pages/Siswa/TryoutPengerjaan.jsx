@@ -10,7 +10,7 @@ export default function SiswaTryoutPengerjaan() {
   const navigate = useNavigate()
   const { id: idTryout, subjectId } = useParams()
   const [currentQuestion, setCurrentQuestion] = useState(1)
-  const [selectedAnswer, setSelectedAnswer] = useState(null)
+  const [selectedAnswers, setSelectedAnswers] = useState({})
   const [timeLeft, setTimeLeft] = useState(null)
   const [answeredQuestions, setAnsweredQuestions] = useState([])
   const [loading, setLoading] = useState(true)
@@ -27,8 +27,8 @@ export default function SiswaTryoutPengerjaan() {
       try {
         setLoading(true)
         
-        console.log('URL yang dipanggil:', `/API/students/tryout/${idTryout}/${subjectId}/taking`)
-        const response = await axiosInstance.get(`/API/students/tryout/${idTryout}/${subjectId}/taking`)
+        console.log('URL yang dipanggil:', `http://localhost:3000/API/student/tryout/${idTryout}/${subjectId}/taking`)
+        const response = await axiosInstance.get(`http://localhost:3000/API/student/tryout/${idTryout}/${subjectId}/taking`)
         console.log('Response API:', response.data)
 
         if (!response.data) {
@@ -98,36 +98,32 @@ export default function SiswaTryoutPengerjaan() {
   const navigateQuestion = (direction) => {
     if (direction === "next" && currentQuestion < totalQuestions) {
       setCurrentQuestion((prev) => prev + 1)
-      setSelectedAnswer(null)
+      setSelectedAnswers({})
     } else if (direction === "prev" && currentQuestion > 1) {
       setCurrentQuestion((prev) => prev - 1)
-      setSelectedAnswer(null)
+      setSelectedAnswers({})
     }
   }
 
   // Fungsi untuk memilih jawaban
-  const handleAnswerSelect = async (answerId) => {
+  const handleAnswerSelect = async (answerOptionId) => {
     try {
-      // Update state lokal
-      setSelectedAnswer(answerId)
+      await axiosInstance.post(
+        `/API/student/tryout/${idTryout}/${subjectId}/${currentQuestionData.question_id}/taking`,
+        { answerOptionId }
+      );
+      setSelectedAnswers((prev) => ({ ...prev, [currentQuestion]: answerOptionId }));
       if (!answeredQuestions.includes(currentQuestion)) {
-        setAnsweredQuestions((prev) => [...prev, currentQuestion])
+        setAnsweredQuestions((prev) => [...prev, currentQuestion]);
       }
-
-      // Kirim jawaban ke API
-      await axiosInstance.post(`/API/students/tryout/${idTryout}/${subjectId}/${currentQuestionData.question_id}/taking`, {
-        answer_option_id: answerId
-      })
-
-      // Otomatis pindah ke soal berikutnya jika bukan soal terakhir
       if (currentQuestion < totalQuestions) {
         setTimeout(() => {
-          navigateQuestion("next")
-        }, 500)
+          navigateQuestion("next");
+        }, 500);
       }
     } catch (err) {
-      console.error('Error menyimpan jawaban:', err)
-      alert('Gagal menyimpan jawaban. Silakan coba lagi.')
+      console.error('Error menyimpan jawaban:', err);
+      alert('Gagal menyimpan jawaban. Silakan coba lagi.');
     }
   }
 
@@ -215,9 +211,9 @@ export default function SiswaTryoutPengerjaan() {
               <h3 className="text-lg font-semibold mb-2">
                 Soal {currentQuestion} dari {totalQuestions}
               </h3>
-              {currentQuestionData?.image_question && (
+              {currentQuestionData?.question_image && (
                 <img 
-                  src={currentQuestionData.image_question} 
+                  src={currentQuestionData.question_image} 
                   alt="Soal" 
                   className="mb-4 rounded-lg max-w-full"
                 />
@@ -228,19 +224,23 @@ export default function SiswaTryoutPengerjaan() {
             </div>
 
             <div className="space-y-4 mt-6">
-              {currentQuestionData?.answer_options?.map((option) => (
-                <motion.button
-                  key={option.id}
-                  onClick={() => handleAnswerSelect(option.id)}
-                  className={`w-full p-4 text-left rounded-xl ${
-                    selectedAnswer === option.id
-                      ? "bg-green-500 text-white"
-                      : "bg-gray-100 hover:bg-gray-200"
-                  }`}
-                >
-                  {option.text}
-                </motion.button>
-              ))}
+              {Array.isArray(currentQuestionData?.answer_options) && currentQuestionData.answer_options.length > 0 ? (
+                currentQuestionData.answer_options.map((option) => (
+                  <motion.button
+                    key={option.answer_option_id || option.id}
+                    onClick={() => handleAnswerSelect(option.answer_option_id || option.id)}
+                    className={`w-full p-4 text-left rounded-xl ${
+                      selectedAnswers[currentQuestion] === (option.answer_option_id || option.id)
+                        ? "bg-green-500 text-white"
+                        : "bg-gray-100 hover:bg-gray-200"
+                    }`}
+                  >
+                    {option.text || option.answer_option}
+                  </motion.button>
+                ))
+              ) : (
+                <div className="text-gray-500 italic">Pilihan jawaban tidak tersedia</div>
+              )}
             </div>
 
             <div className="flex justify-between mt-6">
