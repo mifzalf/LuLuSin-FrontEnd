@@ -8,7 +8,7 @@ export default function Layout() {
     <div className="layout-container w-full min-h-screen flex flex-col">
       <Header />
       <main className="main-content flex-grow w-full">
-        <Outlet />
+        <Outlet key={window.location.pathname} />
       </main>
       <Footer />
     </div>

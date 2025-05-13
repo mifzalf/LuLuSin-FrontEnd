@@ -8,6 +8,112 @@ import { useNavigate } from "react-router-dom"
 export default function SiswaTryoutHasil() {
   const [hoveredCard, setHoveredCard] = useState(null)
   const navigate = useNavigate()
+<<<<<<< tryoutpengerjaan
+=======
+  const { id } = useParams()
+  const [subjectList, setSubjectList] = useState([])
+  const [timeoutError, setTimeoutError] = useState(false)
+
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const res = await axiosInstance.get(`/API/student/tryout/${id}`)
+        // Ambil array subjek dari getTryout.subjects dan filter unik berdasarkan subject_id
+        let subjects = []
+        if (res.data.getTryout && Array.isArray(res.data.getTryout.subjects)) {
+          const seen = new Set()
+          subjects = res.data.getTryout.subjects.filter(sub => {
+            if (seen.has(sub.subject_id)) return false
+            seen.add(sub.subject_id)
+            return true
+          })
+        }
+        setSubjectList(subjects)
+        if (subjects.length === 0) {
+          setTimeoutError(true)
+        }
+      } catch (err) {
+        setSubjectList([])
+        setTimeoutError(true)
+      }
+    }
+    fetchSubjects()
+  }, [id])
+
+  // Timeout loading jika lebih dari 5 detik
+  useEffect(() => {
+    if (!timeoutError && loading) {
+      const timer = setTimeout(() => {
+        setTimeoutError(true)
+        setLoading(false)
+      }, 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [loading, timeoutError])
+
+  useEffect(() => {
+    const fetchTryoutResults = async () => {
+      try {
+        const response = await axiosInstance.get(`/API/student/tryout/${id}/result`)
+        const raw = response.data
+        const summary = Array.isArray(raw.summary) ? raw.summary[0] : raw.summary
+        let perCategorySubject = []
+        if (Array.isArray(raw.perCategorySubject)) {
+          raw.perCategorySubject.forEach(item => {
+            const result = typeof item.result === 'string' ? JSON.parse(item.result) : (item.result || {})
+            const subjekArr = Array.isArray(result.subjek) ? result.subjek : (result.subjek ? [result.subjek] : [])
+            subjekArr.forEach(sub => {
+              // Cari id_subject dari subjectList dengan pencocokan nama+kategori (case-insensitive dan trim)
+              const subjectData = subjectList.find(s => {
+                const a = ((s.subject_name || '') + '|' + (s.subject_category || '')).trim().toLowerCase();
+                const b = ((sub.nama_subjek || '') + '|' + (result.nama_kategori || '')).trim().toLowerCase();
+                console.log('Cocokkan:', a, '<->', b);
+                return a === b;
+              });
+              if (!subjectData) {
+                console.warn('ID subject tidak ditemukan untuk:', sub.nama_subjek, '| kategori:', result.nama_kategori)
+              }
+              perCategorySubject.push({
+                category_name: result.nama_kategori || '-',
+                subject_name: sub.nama_subjek || '-',
+                subject_id: subjectData ? subjectData.subject_id : null,
+                average_score: sub.nilai_rata_rata || 0,
+                total_correct: sub.total_jawaban_benar || 0,
+                total_wrong: sub.total_jawaban_salah || 0,
+                total_empty: sub.total_jawaban_kosong || 0,
+              })
+            })
+          })
+        }
+        setTryoutResults({ summary, perCategorySubject })
+        setLoading(false)
+        setTimeoutError(false)
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to fetch tryout results')
+        setLoading(false)
+        setTimeoutError(true)
+      }
+    }
+    fetchTryoutResults()
+  }, [id, subjectList])
+
+  if (timeoutError) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-red-500 text-center">
+          <p className="text-xl font-semibold mb-2">Error</p>
+          <p>Timeout: Data tidak berhasil dimuat. Silakan refresh halaman atau hubungi admin.</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="mt-4 bg-[#1E3A5F] text-white px-4 py-2 rounded-lg"
+          >
+            Refresh
+          </button>
+        </div>
+      </div>
+    )
+  }
+>>>>>>> local
 
   // Animation variants
   const containerVariants = {

@@ -38,6 +38,7 @@ import SiswaTryoutId from "./Pages/Siswa/TryoutId";
 import GuruDashboard from "./Pages/Guru/Dashboard";
 import { motion } from "framer-motion";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Hasil from "./Pages/Siswa/hasil";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -109,9 +110,11 @@ function App() {
         <Route path="dashboard" element={<SiswaDashBoard />} />
         <Route path="tryout" element={<SiswaTryout />} />
         <Route path="tryout/:id" element={<SiswaTryoutId />} />
-        <Route path="tryout/:id/:subjectId/pengerjaan" element={<SiswaTryoutPengerjaan />} />
+        <Route path="tryout/:id/:subjectId/pengerjaan" element={<SiswaTryoutPengerjaan key={window.location.pathname} />} />
         <Route path="tryout/:id/hasil" element={<SiswaTryoutHasil />} />
         <Route path="tryout/:id/:subjectId/pembahasan" element={<SiswaTryoutPembahasan />} />
+        <Route path="tryout/:id/:subjectId/peralihan" element={<Peralihan />} />
+        <Route path="tryout/:id/hasil" element={<Hasil />} />
       </Route>
 
       {/* About Route - accessible to all */}

@@ -9,6 +9,7 @@ import axiosInstance from "../../api/axiosInstance"
 export default function SiswaTryoutPengerjaan() {
   const navigate = useNavigate()
   const { id: idTryout, subjectId } = useParams()
+  console.log('Current subjectId from params:', subjectId); // Log untuk debug
   const [currentQuestion, setCurrentQuestion] = useState(1)
   const [selectedAnswers, setSelectedAnswers] = useState({})
   const [timeLeft, setTimeLeft] = useState(null)
@@ -21,7 +22,22 @@ export default function SiswaTryoutPengerjaan() {
     questionData: []
   })
 
-  // Ambil data tryout
+  // Reset state setiap subjectId berubah
+  useEffect(() => {
+    setCurrentQuestion(1)
+    setSelectedAnswers({})
+    setAnsweredQuestions([])
+    setTimeLeft(null)
+    setLoading(true)
+    setError(null)
+    setExamData({
+      studentData: null,
+      subjectData: null,
+      questionData: []
+    })
+  }, [subjectId])
+
+  // Ambil data tryout setiap idTryout atau subjectId berubah
   useEffect(() => {
     const fetchTryoutData = async () => {
       try {
@@ -80,13 +96,21 @@ export default function SiswaTryoutPengerjaan() {
           return { minutes: prev.minutes - 1, seconds: 59 }
         } else {
           clearInterval(timer)
+          // Jika subjectId adalah 7 (subjek terakhir), langsung ke halaman hasil
+          if (subjectId === "7") {
+            navigate(`/siswa/tryout/${idTryout}/hasil`);
+          } else {
+            // Jika bukan subjek terakhir, lanjut ke peralihan
+            const nextSubjectId = String(Number(subjectId) + 1);
+            navigate(`/siswa/tryout/${idTryout}/${nextSubjectId}/peralihan`);
+          }
           return prev
         }
       })
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [timeLeft])
+  }, [timeLeft, navigate, idTryout, subjectId])
 
   // Jumlah total soal
   const totalQuestions = examData.questionData?.length || 0
@@ -94,29 +118,54 @@ export default function SiswaTryoutPengerjaan() {
   // Data soal saat ini
   const currentQuestionData = examData.questionData?.[currentQuestion - 1] || null
 
-  // Fungsi navigasi soal
-  const navigateQuestion = (direction) => {
-    if (direction === "next" && currentQuestion < totalQuestions) {
-      setCurrentQuestion((prev) => prev + 1)
-      setSelectedAnswers({})
-    } else if (direction === "prev" && currentQuestion > 1) {
-      setCurrentQuestion((prev) => prev - 1)
-      setSelectedAnswers({})
+  // Find next unanswered question
+  const findNextUnansweredQuestion = () => {
+    for (let i = 1; i <= totalQuestions; i++) {
+      if (!answeredQuestions.includes(i)) {
+        return i
+      }
     }
+    return 1 // If all questions are answered, return to first question
   }
 
   // Fungsi untuk memilih jawaban
   const handleAnswerSelect = async (answerOptionId) => {
     try {
-      await axiosInstance.post(
-        `/API/student/tryout/${idTryout}/${subjectId}/${currentQuestionData.question_id}/taking`,
-        { answerOptionId }
-      );
+      // Cek apakah sudah pernah menjawab soal ini
+      const alreadyAnswered = answeredQuestions.includes(currentQuestion);
+      const url = `/API/student/tryout/${idTryout}/${subjectId}/${currentQuestionData.question_id}/taking`;
+      
+      // Log data yang dikirim ke backend
+      console.log("FRONTEND SEND:", {
+        idTryout,
+        subjectId,
+        questionId: currentQuestionData.question_id,
+        answerOptionId
+      });
+
+      if (alreadyAnswered) {
+        // PATCH untuk update jawaban
+        await axiosInstance.patch(url, { answerOptionId });
+      } else {
+        // POST untuk jawaban baru
+        await axiosInstance.post(url, { answerOptionId });
+      }
+
       setSelectedAnswers((prev) => ({ ...prev, [currentQuestion]: answerOptionId }));
       if (!answeredQuestions.includes(currentQuestion)) {
         setAnsweredQuestions((prev) => [...prev, currentQuestion]);
       }
-      if (currentQuestion < totalQuestions) {
+      
+      // Jika semua soal sudah dijawab, otomatis navigasi ke Peralihan
+      if (answeredQuestions.length + 1 === totalQuestions) {
+        setTimeout(() => {
+          if (subjectId === "7") {
+            navigate(`/siswa/tryout/${idTryout}/hasil`);
+          } else {
+            navigate(`/siswa/tryout/${idTryout}/${subjectId}/peralihan`);
+          }
+        }, 1000);
+      } else if (currentQuestion < totalQuestions) {
         setTimeout(() => {
           navigateQuestion("next");
         }, 500);
@@ -124,6 +173,58 @@ export default function SiswaTryoutPengerjaan() {
     } catch (err) {
       console.error('Error menyimpan jawaban:', err);
       alert('Gagal menyimpan jawaban. Silakan coba lagi.');
+    }
+  }
+
+  // Fungsi untuk submit jawaban kosong
+  const submitEmptyAnswer = async (questionId) => {
+    try {
+      const url = `/API/student/tryout/${idTryout}/${subjectId}/${questionId}/taking`;
+      
+      // Log data yang dikirim ke backend untuk jawaban kosong
+      console.log("FRONTEND SEND EMPTY:", {
+        idTryout,
+        subjectId,
+        questionId,
+        answerOptionId: 0
+      });
+
+      await axiosInstance.post(url, { answerOptionId: 0 });
+    } catch (err) {
+      console.error('Error menyimpan jawaban kosong:', err);
+    }
+  }
+
+  // Fungsi navigasi soal
+  const navigateQuestion = async (direction) => {
+    if (direction === "next") {
+      // Submit jawaban kosong untuk soal saat ini jika belum dijawab
+      if (!answeredQuestions.includes(currentQuestion)) {
+        await submitEmptyAnswer(currentQuestionData.question_id);
+        setAnsweredQuestions((prev) => [...prev, currentQuestion]);
+      }
+
+      if (currentQuestion === totalQuestions) {
+        // Jika semua soal sudah dijawab
+        if (answeredQuestions.length === totalQuestions) {
+          if (subjectId === "7") {
+            navigate(`/siswa/tryout/${idTryout}/hasil`);
+          } else {
+            navigate(`/siswa/tryout/${idTryout}/${subjectId}/peralihan`);
+          }
+        } else {
+          // Jika masih ada soal yang belum dijawab, cari soal berikutnya
+          const nextUnanswered = findNextUnansweredQuestion();
+          setCurrentQuestion(nextUnanswered);
+          setSelectedAnswers({});
+        }
+      } else {
+        setCurrentQuestion((prev) => prev + 1);
+        setSelectedAnswers({});
+      }
+    } else if (direction === "prev" && currentQuestion > 1) {
+      setCurrentQuestion((prev) => prev - 1);
+      setSelectedAnswers({});
     }
   }
 
@@ -257,12 +358,12 @@ export default function SiswaTryoutPengerjaan() {
 
               <button
                 onClick={() => navigateQuestion("next")}
-                disabled={currentQuestion === totalQuestions}
+                disabled={false}
                 className={`flex items-center px-4 py-2 rounded-xl ${
-                  currentQuestion === totalQuestions ? "bg-gray-300" : "bg-[#1E3A5F] text-white"
+                  currentQuestion === totalQuestions ? "bg-[#1E3A5F] text-white" : "bg-[#1E3A5F] text-white"
                 }`}
               >
-                Selanjutnya
+                {currentQuestion === totalQuestions ? "Selesai" : "Selanjutnya"}
                 <ArrowRight className="ml-2" size={16} />
               </button>
             </div>
