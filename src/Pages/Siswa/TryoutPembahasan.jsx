@@ -7,7 +7,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import axiosInstance from "../../api/axiosInstance"
 
 export default function SiswaTryoutPembahasan() {
-  const { idTryout, idSubject } = useParams()
+  const { id, subjectId } = useParams()
   const navigate = useNavigate()
   const [currentQuestion, setCurrentQuestion] = useState(1)
   const [hoveredAnswer, setHoveredAnswer] = useState(null)
@@ -26,35 +26,51 @@ export default function SiswaTryoutPembahasan() {
     const fetchTryoutData = async () => {
       try {
         setLoading(true)
-        const response = await axiosInstance.get(`/API/student/tryout/${idTryout}/${idSubject}/explanation`)
-        console.log('Response API:', response.data)
+        // Ambil data pembahasan dari endpoint yang sudah sesuai backend
+        const response = await axiosInstance.get(`/API/student/tryout/${id}/${subjectId}/explanation`)
+        const { studentData, subjectExpData, detail } = response.data
 
-        if (!response.data) {
-          throw new Error('Data tidak ditemukan')
+        if (!detail || !Array.isArray(detail) || detail.length === 0) {
+          throw new Error('Pembahasan untuk subject ini belum tersedia (ID tidak ditemukan).')
         }
 
         setExamData({
+<<<<<<< tryoutpengerjaan
           studentData: response.data.studentData || {},
           subjectExpData: response.data.subjectExpData || {},
           detail: Array.isArray(response.data.detail) ? response.data.detail : []
+=======
+          studentData: {
+            student_name: studentData?.nama || '',
+            student_id: studentData?.nisn || ''
+          },
+          subjectExpData: {
+            subject_name: subjectExpData?.subjek || '',
+            subject_category_name: subjectExpData?.kategori_subjek || ''
+          },
+          detail: detail.map(item => ({
+            question_id: item.id_question,
+            question_image: item.image_question,
+            question_text: item.question,
+            answer_options: (item.answer_options || []).map((option, idx) => ({
+              option_text: option,
+              is_correct: option === item.correct_answer,
+              is_selected: option === item.jawaban_siswa
+            })),
+            explanation: item.explanation || ''
+          }))
+>>>>>>> local
         })
 
         setLoading(false)
       } catch (err) {
-        console.error('Error:', err)
-        const errorMessage = err.response?.data?.message || err.message || 'Terjadi kesalahan saat memuat data'
-        setError(errorMessage)
-        
-        if (err.response?.status === 401 || err.response?.status === 403) {
-          navigate('/login')
-        }
-        
+        setError(err.message || 'Pembahasan untuk subject ini belum tersedia (ID tidak ditemukan).')
         setLoading(false)
       }
     }
 
     fetchTryoutData()
-  }, [idTryout, idSubject, navigate])
+  }, [id, subjectId, navigate])
 
   // Function to handle question navigation
   const navigateQuestion = (direction) => {
@@ -99,6 +115,11 @@ export default function SiswaTryoutPembahasan() {
 
   // Get current question data
   const currentQuestionData = examData.detail[currentQuestion - 1] || null
+
+  // Hitung jumlah benar, salah, belum
+  const jumlahBenar = examData.detail.filter(q => q.answer_options.some(opt => opt.is_selected && opt.is_correct)).length;
+  const jumlahSalah = examData.detail.filter(q => q.answer_options.some(opt => opt.is_selected && !opt.is_correct)).length;
+  const jumlahBelum = totalQuestions - jumlahBenar - jumlahSalah;
 
   if (loading) {
     return (
@@ -194,54 +215,63 @@ export default function SiswaTryoutPembahasan() {
             </motion.p>
 
             <motion.div variants={containerVariants} className="grid grid-cols-5 sm:grid-cols-7 gap-2">
-              {Array.from({ length: totalQuestions }, (_, i) => (
-                <motion.button
-                  key={i}
-                  variants={itemVariants}
-                  whileHover={{
-                    scale: 1.1,
-                    transition: { type: "spring", stiffness: 300 },
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => goToQuestion(i + 1)}
-                  className={`p-2 rounded-lg flex items-center justify-center relative ${
-                    currentQuestion === i + 1 ? "ring-2 ring-white" : ""
-                  } ${
-                    getAnswerStatus(examData.detail[i]) === "correct"
-                      ? "bg-gradient-to-br from-green-400 to-green-500 text-black font-medium"
-                      : getAnswerStatus(examData.detail[i]) === "incorrect"
-                        ? "bg-gradient-to-br from-red-400 to-red-500 text-black font-medium"
-                        : "bg-gradient-to-br from-[#2C4A6E] to-[#3A5A80]"
-                  }`}
-                >
-                  {i + 1}
-                  {getAnswerStatus(examData.detail[i]) === "correct" && (
-                    <div className="absolute -top-1 -right-1 bg-white rounded-full p-0.5">
-                      <CheckCircle size={8} className="text-green-500" />
-                    </div>
-                  )}
-                  {getAnswerStatus(examData.detail[i]) === "incorrect" && (
-                    <div className="absolute -top-1 -right-1 bg-white rounded-full p-0.5">
-                      <XCircle size={8} className="text-red-500" />
-                    </div>
-                  )}
-                </motion.button>
-              ))}
+              {Array.from({ length: totalQuestions }, (_, i) => {
+                const q = examData.detail[i];
+                // Cek status jawaban
+                let status = 'unanswered';
+                if (q) {
+                  if (q.answer_options.some(opt => opt.is_selected && opt.is_correct)) status = 'correct';
+                  else if (q.answer_options.some(opt => opt.is_selected && !opt.is_correct)) status = 'incorrect';
+                }
+                return (
+                  <motion.button
+                    key={i}
+                    variants={itemVariants}
+                    whileHover={{
+                      scale: 1.1,
+                      transition: { type: "spring", stiffness: 300 },
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => goToQuestion(i + 1)}
+                    className={`p-2 rounded-lg flex items-center justify-center relative ${
+                      currentQuestion === i + 1 ? "ring-2 ring-white" : ""
+                    } ${
+                      status === "correct"
+                        ? "bg-gradient-to-br from-green-400 to-green-500 text-black font-medium"
+                        : status === "incorrect"
+                          ? "bg-gradient-to-br from-red-400 to-red-500 text-black font-medium"
+                          : "bg-gradient-to-br from-[#2C4A6E] to-[#3A5A80]"
+                    }`}
+                  >
+                    {i + 1}
+                    {status === "correct" && (
+                      <div className="absolute -top-1 -right-1 bg-white rounded-full p-0.5">
+                        <CheckCircle size={8} className="text-green-500" />
+                      </div>
+                    )}
+                    {status === "incorrect" && (
+                      <div className="absolute -top-1 -right-1 bg-white rounded-full p-0.5">
+                        <XCircle size={8} className="text-red-500" />
+                      </div>
+                    )}
+                  </motion.button>
+                );
+              })}
             </motion.div>
 
             <motion.div variants={itemVariants} className="mt-6 bg-[#2C4A6E]/50 p-3 rounded-xl">
               <div className="flex justify-between text-sm text-blue-200">
                 <div className="flex items-center">
                   <div className="w-3 h-3 rounded-full bg-green-400 mr-1"></div>
-                  <span>Benar: {examData.detail.filter(q => q.is_correct).length}</span>
+                  <span>Benar: {jumlahBenar}</span>
                 </div>
                 <div className="flex items-center">
                   <div className="w-3 h-3 rounded-full bg-red-400 mr-1"></div>
-                  <span>Salah: {examData.detail.filter(q => !q.is_correct).length}</span>
+                  <span>Salah: {jumlahSalah}</span>
                 </div>
                 <div className="flex items-center">
                   <div className="w-3 h-3 rounded-full bg-[#3A5A80] mr-1"></div>
-                  <span>Belum: {totalQuestions - examData.detail.filter(q => q.is_correct).length - examData.detail.filter(q => !q.is_correct).length}</span>
+                  <span>Belum: {jumlahBelum}</span>
                 </div>
               </div>
             </motion.div>
@@ -318,8 +348,8 @@ export default function SiswaTryoutPembahasan() {
                         : "bg-gradient-to-br from-[#2C4A6E] to-[#3A5A80]"
                   }`}
                 >
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-white rounded-bl-full opacity-10"></div>
-                  <span className="bg-white/20 w-6 h-6 rounded-full flex items-center justify-center mr-3 text-sm font-medium">
+                  <div className={`absolute top-0 right-0 w-20 h-20 bg-white rounded-bl-full opacity-10`}></div>
+                  <span className={`bg-white/20 w-6 h-6 rounded-full flex items-center justify-center mr-3 text-sm font-medium ${option.is_correct ? 'bg-green-400 text-white' : ''}`}>
                     {String.fromCharCode(65 + index)}
                   </span>
                   {option.option_text}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import axiosInstance from '../../api/axiosInstance';
 
 // CSS-in-JS styles
 const styles = {
@@ -100,26 +101,111 @@ const styles = {
 };
 
 const Peralihan = () => {
-  const [timeLeft, setTimeLeft] = useState(30); // Set initial time to 30 seconds
+  const [timeLeft, setTimeLeft] = useState(5); // Set initial time to 30 seconds
   const [isVisible, setIsVisible] = useState(true);
+  const [subjectList, setSubjectList] = useState([]);
+  const [nextSubjectDetail, setNextSubjectDetail] = useState(null);
   const navigate = useNavigate();
+  const { id: idTryout, subjectId } = useParams();
   
+  // Ambil daftar subjek saat mount
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        console.log('Fetching subjects for tryout:', idTryout);
+        const res = await axiosInstance.get(`/API/student/tryout/${idTryout}`);
+        console.log('Raw API Response:', res.data);
+        
+        let subjects = res.data.getTryout.subjects;
+        if (typeof subjects === 'string') {
+          subjects = JSON.parse(subjects);
+        }
+        
+        console.log('Parsed subjects:', subjects);
+        
+        // Urutkan subject berdasarkan ID
+        subjects.sort((a, b) => Number(a.subject_id) - Number(b.subject_id));
+        console.log('Sorted subjects:', subjects.map(s => ({
+          id: s.subject_id,
+          name: s.subject_name || s.subjek
+        })));
+        
+        setSubjectList(subjects);
+      } catch (err) {
+        console.error('Error mengambil data mata pelajaran:', err);
+        console.error('Error details:', {
+          message: err.message,
+          response: err.response?.data,
+          status: err.response?.status
+        });
+        setSubjectList([]);
+      }
+    };
+    fetchSubjects();
+  }, [idTryout]);
+
+  // Efek untuk navigasi otomatis
   useEffect(() => {
     if (timeLeft === 0) {
-      // Navigate to the next page when timer reaches 0
-      setTimeout(() => {
-        navigate('/siswa/tryout/id/subjek/pengerjaan');
-      }, 500);
+      // Cari index subjectId saat ini di subjectList
+      const currentIndex = subjectList.findIndex(subject => String(subject.subject_id) === String(subjectId));
+      const nextSubject = subjectList[currentIndex + 1];
+      
+      console.log('Navigation Debug:', {
+        currentIndex,
+        currentSubjectId: subjectId,
+        nextSubjectId: nextSubject?.subject_id,
+        subjectList: subjectList.map(s => s.subject_id)
+      });
+      
+      if (nextSubject) {
+        console.log('Navigating to next subject ID:', nextSubject.subject_id);
+        window.location.href = `/siswa/tryout/${idTryout}/${nextSubject.subject_id}/pengerjaan`;
+      } else {
+        console.log('No more subjects, going to results');
+        window.location.href = `/siswa/tryout/${idTryout}/hasil`;
+      }
       return;
     }
-    
+
     const timer = setTimeout(() => {
       setTimeLeft(timeLeft - 1);
     }, 1000);
-    
     return () => clearTimeout(timer);
-  }, [timeLeft, navigate]);
-  
+  }, [timeLeft, subjectList, subjectId, idTryout]);
+
+  // Ambil detail subjek berikutnya
+  useEffect(() => {
+    const currentId = parseInt(subjectId);
+    const nextId = currentId + 1;
+    
+    // Cek apakah nextId ada dalam daftar subject
+    const nextSubject = subjectList.find(subject => 
+      parseInt(subject.subject_id) === nextId
+    );
+    
+    if (nextSubject) {
+      console.log('Fetching details for next subject ID:', nextId);
+      axiosInstance.get(`/API/student/${nextId}/transition`)
+        .then(res => {
+          console.log('Next subject details:', res.data.getSubject);
+          setNextSubjectDetail(res.data.getSubject);
+        })
+        .catch(err => {
+          console.error('Error fetching next subject details:', err);
+          setNextSubjectDetail(null);
+        });
+    } else {
+      setNextSubjectDetail(null);
+    }
+  }, [subjectList, subjectId]);
+
+  // Debug log
+  useEffect(() => {
+    console.log('subjectList:', subjectList);
+    console.log('subjectId (current):', subjectId);
+  }, [subjectList, subjectId]);
+
   // Format the time as MM:SS
   const formatTime = () => {
     const minutes = Math.floor(timeLeft / 60);
@@ -217,7 +303,7 @@ const Peralihan = () => {
             transition={{ delay: 0.2, duration: 0.4 }}
             style={styles.title}
           >
-            Test Potensi Skolastik
+            {nextSubjectDetail ? nextSubjectDetail.subject_name || nextSubjectDetail.subjek : 'Test Potensi Skolastik'}
           </motion.h1>
           
           <motion.div
@@ -225,7 +311,7 @@ const Peralihan = () => {
             animate="pulse"
             style={{ marginBottom: '1.5rem' }}
           >
-            <p style={styles.timerLabel}>Dimulai:</p>
+            <p style={styles.timerLabel}>Dimulai dalam:</p>
             <motion.div 
               className="timer-display"
               style={styles.timerValue}
@@ -237,17 +323,13 @@ const Peralihan = () => {
             </motion.div>
           </motion.div>
           
-          <motion.button
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.4 }}
-            whileHover={{ scale: 1.05, ...styles.buttonHover }}
-            whileTap={{ scale: 0.95 }}
-            style={styles.button}
-            onClick={() => navigate('/siswa/tryout/id/subjek/pengerjaan')}
-          >
-            Siapkan Diri anda
-          </motion.button>
+          <div style={{ color: 'white', fontSize: '1.2rem', marginBottom: '1rem' }}>
+            {nextSubjectDetail ? (
+              <>Bersiap untuk mengerjakan: <b>{nextSubjectDetail.subject_name || nextSubjectDetail.subjek}</b></>
+            ) : (
+              'Sedang menghitung skor...'
+            )}
+          </div>
         </motion.div>
       </div>
     </>
