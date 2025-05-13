@@ -13,6 +13,7 @@ export default function SiswaTryoutHasil() {
   const [error, setError] = useState(null)
   const navigate = useNavigate()
   const { id } = useParams()
+  const [subjectList, setSubjectList] = useState([]);
 
   useEffect(() => {
     const fetchTryoutResults = async () => {
@@ -30,6 +31,17 @@ export default function SiswaTryoutHasil() {
     }
     fetchTryoutResults()
   }, [id])
+
+  useEffect(() => {
+    axiosInstance.get(`/API/student/tryout/${id}`)
+      .then(res => {
+        let subjects = res.data.getTryout.subjects;
+        if (typeof subjects === 'string') {
+          subjects = JSON.parse(subjects);
+        }
+        setSubjectList(subjects);
+      });
+  }, [id]);
 
   // Animation variants
   const containerVariants = {
@@ -116,30 +128,44 @@ export default function SiswaTryoutHasil() {
   };
 
   // Helper untuk render metrik subjek
-  const renderSubjectMetrics = (sub) => (
-    <div className="grid grid-cols-4 gap-2 mt-2">
-      <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
-        <Award size={18} className="text-yellow-300 mb-1" />
-        <span className="text-xs text-blue-100">Nilai</span>
-        <span className="font-bold text-white">{sub.nilai_rata_rata}</span>
+  const renderSubjectMetrics = (sub) => {
+    // Cari ID subjek berdasarkan nama subjek
+    const found = subjectList.find(s =>
+      (s.subject_name || s.nama_subjek) === (sub.nama_subjek || sub.subject_name)
+    );
+    const subjectId = found ? found.subject_id : undefined;
+
+    return (
+      <div 
+        onClick={() => subjectId && navigate(`/siswa/tryout/${id}/${subjectId}/pembahasan`)}
+        className="bg-[#2C4A6E] rounded-xl p-4 mb-3 cursor-pointer hover:bg-[#2C4A6E]/80 transition-colors"
+      >
+        <div className="font-semibold text-white mb-2">{sub.nama_subjek}</div>
+        <div className="grid grid-cols-4 gap-2 mt-2">
+          <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
+            <Award size={18} className="text-yellow-300 mb-1" />
+            <span className="text-xs text-blue-100">Nilai</span>
+            <span className="font-bold text-white">{sub.nilai_rata_rata}</span>
+          </div>
+          <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
+            <CheckCircle size={18} className="text-green-400 mb-1" />
+            <span className="text-xs text-blue-100">Total Jawaban Benar</span>
+            <span className="font-bold text-white">{sub.total_jawaban_benar}</span>
+          </div>
+          <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
+            <XCircle size={18} className="text-red-400 mb-1" />
+            <span className="text-xs text-blue-100">Total Jawaban Salah</span>
+            <span className="font-bold text-white">{sub.total_jawaban_salah}</span>
+          </div>
+          <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
+            <HelpCircle size={18} className="text-gray-400 mb-1" />
+            <span className="text-xs text-blue-100">Total Jawaban Kosong</span>
+            <span className="font-bold text-white">{sub.total_jawaban_kosong}</span>
+          </div>
+        </div>
       </div>
-      <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
-        <CheckCircle size={18} className="text-green-400 mb-1" />
-        <span className="text-xs text-blue-100">Total Jawaban Benar</span>
-        <span className="font-bold text-white">{sub.total_jawaban_benar}</span>
-      </div>
-      <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
-        <XCircle size={18} className="text-red-400 mb-1" />
-        <span className="text-xs text-blue-100">Total Jawaban Salah</span>
-        <span className="font-bold text-white">{sub.total_jawaban_salah}</span>
-      </div>
-      <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
-        <HelpCircle size={18} className="text-gray-400 mb-1" />
-        <span className="text-xs text-blue-100">Total Jawaban Kosong</span>
-        <span className="font-bold text-white">{sub.total_jawaban_kosong}</span>
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="bg-gradient-to-b from-[#F5F0E9] to-[#EAE5DE] flex flex-col items-center p-6 min-h-screen w-screen">
@@ -193,34 +219,40 @@ export default function SiswaTryoutHasil() {
         {/* Tes Skolastik */}
         <div className="bg-[#22345A] rounded-xl p-4 mb-4">
           <h2 className="text-lg font-bold text-white mb-2">Tes Skolastik</h2>
-          {getSubjectsByCategory("Tes Potensi Skolastik").map((sub, idx) => (
-            <div key={idx} className="bg-[#2C4A6E] rounded-xl p-4 mb-3">
-              <div className="font-semibold text-white mb-2">{sub.nama_subjek}</div>
-              {renderSubjectMetrics(sub)}
-            </div>
-          ))}
+          {getSubjectsByCategory("Tes Potensi Skolastik").map((sub, idx) => {
+            console.log('SUBJEK DEBUG:', sub);
+            return (
+              <div key={idx} className="bg-[#2C4A6E] rounded-xl p-4 mb-3">
+                {renderSubjectMetrics(sub)}
+              </div>
+            );
+          })}
         </div>
 
         {/* Tes Literasi */}
         <div className="bg-[#22345A] rounded-xl p-4 mb-4">
           <h2 className="text-lg font-bold text-white mb-2">Tes Literasi</h2>
-          {getSubjectsByCategory("Tes Literasi").map((sub, idx) => (
-            <div key={idx} className="bg-[#2C4A6E] rounded-xl p-4 mb-3">
-              <div className="font-semibold text-white mb-2">{sub.nama_subjek}</div>
-              {renderSubjectMetrics(sub)}
-            </div>
-          ))}
+          {getSubjectsByCategory("Tes Literasi").map((sub, idx) => {
+            console.log('SUBJEK DEBUG:', sub);
+            return (
+              <div key={idx} className="bg-[#2C4A6E] rounded-xl p-4 mb-3">
+                {renderSubjectMetrics(sub)}
+              </div>
+            );
+          })}
         </div>
 
         {/* Tes Penalaran Matematika */}
         <div className="bg-[#22345A] rounded-xl p-4 mb-4">
           <h2 className="text-lg font-bold text-white mb-2">Tes Penalaran Matematika</h2>
-          {getSubjectsByCategory("Penalaran Matematika").map((sub, idx) => (
-            <div key={idx} className="bg-[#2C4A6E] rounded-xl p-4 mb-3">
-              <div className="font-semibold text-white mb-2">{sub.nama_subjek}</div>
-              {renderSubjectMetrics(sub)}
-            </div>
-          ))}
+          {getSubjectsByCategory("Penalaran Matematika").map((sub, idx) => {
+            console.log('SUBJEK DEBUG:', sub);
+            return (
+              <div key={idx} className="bg-[#2C4A6E] rounded-xl p-4 mb-3">
+                {renderSubjectMetrics(sub)}
+              </div>
+            );
+          })}
         </div>
 
         {/* Button Keluar */}

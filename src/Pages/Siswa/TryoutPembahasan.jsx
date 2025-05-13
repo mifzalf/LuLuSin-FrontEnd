@@ -26,7 +26,6 @@ export default function SiswaTryoutPembahasan() {
     const fetchTryoutData = async () => {
       try {
         setLoading(true)
-        // Ambil data pembahasan dari endpoint yang sudah sesuai backend
         const response = await axiosInstance.get(`/API/student/tryout/${id}/${subjectId}/explanation`)
         const { studentData, subjectExpData, detail } = response.data
 
@@ -47,7 +46,7 @@ export default function SiswaTryoutPembahasan() {
             question_id: item.id_question,
             question_image: item.image_question,
             question_text: item.question,
-            answer_options: (item.answer_options || []).map((option, idx) => ({
+            answer_options: (item.answer_options || []).map((option) => ({
               option_text: option,
               is_correct: option === item.correct_answer,
               is_selected: option === item.jawaban_siswa
@@ -149,7 +148,7 @@ export default function SiswaTryoutPembahasan() {
           className="flex items-center mb-6"
         >
           <motion.a 
-            href="/siswa/tryout" 
+            href={`/siswa/tryout/${id}/hasil`} 
             whileHover={{ scale: 1.05 }} 
             whileTap={{ scale: 0.95 }}
           >
