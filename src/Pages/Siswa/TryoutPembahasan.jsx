@@ -35,11 +35,6 @@ export default function SiswaTryoutPembahasan() {
         }
 
         setExamData({
-<<<<<<< tryoutpengerjaan
-          studentData: response.data.studentData || {},
-          subjectExpData: response.data.subjectExpData || {},
-          detail: Array.isArray(response.data.detail) ? response.data.detail : []
-=======
           studentData: {
             student_name: studentData?.nama || '',
             student_id: studentData?.nisn || ''
@@ -59,7 +54,6 @@ export default function SiswaTryoutPembahasan() {
             })),
             explanation: item.explanation || ''
           }))
->>>>>>> local
         })
 
         setLoading(false)
