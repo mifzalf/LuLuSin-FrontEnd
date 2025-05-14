@@ -101,10 +101,11 @@ const styles = {
 };
 
 const Peralihan = () => {
-  const [timeLeft, setTimeLeft] = useState(5); // Set initial time to 30 seconds
+  const [timeLeft, setTimeLeft] = useState(5); // Set initial time to 5 detik
   const [isVisible, setIsVisible] = useState(true);
   const [subjectList, setSubjectList] = useState([]);
   const [nextSubjectDetail, setNextSubjectDetail] = useState(null);
+  const [isFinalizing, setIsFinalizing] = useState(false);
   const navigate = useNavigate();
   const { id: idTryout, subjectId } = useParams();
   
@@ -144,26 +145,60 @@ const Peralihan = () => {
     fetchSubjects();
   }, [idTryout]);
 
+  // Fungsi untuk finalisasi tryout
+  const finalizeTryout = async () => {
+    try {
+      setIsFinalizing(true);
+      const response = await axiosInstance.post(`/API/student/tryout/${idTryout}/finalize`);
+      
+      if (response.status === 200) {
+        console.log('Tryout berhasil difinalisasi');
+        // Navigasi ke halaman penilaian setelah finalisasi berhasil
+        navigate(`/siswa/tryout/${idTryout}/penilaian`);
+      }
+    } catch (error) {
+      console.error('Error finalisasi tryout:', error);
+      const errorMessage = error.response?.data?.message || 'Terjadi kesalahan saat finalisasi tryout';
+      alert(errorMessage);
+    } finally {
+      setIsFinalizing(false);
+    }
+  };
+
+  // Fungsi untuk membersihkan data
+  const cleanupData = () => {
+    // Hapus data dari localStorage
+    localStorage.removeItem(`tryout_${idTryout}_${subjectId}_answers`);
+    localStorage.removeItem(`tryout_${idTryout}_${subjectId}_time`);
+    
+    // Reset state
+    setTimeLeft(5);
+    setNextSubjectDetail(null);
+  };
+
   // Efek untuk navigasi otomatis
   useEffect(() => {
-    if (timeLeft === 0) {
-      // Cari index subjectId saat ini di subjectList
-      const currentIndex = subjectList.findIndex(subject => String(subject.subject_id) === String(subjectId));
-      const nextSubject = subjectList[currentIndex + 1];
+    if (timeLeft === 0 && subjectList.length > 0) {
+      console.log('==== DEBUG PERALIHAN.JSX ====');
+      console.log('subjectList:', subjectList.map(s => s.subject_id));
+      console.log('subjectList (full):', subjectList);
+      console.log('current subjectId:', subjectId, typeof subjectId);
       
-      console.log('Navigation Debug:', {
-        currentIndex,
-        currentSubjectId: subjectId,
-        nextSubjectId: nextSubject?.subject_id,
-        subjectList: subjectList.map(s => s.subject_id)
-      });
+      // Pastikan subjectId adalah number
+      const currentSubjectId = parseInt(subjectId);
+      const nextSubjectId = currentSubjectId + 1;
+      
+      // Cari subjek berikutnya berdasarkan ID
+      const nextSubject = subjectList.find(subject => parseInt(subject.subject_id) === nextSubjectId);
+      console.log('nextSubjectId yang dicari:', nextSubjectId);
+      console.log('nextSubject ditemukan:', nextSubject);
       
       if (nextSubject) {
-        console.log('Navigating to next subject ID:', nextSubject.subject_id);
-        window.location.href = `/siswa/tryout/${idTryout}/${nextSubject.subject_id}/pengerjaan`;
+        console.log('Navigasi ke subjek berikutnya:', nextSubject.subject_id, 'URL:', `/siswa/tryout/${idTryout}/${nextSubject.subject_id}/pengerjaan`);
+        navigate(`/siswa/tryout/${idTryout}/${nextSubject.subject_id}/pengerjaan`);
       } else {
-        console.log('No more subjects, going to results');
-        window.location.href = `/siswa/tryout/${idTryout}/hasil`;
+        console.log('Finalisasi tryout...');
+        finalizeTryout();
       }
       return;
     }
@@ -172,7 +207,7 @@ const Peralihan = () => {
       setTimeLeft(timeLeft - 1);
     }, 1000);
     return () => clearTimeout(timer);
-  }, [timeLeft, subjectList, subjectId, idTryout]);
+  }, [timeLeft, subjectList, subjectId, idTryout, navigate]);
 
   // Ambil detail subjek berikutnya
   useEffect(() => {
@@ -303,7 +338,7 @@ const Peralihan = () => {
             transition={{ delay: 0.2, duration: 0.4 }}
             style={styles.title}
           >
-            {nextSubjectDetail ? nextSubjectDetail.subject_name || nextSubjectDetail.subjek : 'Test Potensi Skolastik'}
+            {nextSubjectDetail ? nextSubjectDetail.subject_name || nextSubjectDetail.subjek : 'Memproses Hasil...'}
           </motion.h1>
           
           <motion.div
@@ -311,16 +346,24 @@ const Peralihan = () => {
             animate="pulse"
             style={{ marginBottom: '1.5rem' }}
           >
-            <p style={styles.timerLabel}>Dimulai dalam:</p>
-            <motion.div 
-              className="timer-display"
-              style={styles.timerValue}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4, duration: 0.4 }}
-            >
-              {formatTime()}
-            </motion.div>
+            <p style={styles.timerLabel}>
+              {nextSubjectDetail ? 'Dimulai dalam:' : 'Memproses hasil...'}
+            </p>
+            {nextSubjectDetail ? (
+              <motion.div 
+                className="timer-display"
+                style={styles.timerValue}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.4 }}
+              >
+                {formatTime()}
+              </motion.div>
+            ) : (
+              <div style={{ color: 'white', fontSize: '1.2rem' }}>
+                {isFinalizing ? 'Memproses penilaian...' : 'Siap menampilkan hasil'}
+              </div>
+            )}
           </motion.div>
           
           <div style={{ color: 'white', fontSize: '1.2rem', marginBottom: '1rem' }}>

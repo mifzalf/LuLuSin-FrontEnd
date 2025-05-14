@@ -115,10 +115,10 @@ export default function SiswaTryoutHasil() {
 
   // Get metrics from API data
   const metrics = tryoutResults?.summary ? [
-    { title: "Nilai rata-rata", value: tryoutResults.summary.average_score.toString(), icon: <Award size={28} className="text-yellow-300 mb-1" /> },
-    { title: "Total Jawaban Benar", value: tryoutResults.summary.total_correct.toString(), icon: <CheckCircle size={28} className="text-green-400 mb-1" /> },
-    { title: "Total Jawaban Salah", value: tryoutResults.summary.total_wrong.toString(), icon: <XCircle size={28} className="text-red-400 mb-1" /> },
-    { title: "Total Jawaban Kosong", value: tryoutResults.summary.total_empty.toString(), icon: <HelpCircle size={28} className="text-gray-400 mb-1" /> },
+    { title: "Nilai rata-rata", value: tryoutResults.summary.average_score?.toString(), icon: <Award size={28} className="text-yellow-300 mb-1" /> },
+    { title: "Total Jawaban Benar", value: tryoutResults.summary.total_correct?.toString(), icon: <CheckCircle size={28} className="text-green-400 mb-1" /> },
+    { title: "Total Jawaban Salah", value: tryoutResults.summary.total_wrong?.toString(), icon: <XCircle size={28} className="text-red-400 mb-1" /> },
+    { title: "Total Jawaban Kosong", value: tryoutResults.summary.total_empty?.toString(), icon: <HelpCircle size={28} className="text-gray-400 mb-1" /> },
   ] : []
 
   // Helper untuk ambil subjek per kategori
@@ -205,7 +205,7 @@ export default function SiswaTryoutHasil() {
           <div className="w-10"></div> {/* Spacer for centering */}
         </motion.div>
 
-        {/* Header Box */}
+        {/* Header Box: Nilai Rata-rata, Benar, Salah, Kosong */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-gradient-to-br from-[#1E3A5F] to-[#2E4A7F] text-white p-6 rounded-xl shadow-lg mb-4">
           {metrics.map((item, index) => (
             <div key={index} className="flex flex-col items-center justify-center p-2 rounded-xl">
@@ -216,44 +216,39 @@ export default function SiswaTryoutHasil() {
           ))}
         </div>
 
-        {/* Tes Skolastik */}
-        <div className="bg-[#22345A] rounded-xl p-4 mb-4">
-          <h2 className="text-lg font-bold text-white mb-2">Tes Skolastik</h2>
-          {getSubjectsByCategory("Tes Potensi Skolastik").map((sub, idx) => {
-            console.log('SUBJEK DEBUG:', sub);
-            return (
-              <div key={idx} className="bg-[#2C4A6E] rounded-xl p-4 mb-3">
-                {renderSubjectMetrics(sub)}
+        {/* Detail per kategori dan subjek */}
+        {tryoutResults?.perCategorySubject?.map((cat, idx) => (
+          <div key={idx} className="bg-[#22345A] rounded-xl p-4 mb-4">
+            <h2 className="text-lg font-bold text-white mb-2">{cat.result.nama_kategori}</h2>
+            {cat.result.subjek?.map((sub, i) => (
+              <div key={i} className="bg-[#2C4A6E] rounded-xl p-4 mb-3">
+                <div className="font-semibold text-white mb-2">{sub.nama_subjek}</div>
+                <div className="grid grid-cols-4 gap-2 mt-2">
+                  <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
+                    <Award size={18} className="text-yellow-300 mb-1" />
+                    <span className="text-xs text-blue-100">Nilai</span>
+                    <span className="font-bold text-white">{sub.nilai_rata_rata}</span>
+                  </div>
+                  <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
+                    <CheckCircle size={18} className="text-green-400 mb-1" />
+                    <span className="text-xs text-blue-100">Total Jawaban Benar</span>
+                    <span className="font-bold text-white">{sub.total_jawaban_benar}</span>
+                  </div>
+                  <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
+                    <XCircle size={18} className="text-red-400 mb-1" />
+                    <span className="text-xs text-blue-100">Total Jawaban Salah</span>
+                    <span className="font-bold text-white">{sub.total_jawaban_salah}</span>
+                  </div>
+                  <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
+                    <HelpCircle size={18} className="text-gray-400 mb-1" />
+                    <span className="text-xs text-blue-100">Total Jawaban Kosong</span>
+                    <span className="font-bold text-white">{sub.total_jawaban_kosong}</span>
+                  </div>
+                </div>
               </div>
-            );
-          })}
-        </div>
-
-        {/* Tes Literasi */}
-        <div className="bg-[#22345A] rounded-xl p-4 mb-4">
-          <h2 className="text-lg font-bold text-white mb-2">Tes Literasi</h2>
-          {getSubjectsByCategory("Tes Literasi").map((sub, idx) => {
-            console.log('SUBJEK DEBUG:', sub);
-            return (
-              <div key={idx} className="bg-[#2C4A6E] rounded-xl p-4 mb-3">
-                {renderSubjectMetrics(sub)}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Tes Penalaran Matematika */}
-        <div className="bg-[#22345A] rounded-xl p-4 mb-4">
-          <h2 className="text-lg font-bold text-white mb-2">Tes Penalaran Matematika</h2>
-          {getSubjectsByCategory("Penalaran Matematika").map((sub, idx) => {
-            console.log('SUBJEK DEBUG:', sub);
-            return (
-              <div key={idx} className="bg-[#2C4A6E] rounded-xl p-4 mb-3">
-                {renderSubjectMetrics(sub)}
-              </div>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        ))}
 
         {/* Button Keluar */}
         <div className="flex justify-center mt-6">

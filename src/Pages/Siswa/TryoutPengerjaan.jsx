@@ -9,6 +9,7 @@ import axiosInstance from "../../api/axiosInstance"
 export default function SiswaTryoutPengerjaan() {
   const navigate = useNavigate()
   const { id: idTryout, subjectId } = useParams()
+  
   console.log('Current subjectId from params:', subjectId); // Log untuk debug
   const [currentQuestion, setCurrentQuestion] = useState(1)
   const [selectedAnswers, setSelectedAnswers] = useState({})
@@ -25,8 +26,6 @@ export default function SiswaTryoutPengerjaan() {
   // Reset state setiap subjectId berubah
   useEffect(() => {
     setCurrentQuestion(1)
-    setSelectedAnswers({})
-    setAnsweredQuestions([])
     setTimeLeft(null)
     setLoading(true)
     setError(null)
@@ -96,9 +95,9 @@ export default function SiswaTryoutPengerjaan() {
           return { minutes: prev.minutes - 1, seconds: 59 }
         } else {
           clearInterval(timer)
-          // Jika subjectId adalah 7 (subjek terakhir), langsung ke halaman hasil
+          // Jika subjectId adalah 7 (subjek terakhir), langsung ke halaman penilaian
           if (subjectId === "7") {
-            navigate(`/siswa/tryout/${idTryout}/hasil`);
+            navigate(`/siswa/tryout/${idTryout}/penilaian`);
           } else {
             // Jika bukan subjek terakhir, lanjut ke peralihan
             const nextSubjectId = String(Number(subjectId) + 1);
@@ -156,12 +155,13 @@ export default function SiswaTryoutPengerjaan() {
         setAnsweredQuestions((prev) => [...prev, currentQuestion]);
       }
       
-      // Jika semua soal sudah dijawab, otomatis navigasi ke Peralihan
+      // Jika semua soal sudah dijawab, otomatis navigasi ke Peralihan/Penilaian
       if (answeredQuestions.length + 1 === totalQuestions) {
         setTimeout(() => {
           if (subjectId === "7") {
-            navigate(`/siswa/tryout/${idTryout}/hasil`);
+            navigate(`/siswa/tryout/${idTryout}/penilaian`);
           } else {
+            // Navigasi ke peralihan dengan ID subjek saat ini
             navigate(`/siswa/tryout/${idTryout}/${subjectId}/peralihan`);
           }
         }, 1000);
@@ -172,6 +172,9 @@ export default function SiswaTryoutPengerjaan() {
       }
     } catch (err) {
       console.error('Error menyimpan jawaban:', err);
+      if (err.response) {
+        console.error('Backend error response:', err.response.data);
+      }
       alert('Gagal menyimpan jawaban. Silakan coba lagi.');
     }
   }
@@ -186,10 +189,10 @@ export default function SiswaTryoutPengerjaan() {
         idTryout,
         subjectId,
         questionId,
-        answerOptionId: 0
+        answerOptionId: null
       });
 
-      await axiosInstance.post(url, { answerOptionId: 0 });
+      await axiosInstance.post(url, { answerOptionId: null });
     } catch (err) {
       console.error('Error menyimpan jawaban kosong:', err);
     }
@@ -208,7 +211,7 @@ export default function SiswaTryoutPengerjaan() {
         // Jika semua soal sudah dijawab
         if (answeredQuestions.length === totalQuestions) {
           if (subjectId === "7") {
-            navigate(`/siswa/tryout/${idTryout}/hasil`);
+            navigate(`/siswa/tryout/${idTryout}/penilaian`);
           } else {
             navigate(`/siswa/tryout/${idTryout}/${subjectId}/peralihan`);
           }

@@ -294,7 +294,20 @@ export default function TryoutId() {
             variants={buttonVariants}
             whileHover="hover"
             whileTap="tap"
-            onClick={() => navigate(`/siswa/tryout/${id}/${id}/pengerjaan`)}
+            onClick={() => {
+              // Ambil array subjects dari tryoutData, urutkan, dan arahkan ke subjek pertama
+              let subjects = tryoutData?.getTryout?.subjects;
+              if (typeof subjects === 'string') {
+                subjects = JSON.parse(subjects);
+              }
+              if (Array.isArray(subjects) && subjects.length > 0) {
+                subjects.sort((a, b) => Number(a.subject_id) - Number(b.subject_id));
+                const firstSubjectId = subjects[0].subject_id;
+                navigate(`/siswa/tryout/${id}/${firstSubjectId}/pengerjaan`);
+              } else {
+                alert('Data subjek tidak ditemukan!');
+              }
+            }}
             className="w-full bg-gradient-to-r from-[#1E3A5F] to-[#2E4A7F] text-white py-4 px-8 rounded-xl text-lg font-semibold shadow-lg transform transition-all duration-300 hover:shadow-xl"
           >
             MULAI TRYOUT

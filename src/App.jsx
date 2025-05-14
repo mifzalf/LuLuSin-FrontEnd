@@ -38,7 +38,8 @@ import SiswaTryoutId from "./Pages/Siswa/TryoutId";
 import GuruDashboard from "./Pages/Guru/Dashboard";
 import { motion } from "framer-motion";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Hasil from "./Pages/Siswa/hasil";
+import Penilaian from './Pages/Siswa/penilaian';
+
 
 function App() {
   const [count, setCount] = useState(0);
@@ -114,7 +115,7 @@ function App() {
         <Route path="tryout/:id/hasil" element={<SiswaTryoutHasil />} />
         <Route path="tryout/:id/:subjectId/pembahasan" element={<SiswaTryoutPembahasan />} />
         <Route path="tryout/:id/:subjectId/peralihan" element={<Peralihan />} />
-        <Route path="tryout/:id/hasil" element={<Hasil />} />
+        <Route path="tryout/:tryoutId/penilaian" element={<Penilaian />} />
       </Route>
 
       {/* About Route - accessible to all */}
