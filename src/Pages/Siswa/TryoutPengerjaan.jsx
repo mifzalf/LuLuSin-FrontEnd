@@ -219,15 +219,12 @@ export default function SiswaTryoutPengerjaan() {
           // Jika masih ada soal yang belum dijawab, cari soal berikutnya
           const nextUnanswered = findNextUnansweredQuestion();
           setCurrentQuestion(nextUnanswered);
-          setSelectedAnswers({});
         }
       } else {
         setCurrentQuestion((prev) => prev + 1);
-        setSelectedAnswers({});
       }
     } else if (direction === "prev" && currentQuestion > 1) {
       setCurrentQuestion((prev) => prev - 1);
-      setSelectedAnswers({});
     }
   }
 
