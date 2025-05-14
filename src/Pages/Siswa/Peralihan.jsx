@@ -179,25 +179,12 @@ const Peralihan = () => {
   // Efek untuk navigasi otomatis
   useEffect(() => {
     if (timeLeft === 0 && subjectList.length > 0) {
-      console.log('==== DEBUG PERALIHAN.JSX ====');
-      console.log('subjectList:', subjectList.map(s => s.subject_id));
-      console.log('subjectList (full):', subjectList);
-      console.log('current subjectId:', subjectId, typeof subjectId);
-      
-      // Pastikan subjectId adalah number
-      const currentSubjectId = parseInt(subjectId);
-      const nextSubjectId = currentSubjectId + 1;
-      
-      // Cari subjek berikutnya berdasarkan ID
-      const nextSubject = subjectList.find(subject => parseInt(subject.subject_id) === nextSubjectId);
-      console.log('nextSubjectId yang dicari:', nextSubjectId);
-      console.log('nextSubject ditemukan:', nextSubject);
-      
+      // Cari index subjek saat ini di subjectList
+      const currentIndex = subjectList.findIndex(subject => String(subject.subject_id) === String(subjectId));
+      const nextSubject = subjectList[currentIndex + 1];
       if (nextSubject) {
-        console.log('Navigasi ke subjek berikutnya:', nextSubject.subject_id, 'URL:', `/siswa/tryout/${idTryout}/${nextSubject.subject_id}/pengerjaan`);
         navigate(`/siswa/tryout/${idTryout}/${nextSubject.subject_id}/pengerjaan`);
       } else {
-        console.log('Finalisasi tryout...');
         finalizeTryout();
       }
       return;

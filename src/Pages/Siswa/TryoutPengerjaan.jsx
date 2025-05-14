@@ -130,45 +130,30 @@ export default function SiswaTryoutPengerjaan() {
   // Fungsi untuk memilih jawaban
   const handleAnswerSelect = async (answerOptionId) => {
     try {
+      const questionId = currentQuestionData.question_id;
       // Cek apakah sudah pernah menjawab soal ini
-      const alreadyAnswered = answeredQuestions.includes(currentQuestion);
-      const url = `/API/student/tryout/${idTryout}/${subjectId}/${currentQuestionData.question_id}/taking`;
+      const alreadyAnswered = answeredQuestions.includes(questionId);
+      const url = `/API/student/tryout/${idTryout}/${subjectId}/${questionId}/taking`;
       
       // Log data yang dikirim ke backend
       console.log("FRONTEND SEND:", {
         idTryout,
         subjectId,
-        questionId: currentQuestionData.question_id,
+        questionId,
         answerOptionId
       });
 
       if (alreadyAnswered) {
         // PATCH untuk update jawaban
-        await axiosInstance.patch(url, { answerOptionId });
+        await axiosInstance.patch(url, { answer_option_id: answerOptionId });
+        setSelectedAnswers((prev) => ({ ...prev, [questionId]: answerOptionId }));
       } else {
         // POST untuk jawaban baru
         await axiosInstance.post(url, { answerOptionId });
+        setSelectedAnswers((prev) => ({ ...prev, [questionId]: answerOptionId }));
       }
-
-      setSelectedAnswers((prev) => ({ ...prev, [currentQuestion]: answerOptionId }));
-      if (!answeredQuestions.includes(currentQuestion)) {
-        setAnsweredQuestions((prev) => [...prev, currentQuestion]);
-      }
-      
-      // Jika semua soal sudah dijawab, otomatis navigasi ke Peralihan/Penilaian
-      if (answeredQuestions.length + 1 === totalQuestions) {
-        setTimeout(() => {
-          if (subjectId === "7") {
-            navigate(`/siswa/tryout/${idTryout}/penilaian`);
-          } else {
-            // Navigasi ke peralihan dengan ID subjek saat ini
-            navigate(`/siswa/tryout/${idTryout}/${subjectId}/peralihan`);
-          }
-        }, 1000);
-      } else if (currentQuestion < totalQuestions) {
-        setTimeout(() => {
-          navigateQuestion("next");
-        }, 500);
+      if (!answeredQuestions.includes(questionId)) {
+        setAnsweredQuestions((prev) => [...prev, questionId]);
       }
     } catch (err) {
       console.error('Error menyimpan jawaban:', err);
@@ -200,25 +185,33 @@ export default function SiswaTryoutPengerjaan() {
 
   // Fungsi navigasi soal
   const navigateQuestion = async (direction) => {
+    const questionId = currentQuestionData.question_id;
     if (direction === "next") {
       // Submit jawaban kosong untuk soal saat ini jika belum dijawab
-      if (!answeredQuestions.includes(currentQuestion)) {
-        await submitEmptyAnswer(currentQuestionData.question_id);
-        setAnsweredQuestions((prev) => [...prev, currentQuestion]);
+      if (!answeredQuestions.includes(questionId)) {
+        await submitEmptyAnswer(questionId);
+        setAnsweredQuestions((prev) => [...prev, questionId]);
       }
 
       if (currentQuestion === totalQuestions) {
-        // Jika semua soal sudah dijawab
-        if (answeredQuestions.length === totalQuestions) {
-          if (subjectId === "7") {
-            navigate(`/siswa/tryout/${idTryout}/penilaian`);
-          } else {
-            navigate(`/siswa/tryout/${idTryout}/${subjectId}/peralihan`);
-          }
-        } else {
-          // Jika masih ada soal yang belum dijawab, cari soal berikutnya
+        // Jika masih ada waktu, jangan pindah ke subjek berikutnya
+        if (timeLeft && (timeLeft.minutes > 0 || timeLeft.seconds > 0)) {
+          // Jika masih ada soal yang belum dijawab, arahkan ke soal pertama yang belum dijawab
           const nextUnanswered = findNextUnansweredQuestion();
           setCurrentQuestion(nextUnanswered);
+        } else {
+          // Jika waktu habis, baru boleh pindah ke subjek berikutnya
+          if (answeredQuestions.length === totalQuestions) {
+            if (subjectId === "7") {
+              navigate(`/siswa/tryout/${idTryout}/penilaian`);
+            } else {
+              navigate(`/siswa/tryout/${idTryout}/${subjectId}/peralihan`);
+            }
+          } else {
+            // Jika masih ada soal yang belum dijawab, arahkan ke soal pertama yang belum dijawab
+            const nextUnanswered = findNextUnansweredQuestion();
+            setCurrentQuestion(nextUnanswered);
+          }
         }
       } else {
         setCurrentQuestion((prev) => prev + 1);
@@ -281,21 +274,24 @@ export default function SiswaTryoutPengerjaan() {
             </motion.div>
 
             <div className="grid grid-cols-5 gap-2 mt-4">
-              {Array.from({ length: totalQuestions }, (_, i) => (
-                <motion.button
-                  key={i}
-                  onClick={() => setCurrentQuestion(i + 1)}
-                  className={`p-2 rounded-lg ${
-                    currentQuestion === i + 1 ? "ring-2 ring-white" : ""
-                  } ${
-                    answeredQuestions.includes(i + 1)
-                      ? "bg-green-500"
-                      : "bg-[#2C4A6E]"
-                  }`}
-                >
-                  {i + 1}
-                </motion.button>
-              ))}
+              {Array.from({ length: totalQuestions }, (_, i) => {
+                const qId = examData.questionData[i]?.question_id;
+                return (
+                  <motion.button
+                    key={i}
+                    onClick={() => setCurrentQuestion(i + 1)}
+                    className={`p-2 rounded-lg ${
+                      currentQuestion === i + 1 ? "ring-2 ring-white" : ""
+                    } ${
+                      answeredQuestions.includes(qId)
+                        ? "bg-green-500"
+                        : "bg-[#2C4A6E]"
+                    }`}
+                  >
+                    {i + 1}
+                  </motion.button>
+                );
+              })}
             </div>
 
             <div className="mt-4 bg-[#2C4A6E]/50 p-3 rounded-xl">
@@ -331,7 +327,7 @@ export default function SiswaTryoutPengerjaan() {
                     key={option.answer_option_id || option.id}
                     onClick={() => handleAnswerSelect(option.answer_option_id || option.id)}
                     className={`w-full p-4 text-left rounded-xl ${
-                      selectedAnswers[currentQuestion] === (option.answer_option_id || option.id)
+                      selectedAnswers[currentQuestionData.question_id] === (option.answer_option_id || option.id)
                         ? "bg-green-500 text-white"
                         : "bg-gray-100 hover:bg-gray-200"
                     }`}
