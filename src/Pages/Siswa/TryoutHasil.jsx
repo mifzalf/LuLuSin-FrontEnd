@@ -220,33 +220,45 @@ export default function SiswaTryoutHasil() {
         {tryoutResults?.perCategorySubject?.map((cat, idx) => (
           <div key={idx} className="bg-[#22345A] rounded-xl p-4 mb-4">
             <h2 className="text-lg font-bold text-white mb-2">{cat.result.nama_kategori}</h2>
-            {cat.result.subjek?.map((sub, i) => (
-              <div key={i} className="bg-[#2C4A6E] rounded-xl p-4 mb-3">
-                <div className="font-semibold text-white mb-2">{sub.nama_subjek}</div>
-                <div className="grid grid-cols-4 gap-2 mt-2">
-                  <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
-                    <Award size={18} className="text-yellow-300 mb-1" />
-                    <span className="text-xs text-blue-100">Nilai</span>
-                    <span className="font-bold text-white">{sub.nilai_rata_rata}</span>
-                  </div>
-                  <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
-                    <CheckCircle size={18} className="text-green-400 mb-1" />
-                    <span className="text-xs text-blue-100">Total Jawaban Benar</span>
-                    <span className="font-bold text-white">{sub.total_jawaban_benar}</span>
-                  </div>
-                  <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
-                    <XCircle size={18} className="text-red-400 mb-1" />
-                    <span className="text-xs text-blue-100">Total Jawaban Salah</span>
-                    <span className="font-bold text-white">{sub.total_jawaban_salah}</span>
-                  </div>
-                  <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
-                    <HelpCircle size={18} className="text-gray-400 mb-1" />
-                    <span className="text-xs text-blue-100">Total Jawaban Kosong</span>
-                    <span className="font-bold text-white">{sub.total_jawaban_kosong}</span>
+            {cat.result.subjek?.map((sub, i) => {
+              // Cari ID subjek berdasarkan nama subjek
+              const found = subjectList.find(s =>
+                (s.subject_name || s.nama_subjek) === (sub.nama_subjek || sub.subject_name)
+              );
+              const subjectId = found ? found.subject_id : undefined;
+
+              return (
+                <div
+                  key={i}
+                  className="bg-[#2C4A6E] rounded-xl p-4 mb-3 cursor-pointer hover:bg-[#2C4A6E]/80 transition-colors"
+                  onClick={() => subjectId && navigate(`/siswa/tryout/${id}/${subjectId}/pembahasan`)}
+                >
+                  <div className="font-semibold text-white mb-2">{sub.nama_subjek}</div>
+                  <div className="grid grid-cols-4 gap-2 mt-2">
+                    <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
+                      <Award size={18} className="text-yellow-300 mb-1" />
+                      <span className="text-xs text-blue-100">Nilai</span>
+                      <span className="font-bold text-white">{sub.nilai_rata_rata}</span>
+                    </div>
+                    <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
+                      <CheckCircle size={18} className="text-green-400 mb-1" />
+                      <span className="text-xs text-blue-100">Total Jawaban Benar</span>
+                      <span className="font-bold text-white">{sub.total_jawaban_benar}</span>
+                    </div>
+                    <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
+                      <XCircle size={18} className="text-red-400 mb-1" />
+                      <span className="text-xs text-blue-100">Total Jawaban Salah</span>
+                      <span className="font-bold text-white">{sub.total_jawaban_salah}</span>
+                    </div>
+                    <div className="flex flex-col items-center bg-[#22345A] rounded-lg p-2">
+                      <HelpCircle size={18} className="text-gray-400 mb-1" />
+                      <span className="text-xs text-blue-100">Total Jawaban Kosong</span>
+                      <span className="font-bold text-white">{sub.total_jawaban_kosong}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ))}
 
