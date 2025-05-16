@@ -127,14 +127,27 @@ export default function SiswaTryoutPengerjaan() {
     return 1 // If all questions are answered, return to first question
   }
 
-  // Fungsi untuk memilih jawaban
+  // Fungsi untuk memilih atau menghapus jawaban
   const handleAnswerSelect = async (answerOptionId) => {
     try {
       const questionId = currentQuestionData.question_id;
+      const selected = selectedAnswers[questionId];
+      const url = `/API/student/tryout/${idTryout}/${subjectId}/${questionId}/taking`;
+
+      // Jika klik jawaban yang sama, hapus jawaban
+      if (selected === answerOptionId) {
+        await axiosInstance.delete(url);
+        setSelectedAnswers((prev) => {
+          const newAnswers = { ...prev };
+          delete newAnswers[questionId];
+          return newAnswers;
+        });
+        setAnsweredQuestions((prev) => prev.filter(id => id !== questionId));
+        return;
+      }
+
       // Cek apakah sudah pernah menjawab soal ini
       const alreadyAnswered = answeredQuestions.includes(questionId);
-      const url = `/API/student/tryout/${idTryout}/${subjectId}/${questionId}/taking`;
-      
       // Log data yang dikirim ke backend
       console.log("FRONTEND SEND:", {
         idTryout,
@@ -156,11 +169,11 @@ export default function SiswaTryoutPengerjaan() {
         setAnsweredQuestions((prev) => [...prev, questionId]);
       }
     } catch (err) {
-      console.error('Error menyimpan jawaban:', err);
+      console.error('Error menyimpan/menghapus jawaban:', err);
       if (err.response) {
         console.error('Backend error response:', err.response.data);
       }
-      alert('Gagal menyimpan jawaban. Silakan coba lagi.');
+      alert('Gagal menyimpan/menghapus jawaban. Silakan coba lagi.');
     }
   }
 
@@ -180,6 +193,36 @@ export default function SiswaTryoutPengerjaan() {
       await axiosInstance.post(url, { answerOptionId: null });
     } catch (err) {
       console.error('Error menyimpan jawaban kosong:', err);
+    }
+  }
+
+  // Fungsi untuk menghapus jawaban
+  const handleDeleteAnswer = async (questionId) => {
+    try {
+      const url = `/API/student/tryout/${idTryout}/${subjectId}/${questionId}/taking`;
+      
+      // Log data yang dikirim ke backend untuk menghapus jawaban
+      console.log("FRONTEND DELETE ANSWER:", {
+        idTryout,
+        subjectId,
+        questionId
+      });
+
+      await axiosInstance.delete(url);
+      
+      // Update state setelah menghapus jawaban
+      setSelectedAnswers((prev) => {
+        const newAnswers = { ...prev };
+        delete newAnswers[questionId];
+        return newAnswers;
+      });
+      
+      // Hapus dari daftar soal yang sudah dijawab
+      setAnsweredQuestions((prev) => prev.filter(id => id !== questionId));
+      
+    } catch (err) {
+      console.error('Error menghapus jawaban:', err);
+      alert('Gagal menghapus jawaban. Silakan coba lagi.');
     }
   }
 
