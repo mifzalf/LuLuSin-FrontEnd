@@ -264,7 +264,7 @@ function GuruTryoutSubjek() {
 
   const handleDelete = async (questionId) => {
     try {
-      await axiosInstance.delete(`/API/teacher/tryout/${tryout_id}/${subject_id}/delete_question/${questionId}`)
+      await axiosInstance.delete(`/API/teacher/tryout/${tryout_id}/${subject_id}/${questionId}/delete`)
       
       const response = await axiosInstance.get(`/API/teacher/tryout/${tryout_id}/${subject_id}`)
       setSubjectData(response.data)
@@ -280,7 +280,7 @@ function GuruTryoutSubjek() {
   }
 
   const openDeleteConfirm = (question) => {
-    setQuestionToDelete(question)
+    setQuestionToDelete(question.question_id)
     setShowDeleteConfirm(true)
   }
 
@@ -560,105 +560,108 @@ function GuruTryoutSubjek() {
                 </div>
               ) : (
               <div className="space-y-4">
-                {subjectData.tryoutQuestionBySubject.map((question, index) => (
-                  <motion.div
-                    key={index}
-                    className="border border-blue-600/20 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow"
-                    initial={false}
-                  >
-                    <div className={`p-4 hover:bg-blue-50 transition-colors ${
-                      expandedQuestions[index] ? 'bg-blue-50' : ''
-                    }`}>
-                      <div className="flex justify-between items-center">
-                        <div 
-                          className="flex items-center space-x-3 flex-grow cursor-pointer"
-                          onClick={() => toggleQuestion(index)}
-                        >
-                          <span className="font-medium text-blue-600">Soal {index + 1}</span>
-                          <span className="text-gray-600 text-sm">
-                            {question.question.length > 100
-                              ? question.question.substring(0, 100) + "..."
-                              : question.question}
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-2 ml-4">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleEdit(question)
-                            }}
-                            className="p-2 text-blue-600 hover:bg-blue-600/10 rounded-full transition-colors"
-                            title="Edit Soal"
-                          >
-                            <Edit className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              openDeleteConfirm(question)
-                            }}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
-                            title="Hapus Soal"
-                          >
-                            <Trash2 className="w-5 h-5" />
-                          </button>
-                          <button
+                {subjectData.tryoutQuestionBySubject.map((question, index) => {
+                  console.log('DEBUG QUESTION:', question);
+                  return (
+                    <motion.div
+                      key={index}
+                      className="border border-blue-600/20 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow"
+                      initial={false}
+                    >
+                      <div className={`p-4 hover:bg-blue-50 transition-colors ${
+                        expandedQuestions[index] ? 'bg-blue-50' : ''
+                      }`}>
+                        <div className="flex justify-between items-center">
+                          <div 
+                            className="flex items-center space-x-3 flex-grow cursor-pointer"
                             onClick={() => toggleQuestion(index)}
-                            className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
                           >
-                            {expandedQuestions[index] ? (
-                              <ChevronUp className="w-5 h-5" />
-                            ) : (
-                              <ChevronDown className="w-5 h-5" />
-                            )}
-                          </button>
+                            <span className="font-medium text-blue-600">Soal {index + 1}</span>
+                            <span className="text-gray-600 text-sm">
+                              {question.question.length > 100
+                                ? question.question.substring(0, 100) + "..."
+                                : question.question}
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2 ml-4">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleEdit(question)
+                              }}
+                              className="p-2 text-blue-600 hover:bg-blue-600/10 rounded-full transition-colors"
+                              title="Edit Soal"
+                            >
+                              <Edit className="w-5 h-5" />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                openDeleteConfirm(question)
+                              }}
+                              className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                              title="Hapus Soal"
+                            >
+                              <Trash2 className="w-5 h-5" />
+                            </button>
+                            <button
+                              onClick={() => toggleQuestion(index)}
+                              className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
+                            >
+                              {expandedQuestions[index] ? (
+                                <ChevronUp className="w-5 h-5" />
+                              ) : (
+                                <ChevronDown className="w-5 h-5" />
+                              )}
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <AnimatePresence>
-                      {expandedQuestions[index] && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="border-t border-blue-600/20"
-                        >
-                          <div className="p-4 bg-white">
-                            <div className="mb-4">
-                              <p className="text-gray-700 whitespace-pre-line">{question.question}</p>
-                              {question.question_image && (
-                                <img src={question.question_image} alt="Question" className="max-w-md mt-2 rounded-lg" />
-                              )}
-                            </div>
+                      <AnimatePresence>
+                        {expandedQuestions[index] && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="border-t border-blue-600/20"
+                          >
+                            <div className="p-4 bg-white">
+                              <div className="mb-4">
+                                <p className="text-gray-700 whitespace-pre-line">{question.question}</p>
+                                {question.question_image && (
+                                  <img src={question.question_image} alt="Question" className="max-w-md mt-2 rounded-lg" />
+                                )}
+                              </div>
 
-                            <div className="space-y-1 mb-3">
-                              <p className="font-medium text-gray-700 mb-2">Pilihan Jawaban:</p>
-                              {question.answer_options.map((option, optIndex) => (
-                                <p key={optIndex} className="text-gray-600 pl-4 py-1 hover:bg-blue-50 rounded-md transition-colors">
-                                  {String.fromCharCode(65 + optIndex)}. {option.answer_option}
-                                </p>
-                              ))}
-                            </div>
+                              <div className="space-y-1 mb-3">
+                                <p className="font-medium text-gray-700 mb-2">Pilihan Jawaban:</p>
+                                {question.answer_options.map((option, optIndex) => (
+                                  <p key={optIndex} className="text-gray-600 pl-4 py-1 hover:bg-blue-50 rounded-md transition-colors">
+                                    {String.fromCharCode(65 + optIndex)}. {option.answer_option}
+                                  </p>
+                                ))}
+                              </div>
 
-                            <div className="bg-blue-600/10 p-4 rounded-lg mb-2">
-                              <p className="font-medium text-gray-700">Jawaban Benar:</p>
-                              <p className="text-blue-600 mt-1 font-medium">{question.correct_answer}</p>
-                            </div>
+                              <div className="bg-blue-600/10 p-4 rounded-lg mb-2">
+                                <p className="font-medium text-gray-700">Jawaban Benar:</p>
+                                <p className="text-blue-600 mt-1 font-medium">{question.correct_answer}</p>
+                              </div>
 
-                            <div className="flex items-center space-x-2">
-                              <span className="text-sm font-medium text-gray-600">Nilai:</span>
-                              <span className="text-sm bg-blue-600 text-white px-3 py-1 rounded-full">
-                                {question.score}
-                              </span>
+                              <div className="flex items-center space-x-2">
+                                <span className="text-sm font-medium text-gray-600">Nilai:</span>
+                                <span className="text-sm bg-blue-600 text-white px-3 py-1 rounded-full">
+                                  {question.score}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
+                  )
+                })}
               </div>
               )}
             </div>
