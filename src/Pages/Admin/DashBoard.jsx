@@ -1,42 +1,77 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   // States for API data and error handling
   const [adminData, setAdminData] = useState({ admin_name: "" });
   const [countTS, setCountTS] = useState({ total_students: 0, total_teachers: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 3;
 
   // Fetch data from the backend endpoint using axiosInstance
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
+        setError(null);
         console.log("Fetching admin dashboard data...");
         const response = await axiosInstance.get("/API/admin/dashboard");
         console.log("Dashboard API Response:", response.data);
 
-        // Validate that the response structure matches what we expect.
+        // Validate that the response structure matches what we expect
         if (response.data && response.data.adminData && response.data.countTS) {
           setAdminData(response.data.adminData);
           setCountTS(response.data.countTS);
+          setRetryCount(0); // Reset retry count on success
         } else {
           throw new Error("Format data dashboard tidak sesuai harapan.");
         }
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
-        const errorMessage =
-          err.response?.data?.message || err.message || "Terjadi kesalahan saat memuat data dashboard.";
-        setError(errorMessage);
+        
+        // Handle specific error cases
+        if (err.response) {
+          switch (err.response.status) {
+            case 401:
+              setError("Sesi Anda telah berakhir. Silakan login kembali.");
+              navigate('/login');
+              break;
+            case 403:
+              setError("Anda tidak memiliki akses ke halaman ini.");
+              navigate('/login');
+              break;
+            case 404:
+              setError("Endpoint dashboard tidak ditemukan.");
+              break;
+            case 500:
+              setError("Terjadi kesalahan pada server. Silakan coba lagi nanti.");
+              break;
+            default:
+              setError(err.response.data?.message || "Terjadi kesalahan saat memuat data dashboard.");
+          }
+        } else if (err.request) {
+          // Network error
+          if (retryCount < MAX_RETRIES) {
+            setRetryCount(prev => prev + 1);
+            setTimeout(fetchData, 2000 * (retryCount + 1)); // Exponential backoff
+            return;
+          }
+          setError("Tidak dapat terhubung ke server. Silakan periksa koneksi internet Anda.");
+        } else {
+          setError(err.message || "Terjadi kesalahan saat memuat data dashboard.");
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [navigate, retryCount]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
