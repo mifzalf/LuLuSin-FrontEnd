@@ -586,8 +586,8 @@ function GuruTryoutSubjek() {
                           <div className="flex items-center space-x-2 ml-4">
                             <button
                               onClick={(e) => {
-                                e.stopPropagation()
-                                handleEdit(question)
+                                e.stopPropagation();
+                                navigate(`/guru/tryout/${tryout_id}/${subject_id}/editSoal/${question.question_id}`);
                               }}
                               className="p-2 text-blue-600 hover:bg-blue-600/10 rounded-full transition-colors"
                               title="Edit Soal"
