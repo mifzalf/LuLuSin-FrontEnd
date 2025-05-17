@@ -95,13 +95,17 @@ export default function SiswaTryoutPengerjaan() {
           return { minutes: prev.minutes - 1, seconds: 59 }
         } else {
           clearInterval(timer)
-          // Jika subjectId adalah 7 (subjek terakhir), langsung ke halaman penilaian
-          if (subjectId === "7") {
-            navigate(`/siswa/tryout/${idTryout}/penilaian`);
-          } else {
-            // Jika bukan subjek terakhir, lanjut ke peralihan
-            const nextSubjectId = String(Number(subjectId) + 1);
+          // Cek apakah ini adalah subjek terakhir
+          const currentSubjectId = Number(subjectId);
+          const maxSubjectId = 7; // ID subjek maksimal
+
+          if (currentSubjectId < maxSubjectId) {
+            // Jika bukan subjek terakhir, arahkan ke peralihan
+            const nextSubjectId = currentSubjectId + 1;
             navigate(`/siswa/tryout/${idTryout}/${nextSubjectId}/peralihan`);
+          } else {
+            // Jika subjek terakhir, arahkan ke penilaian
+            navigate(`/siswa/tryout/${idTryout}/penilaian`);
           }
           return prev
         }
@@ -214,12 +218,19 @@ export default function SiswaTryoutPengerjaan() {
           const nextUnanswered = findNextUnansweredQuestion();
           setCurrentQuestion(nextUnanswered);
         } else {
-          // Jika waktu habis, baru boleh pindah ke subjek berikutnya
+          // Cek apakah semua soal sudah dijawab
           if (answeredQuestions.length === totalQuestions) {
-            if (subjectId === "7") {
-              navigate(`/siswa/tryout/${idTryout}/penilaian`);
+            const currentSubjectId = Number(subjectId);
+            const maxSubjectId = 7; // ID subjek maksimal
+
+            if (currentSubjectId < maxSubjectId) {
+              // Jika masih ada subjek berikutnya, arahkan ke peralihan
+              const nextSubjectId = currentSubjectId + 1;
+              navigate(`/siswa/tryout/${idTryout}/${nextSubjectId}/peralihan`);
             } else {
-              navigate(`/siswa/tryout/${idTryout}/${subjectId}/peralihan`);
+              // Jika ini adalah subjek terakhir dan semua soal sudah dijawab
+              // baru arahkan ke halaman penilaian
+              navigate(`/siswa/tryout/${idTryout}/penilaian`);
             }
           } else {
             // Jika masih ada soal yang belum dijawab, arahkan ke soal pertama yang belum dijawab
@@ -231,7 +242,6 @@ export default function SiswaTryoutPengerjaan() {
         setCurrentQuestion((prev) => prev + 1);
       }
     } else if (direction === "prev") {
-      // Hapus pengecekan currentQuestion > 1 agar bisa kembali ke nomor 1
       setCurrentQuestion((prev) => Math.max(1, prev - 1));
     }
   }

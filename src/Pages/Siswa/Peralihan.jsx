@@ -207,16 +207,9 @@ const Peralihan = () => {
     );
     
     if (nextSubject) {
-      console.log('Fetching details for next subject ID:', nextId);
-      axiosInstance.get(`/API/student/${nextId}/transition`)
-        .then(res => {
-          console.log('Next subject details:', res.data.getSubject);
-          setNextSubjectDetail(res.data.getSubject);
-        })
-        .catch(err => {
-          console.error('Error fetching next subject details:', err);
-          setNextSubjectDetail(null);
-        });
+      console.log('Next subject found:', nextSubject);
+      // Langsung gunakan data dari nextSubject tanpa perlu API call tambahan
+      setNextSubjectDetail(nextSubject);
     } else {
       setNextSubjectDetail(null);
     }
@@ -325,7 +318,10 @@ const Peralihan = () => {
             transition={{ delay: 0.2, duration: 0.4 }}
             style={styles.title}
           >
-            {nextSubjectDetail ? nextSubjectDetail.subject_name || nextSubjectDetail.subjek : 'Memproses Hasil...'}
+            {nextSubjectDetail ? nextSubjectDetail.subject_name || nextSubjectDetail.subjek : 
+              subjectList.length > 0 ? 
+                `${subjectList[subjectList.length - 1].subject_name || subjectList[subjectList.length - 1].subjek} (Pengerjaan Terakhir)` : 
+                'Pengerjaan Terakhir...'}
           </motion.h1>
           
           <motion.div
@@ -348,16 +344,18 @@ const Peralihan = () => {
               </motion.div>
             ) : (
               <div style={{ color: 'white', fontSize: '1.2rem' }}>
-                {isFinalizing ? 'Memproses penilaian...' : 'Siap menampilkan hasil'}
+                {isFinalizing ? '' : ''}
               </div>
             )}
           </motion.div>
           
           <div style={{ color: 'white', fontSize: '1.2rem', marginBottom: '1rem' }}>
             {nextSubjectDetail ? (
-              <>Bersiap untuk mengerjakan: <b>{nextSubjectDetail.subject_name || nextSubjectDetail.subjek}</b></>
+              <>
+                Bersiap untuk mengerjakan: <b>{nextSubjectDetail.subject_name || nextSubjectDetail.subjek}</b>
+              </>
             ) : (
-              'Sedang menghitung skor...'
+              ''
             )}
           </div>
         </motion.div>
