@@ -91,7 +91,7 @@ const SoalCreatePembahasan = () => {
       // Siapkan data dalam format yang sesuai dengan struktur database
       const explanationData = {
         id_answer_option: id_answer_option,
-        question_explanation: formData.question_explanation.trim(),
+        question_explanation: formData.question_explanation,
         tryout_id: parseInt(tryout_id),
         subject_id: parseInt(subject_id)
       };
@@ -110,23 +110,11 @@ const SoalCreatePembahasan = () => {
       );
 
       if (response.status === 201 || response.status === 200) {
-        const answerOptionIds = response.data.answer_option_ids;
-        localStorage.setItem(`tryout_form_${tryout_id}_${subject_id}`, JSON.stringify({
-          question: formData.question.trim(),
-          score: formData.score,
-          answer_options: questionData.answer_options,
-          answer_option_ids: answerOptionIds,
-          question_image: formData.question_image ? formData.question_image.name : null
-        }));
+        localStorage.removeItem(`tryout_form_${tryout_id}_${subject_id}`);
         localStorage.removeItem(`temp_save_data_${tryout_id}_${subject_id}`);
         alert('Soal dan pembahasan berhasil disimpan!');
-        navigate(`/guru/tryout/${tryout_id}/${subject_id}`, {
-          state: {
-            refreshData: true,
-            timestamp: new Date().getTime(),
-            message: 'Data soal baru telah ditambahkan'
-          }
-        });
+        navigate('/guru/tryout');
+        return;
       }
     } catch (error) {
       console.error('Error:', error);

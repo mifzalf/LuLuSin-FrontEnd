@@ -151,7 +151,7 @@ const CreateTryoutSubjek = () => {
       if (response.status === 201) {
         const answerOptionIds = response.data.answer_option_ids;
         const dataToSave = {
-          question: formData.question.trim(),
+          question: (formData.question || "").trim(),
           score: formData.score,
           answer_options: nonEmptyOptions,
           answer_option_ids: answerOptionIds,
