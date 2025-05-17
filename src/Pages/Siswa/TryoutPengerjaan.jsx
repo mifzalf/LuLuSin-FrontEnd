@@ -138,9 +138,12 @@ export default function SiswaTryoutPengerjaan() {
       const selected = selectedAnswers[questionId];
       const url = `/API/student/tryout/${idTryout}/${subjectId}/${questionId}/taking`;
 
-      // Jika klik jawaban yang sama, hapus jawaban
+      // Jika klik jawaban yang sama, hapus jawaban dengan mengirim null
       if (selected === answerOptionId) {
-        await axiosInstance.delete(url);
+        await axiosInstance.patch(url, { 
+          answer_option_id: null,
+          is_update: true 
+        });
         setSelectedAnswers((prev) => {
           const newAnswers = { ...prev };
           delete newAnswers[questionId];
@@ -150,8 +153,6 @@ export default function SiswaTryoutPengerjaan() {
         return;
       }
 
-      // Cek apakah sudah pernah menjawab soal ini
-      const alreadyAnswered = answeredQuestions.includes(questionId);
       // Log data yang dikirim ke backend
       console.log("FRONTEND SEND:", {
         idTryout,
@@ -160,15 +161,27 @@ export default function SiswaTryoutPengerjaan() {
         answerOptionId
       });
 
+      // Cek apakah sudah pernah menjawab soal ini
+      const alreadyAnswered = answeredQuestions.includes(questionId);
+
       if (alreadyAnswered) {
         // PATCH untuk update jawaban
-        await axiosInstance.patch(url, { answer_option_id: answerOptionId });
-        setSelectedAnswers((prev) => ({ ...prev, [questionId]: answerOptionId }));
+        await axiosInstance.patch(url, { 
+          answer_option_id: answerOptionId,
+          is_update: true 
+        });
       } else {
         // POST untuk jawaban baru
-        await axiosInstance.post(url, { answerOptionId });
-        setSelectedAnswers((prev) => ({ ...prev, [questionId]: answerOptionId }));
+        await axiosInstance.post(url, { 
+          answerOptionId,
+          is_update: false 
+        });
       }
+
+      // Update state setelah berhasil menyimpan
+      setSelectedAnswers((prev) => ({ ...prev, [questionId]: answerOptionId }));
+      
+      // Pastikan questionId ada dalam answeredQuestions
       if (!answeredQuestions.includes(questionId)) {
         setAnsweredQuestions((prev) => [...prev, questionId]);
       }
@@ -176,8 +189,12 @@ export default function SiswaTryoutPengerjaan() {
       console.error('Error menyimpan/menghapus jawaban:', err);
       if (err.response) {
         console.error('Backend error response:', err.response.data);
+        // Tampilkan pesan error yang lebih spesifik
+        const errorMessage = err.response.data?.message || 'Terjadi kesalahan saat menyimpan jawaban';
+        alert(errorMessage);
+      } else {
+        alert('Gagal menyimpan/menghapus jawaban. Silakan coba lagi.');
       }
-      alert('Gagal menyimpan/menghapus jawaban. Silakan coba lagi.');
     }
   }
 
@@ -195,8 +212,13 @@ export default function SiswaTryoutPengerjaan() {
       });
 
       await axiosInstance.post(url, { answerOptionId: null });
-      // Hapus baris ini agar soal yang di-skip tidak masuk ke answeredQuestions
-      // setAnsweredQuestions((prev) => [...prev, questionId]);
+      // Tambahkan ke answeredQuestions untuk tracking soal yang sudah dilewati
+      setAnsweredQuestions((prev) => {
+        if (!prev.includes(questionId)) {
+          return [...prev, questionId];
+        }
+        return prev;
+      });
     } catch (err) {
       console.error('Error menyimpan jawaban kosong:', err);
     }
