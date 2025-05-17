@@ -191,8 +191,48 @@ export default function SiswaTryoutPengerjaan() {
       });
 
       await axiosInstance.post(url, { answerOptionId: null });
+      // Hapus baris ini agar soal yang di-skip tidak masuk ke answeredQuestions
+      // setAnsweredQuestions((prev) => [...prev, questionId]);
     } catch (err) {
       console.error('Error menyimpan jawaban kosong:', err);
+    }
+  }
+
+  // Fungsi navigasi soal
+  const navigateQuestion = async (direction) => {
+    const questionId = currentQuestionData.question_id;
+    if (direction === "next") {
+      // Submit jawaban kosong untuk soal saat ini jika belum dijawab
+      if (!answeredQuestions.includes(questionId)) {
+        await submitEmptyAnswer(questionId);
+      }
+
+      if (currentQuestion === totalQuestions) {
+        // Jika masih ada waktu, jangan pindah ke subjek berikutnya
+        if (timeLeft && (timeLeft.minutes > 0 || timeLeft.seconds > 0)) {
+          // Jika masih ada soal yang belum dijawab, arahkan ke soal pertama yang belum dijawab
+          const nextUnanswered = findNextUnansweredQuestion();
+          setCurrentQuestion(nextUnanswered);
+        } else {
+          // Jika waktu habis, baru boleh pindah ke subjek berikutnya
+          if (answeredQuestions.length === totalQuestions) {
+            if (subjectId === "7") {
+              navigate(`/siswa/tryout/${idTryout}/penilaian`);
+            } else {
+              navigate(`/siswa/tryout/${idTryout}/${subjectId}/peralihan`);
+            }
+          } else {
+            // Jika masih ada soal yang belum dijawab, arahkan ke soal pertama yang belum dijawab
+            const nextUnanswered = findNextUnansweredQuestion();
+            setCurrentQuestion(nextUnanswered);
+          }
+        }
+      } else {
+        setCurrentQuestion((prev) => prev + 1);
+      }
+    } else if (direction === "prev") {
+      // Hapus pengecekan currentQuestion > 1 agar bisa kembali ke nomor 1
+      setCurrentQuestion((prev) => Math.max(1, prev - 1));
     }
   }
 
@@ -223,44 +263,6 @@ export default function SiswaTryoutPengerjaan() {
     } catch (err) {
       console.error('Error menghapus jawaban:', err);
       alert('Gagal menghapus jawaban. Silakan coba lagi.');
-    }
-  }
-
-  // Fungsi navigasi soal
-  const navigateQuestion = async (direction) => {
-    const questionId = currentQuestionData.question_id;
-    if (direction === "next") {
-      // Submit jawaban kosong untuk soal saat ini jika belum dijawab
-      if (!answeredQuestions.includes(questionId)) {
-        await submitEmptyAnswer(questionId);
-        setAnsweredQuestions((prev) => [...prev, questionId]);
-      }
-
-      if (currentQuestion === totalQuestions) {
-        // Jika masih ada waktu, jangan pindah ke subjek berikutnya
-        if (timeLeft && (timeLeft.minutes > 0 || timeLeft.seconds > 0)) {
-          // Jika masih ada soal yang belum dijawab, arahkan ke soal pertama yang belum dijawab
-          const nextUnanswered = findNextUnansweredQuestion();
-          setCurrentQuestion(nextUnanswered);
-        } else {
-          // Jika waktu habis, baru boleh pindah ke subjek berikutnya
-          if (answeredQuestions.length === totalQuestions) {
-            if (subjectId === "7") {
-              navigate(`/siswa/tryout/${idTryout}/penilaian`);
-            } else {
-              navigate(`/siswa/tryout/${idTryout}/${subjectId}/peralihan`);
-            }
-          } else {
-            // Jika masih ada soal yang belum dijawab, arahkan ke soal pertama yang belum dijawab
-            const nextUnanswered = findNextUnansweredQuestion();
-            setCurrentQuestion(nextUnanswered);
-          }
-        }
-      } else {
-        setCurrentQuestion((prev) => prev + 1);
-      }
-    } else if (direction === "prev" && currentQuestion > 1) {
-      setCurrentQuestion((prev) => prev - 1);
     }
   }
 
