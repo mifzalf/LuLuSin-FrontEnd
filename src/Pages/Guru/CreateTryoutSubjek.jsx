@@ -24,6 +24,17 @@ const CreateTryoutSubjek = () => {
     fetchQuestions();
   }, [tryout_id, subject_id]);
 
+  useEffect(() => {
+    const saved = localStorage.getItem(`tryout_form_${tryout_id}_${subject_id}`);
+    if (saved) {
+      setFormData(JSON.parse(saved));
+    }
+  }, [tryout_id, subject_id]);
+
+  useEffect(() => {
+    localStorage.setItem(`tryout_form_${tryout_id}_${subject_id}`, JSON.stringify(formData));
+  }, [formData, tryout_id, subject_id]);
+
   const fetchQuestions = async () => {
     try {
       const response = await axiosInstance.get(`/API/teacher/tryout/${tryout_id}/${subject_id}`);
