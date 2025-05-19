@@ -330,7 +330,7 @@ const Peralihan = () => {
             style={{ marginBottom: '1.5rem' }}
           >
             <p style={styles.timerLabel}>
-              {nextSubjectDetail ? 'Dimulai dalam:' : 'Memproses hasil...'}
+              {nextSubjectDetail ? 'Dimulai dalam:' : '.'}
             </p>
             {nextSubjectDetail ? (
               <motion.div 

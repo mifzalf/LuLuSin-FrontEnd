@@ -203,16 +203,35 @@ export default function SiswaTryoutPengerjaan() {
     try {
       const url = `/API/student/tryout/${idTryout}/${subjectId}/${questionId}/taking`;
       
-      // Log data yang dikirim ke backend untuk jawaban kosong
+      // Log untuk memastikan mengirim null
       console.log("FRONTEND SEND EMPTY:", {
         idTryout,
         subjectId,
         questionId,
-        answerOptionId: null
+        answerOptionId: null  // Pastikan mengirim null
       });
 
-      await axiosInstance.post(url, { answerOptionId: null });
-      // Tambahkan ke answeredQuestions untuk tracking soal yang sudah dilewati
+      // Cek apakah sudah pernah menjawab soal ini
+      const alreadyAnswered = answeredQuestions.includes(questionId);
+
+      if (alreadyAnswered) {
+        // Hapus jawaban yang ada dengan DELETE request
+        await axiosInstance.delete(url);
+      } else {
+        // POST untuk jawaban kosong baru dengan null
+        await axiosInstance.post(url, { 
+          answerOptionId: null  // Pastikan mengirim null
+        });
+      }
+
+      // Update state
+      setSelectedAnswers((prev) => {
+        const newAnswers = { ...prev };
+        delete newAnswers[questionId];
+        return newAnswers;
+      });
+      
+      // Update answeredQuestions
       setAnsweredQuestions((prev) => {
         if (!prev.includes(questionId)) {
           return [...prev, questionId];
@@ -221,6 +240,13 @@ export default function SiswaTryoutPengerjaan() {
       });
     } catch (err) {
       console.error('Error menyimpan jawaban kosong:', err);
+      if (err.response) {
+        console.error('Backend error response:', err.response.data);
+        const errorMessage = err.response.data?.message || 'Terjadi kesalahan saat menyimpan jawaban kosong';
+        alert(errorMessage);
+      } else {
+        alert('Gagal menyimpan jawaban kosong. Silakan coba lagi.');
+      }
     }
   }
 
