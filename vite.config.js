@@ -6,12 +6,13 @@ export default defineConfig({
   plugins: [
     react()
   ],
+
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
     },
   },
-  base: "./",
+  base: "/Lulusin",
   css: {
     postcss: './postcss.config.cjs',
   },
