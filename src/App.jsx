@@ -47,7 +47,7 @@ function App() {
   return (
     <Routes>
       {/* Landing Page Route - accessible to all */}
-      <Route path="/" element={<SiswaLandingPage />} />
+      <Route path="/LuLuSin-FrontEnd" element={<SiswaLandingPage />} />
      
       {/* Auth Routes - accessible to all */}
       <Route path="/login" element={<Login />} />
