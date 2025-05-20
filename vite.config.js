@@ -12,7 +12,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
-  base: "/",
+  base: "/LuLuSin-FrontEnd/",
   css: {
     postcss: './postcss.config.cjs',
   },
