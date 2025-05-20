@@ -12,7 +12,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start">
         <div className="mb-4 md:mb-0">
           <img
-            src="/santoso tk lulus kuliah.png"
+            src="/base_photo.png"
             alt="Logo"
             className="w-16 h-16 mb-2"
           />
