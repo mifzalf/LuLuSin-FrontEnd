@@ -124,7 +124,7 @@ export default function SiswaLandingPage() {
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.7, duration: 0.8, type: "spring" }}
               whileHover={{ scale: 1.05, rotate: 2 }}
-              src="/base_photo.png"
+              src={`${import.meta.env.BASE_URL}base_photo.png`}
               alt="Education Illustration"
               className="w-80"
             />
@@ -244,7 +244,7 @@ export default function SiswaLandingPage() {
                 <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start">
                   <div className="mb-4 md:mb-0">
                     <img
-                      src="/base_photo.png"
+                      src={`${import.meta.env.BASE_URL}base_photo.png`}
                       alt="Logo"
                       className="w-16 h-16 mb-2"
                     />
