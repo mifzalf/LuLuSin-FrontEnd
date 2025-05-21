@@ -28,7 +28,7 @@ export default function SiswaTryout() {
           }
         };
         
-        const response = await axios.get('http://localhost:3000/API/student/tryout', config);
+        const response = await axios.get('/API/student/tryout', config);
         console.log('Response API:', response.data);
 
         if (response.data) {

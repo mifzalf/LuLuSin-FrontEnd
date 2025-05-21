@@ -17,7 +17,7 @@ const Penilaian = () => {
         setIsPosting(true);
         setError(null);
         await axios.post(
-          `http://localhost:3000/API/student/tryout/${tryoutId}/finalize`,
+          `/API/student/tryout/${tryoutId}/finalize`,
           {},
           {
             headers: {
